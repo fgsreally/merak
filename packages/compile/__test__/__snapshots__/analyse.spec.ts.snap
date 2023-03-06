@@ -1,0 +1,91 @@
+// Vitest Snapshot v1
+
+exports[`analyse file > analyse html file 1`] = `
+{
+  "dynamicImports": {},
+  "filePath": "",
+  "imports": [
+    {
+      "filePath": "/src/main.js",
+      "isInline": false,
+      "loc": [
+        206,
+        256,
+      ],
+    },
+  ],
+  "inlineScripts": [
+    {
+      "loc": [
+        283,
+        334,
+      ],
+      "type": "esm",
+    },
+    {
+      "loc": [
+        356,
+        422,
+      ],
+      "type": "iife",
+    },
+  ],
+  "links": {
+    "/favicon.ico": {
+      "loc": [
+        94,
+        108,
+      ],
+    },
+  },
+  "type": "html",
+}
+`;
+
+exports[`analyse file > analyse js file 1`] = `
+{
+  "dynamicImports": {
+    "fixtures/b": {
+      "loc": [
+        95,
+        106,
+      ],
+    },
+  },
+  "filePath": "fixtures/index.js",
+  "globals": [
+    "document",
+  ],
+  "imports": [
+    {
+      "filePath": "fixtures/c",
+      "loc": [
+        14,
+        17,
+      ],
+    },
+  ],
+  "type": "js",
+}
+`;
+
+exports[`analyse file > compile esm js 1`] = `
+"import c from 'c'
+const {document,}=$test;
+
+document.addEventListener('click', c)
+window.onload = async () => {
+  await import('b')
+}
+"
+`;
+
+exports[`analyse file > compile esm js 2`] = `
+"(()=>{const {document,}=$test;import c from 'c'
+
+document.addEventListener('click', c)
+window.onload = async () => {
+  await import('b')
+}
+})()"
+`;

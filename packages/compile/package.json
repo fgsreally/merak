@@ -1,0 +1,25 @@
+{
+  "name": "merak-compile",
+  "version": "1.0.0",
+  "description": "",
+  "main": "dist/index.js",
+  "module": "dist/index.mjs",
+  "types": "dist/index.d.ts",
+  "scripts": {
+    "dev": "tsup --watch",
+    "build": "tsup"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "devDependencies": {
+    "@types/babel__core": "^7.20.0",
+    "tsup": "^6.5.0"
+  },
+  "dependencies": {
+    "@babel/core": "^7.20.12",
+    "fs-extra": "^11.1.0",
+    "html5parser": "^2.0.2",
+    "magic-string": "^0.27.0"
+  }
+}

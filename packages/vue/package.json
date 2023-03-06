@@ -1,0 +1,22 @@
+{
+  "name": "merak-vue",
+  "version": "1.0.0",
+  "description": "",
+  "main": "dist/index.js",
+  "module": "dist/index.mjs",
+  "types": "dist/index.d.ts",
+  "scripts": {
+    "dev": "tsup --watch",
+    "build": "tsup"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "dependencies": {
+    "merak-core": "workspace:*",
+    "vue": "^3.2.47"
+  },
+  "devDependencies": {
+    "tsup": "^6.5.0"
+  }
+}

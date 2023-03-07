@@ -33,7 +33,7 @@ export class PureLoader {
     let htmlStr: string
     if (configUrl) { // independent config file
       config = await loadConfig(configUrl || url)
-      fileURL = resolveUrl(config.template.filePath, url)
+      fileURL = resolveUrl(config._t._f, url)
       htmlStr = await loadTextFile(fileURL)
     }
     else { // inline config
@@ -44,18 +44,17 @@ export class PureLoader {
         return ''
       })
     }
-    const htmlInfo = config.template
-
+    const htmlInfo = config._t
     const { code } = await this.execHook('transform', { cmd: 'transform', code: htmlStr, id }) as any
 
-    htmlInfo.scripts.forEach((item) => {
-      if ((item as ImportScript).filePath)
-        (item as ImportScript).filePath = resolveUrl((item as ImportScript).filePath, url) as string
+    htmlInfo._s.forEach((item) => {
+      if ((item as ImportScript)._f)
+        (item as ImportScript)._f = resolveUrl((item as ImportScript)._f, url) as string
     })
 
-    const template = this.compileHTML(code, htmlInfo, url, config.globals, config.fakeGlobalName)
+    const template = this.compileHTML(code, htmlInfo, url, config._g, config._f)
 
-    const loadRes = { cmd: 'load' as const, id, url, fakeGlobalName: config.fakeGlobalName, template, scripts: htmlInfo.scripts.map(item => item.merakAttrs) as Record<string, any>[] }
+    const loadRes = { cmd: 'load' as const, id, url, fakeGlobalName: config._f, template, scripts: htmlInfo._s.map(item => item._a) as Record<string, any>[] }
 
     await this.execHook('load', loadRes)
 
@@ -65,8 +64,8 @@ export class PureLoader {
 
   compileHTML(code: string, file: MerakHTMLFile, baseURL: string, globals: string[], fakeGlobalName: string) {
     const s = new MS(code) as unknown as MagicString
-    compileCSSLink(s, file.links, baseURL)
-    compileHTMLJS(s, file.scripts, globals, fakeGlobalName)
+    compileCSSLink(s, file._l, baseURL)
+    compileHTMLJS(s, baseURL, file._s, globals, fakeGlobalName)
     return s.toString()
   }
 }

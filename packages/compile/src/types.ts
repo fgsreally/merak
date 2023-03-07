@@ -30,10 +30,10 @@ export interface MerakJSFile {
 }
 
 export interface MerakHTMLFile {
-  type: 'html'
-  filePath: string
-  links: { [filePath in string]: { loc: [number, number] } }
-  scripts: (ImportScript | InlineScript)[]
+  _t: 'html'
+  _f: string
+  _l: { [filePath in string]: { _l: [number, number] } }
+  _s: (ImportScript | InlineScript)[]
   // inlineScripts: (MerakAttrs & {
   //   type: 'esm' | 'iife'
   //   loc: [number, number]
@@ -42,17 +42,19 @@ export interface MerakHTMLFile {
 }
 
 export type ImportScript = MerakAttrs &
-{ type: 'outline'
-  filePath: string
-  loc: [number, number] }
+{ _t: 'outline'
+  _f: string
+  _tl: [number, number] }
 
 export type InlineScript = MerakAttrs &
-{ type: 'esm' | 'iife'
-  body: [number, number]
-  loc: [number, number] }
+{ _t: 'esm' | 'iife'
+  _b: [number, number]
+  _tl: [number, number]
+  _l: [number, number][]
+}
 
 export interface MerakAttrs {
-  merakAttrs: Record<string, any>
+  _a: Record<string, any>
 }
 
 export type MerakFile = MerakJSFile | MerakHTMLFile

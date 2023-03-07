@@ -15,7 +15,7 @@ export function Merak(fakeGlobalName: string, globals: string[], opts: { isinLin
   globals.push(...DEFAULT_INJECT)
 
   const globalVars = [...new Set(globals)] as string[]
-  const merakConfig = { fakeGlobalName, globals: globalVars } as any
+  const merakConfig = { _f: fakeGlobalName, _g: globalVars } as any
   const resolvedOpts = {
     includes: /\.(vue|ts|js|tsx|jsx|mjs)/,
     excludes: /\.(css|scss|sass|less)$/,
@@ -47,7 +47,7 @@ export function Merak(fakeGlobalName: string, globals: string[], opts: { isinLin
 
     async transformIndexHtml(html) {
       html = html.replace('</head>', `</head><script merak-ignore>const ${fakeGlobalName}=window.${fakeGlobalName}||window</script>`)
-      merakConfig.template = analyseHTML(html)
+      merakConfig._t = analyseHTML(html)
       html = html.replace('</body>', `<merak-base config="${JSON.stringify(merakConfig)}"></merak-base></body>`)
       return html
     },
@@ -73,6 +73,8 @@ export function Merak(fakeGlobalName: string, globals: string[], opts: { isinLin
       baseOptions.assetsDir = _conf.build.assetsDir
     },
     async renderChunk(raw, chunk, opts) {
+      if (!filter(chunk.fileName))
+        return
       let ret: { code: string; map: SourceMap }
       if (opts.format === 'es')
         ret = injectGlobalToESM(raw, fakeGlobalName, globalVars)
@@ -110,7 +112,7 @@ export function Merak(fakeGlobalName: string, globals: string[], opts: { isinLin
             }
             else {
               chunk.source = transformHtml(chunk.source, baseOptions)
-              merakConfig.template = analyseHTML(chunk.source)
+              merakConfig._t = analyseHTML(chunk.source)
 
               if (!isinLine) {
                 this.emitFile({

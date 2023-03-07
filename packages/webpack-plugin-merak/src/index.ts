@@ -12,7 +12,7 @@ import isVarName from 'is-var-name'
  * it would inject all globalVars to each chunk with no treeshake
  */
 export class Merak {
-  constructor(public fakeGlobalName: string, public globals: string[]) {
+  constructor(public fakeGlobalName: string, public globals: string[], public options?: { filter?: RegExp }) {
     if (!isVarName(fakeGlobalName))
       throw new Error(`${fakeGlobalName} is not a valid var`)
   }
@@ -25,7 +25,7 @@ export class Merak {
     const globalVars = [...new Set(globals)] as string[]
     if (format === 'module') {
       new WrapperPlugin({
-        test: /\.js$/, // only wrap output of bundle files with '.js' extension
+        test: this.options?.filter || /\.js$/, // only wrap output of bundle files with '.js' extension
         header: `const {${desctructGlobal(globalVars)}}=${fakeGlobalName};`,
         footer: '',
       }).apply(compiler)
@@ -58,7 +58,7 @@ export class Merak {
         },
       )
       HtmlWebpackPlugin.getHooks(compilation).beforeEmit.tap('webpack-merak', (data) => {
-        const merakConfig = { fakeGlobalName, globalVars, template: analyseHTML(data.html) }
+        const merakConfig = { _f: fakeGlobalName, _g: globalVars, _t: analyseHTML(data.html) }
 
         data.html = data.html.replace('</body>', `<merak-base config='${JSON.stringify(merakConfig)}'></merak-base></body`)
 

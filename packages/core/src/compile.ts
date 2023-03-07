@@ -1,4 +1,4 @@
-import type MagicString from 'magic-string'
+import MagicString from 'magic-string'
 
 import type { ImportFile, ImportScript, InlineScript } from 'merak-compile'
 import { desctructGlobal, resolveUrl } from './utils'
@@ -61,21 +61,26 @@ export function compileDynamicImports(s: MagicString, dynamicImport: { [filePath
   return s
 }
 
-export function compileHTMLJS(s: MagicString, files: (ImportScript | InlineScript)[], globals: string[], fakeGlobalName: string) {
+export function compileHTMLJS(s: MagicString, url: string, files: (ImportScript | InlineScript)[], globals: string[], fakeGlobalName: string) {
   for (const file of files) {
-    if (file.type !== 'outline') {
-      const [tagStart, tagEnd] = (file as InlineScript).body
-      const body = s.slice(tagStart, tagEnd)
-      if (file.type === 'esm')
-        file.merakAttrs.innerHTML = `\nconst {${desctructGlobal(globals)}}=${fakeGlobalName};\n${body}`
-      if (file.type === 'iife')
-        file.merakAttrs.innerHTML = `(()=>{const {${desctructGlobal(globals)}}=${fakeGlobalName};${body}})()`
+    if (file._t !== 'outline') {
+      const [tagStart, tagEnd] = (file as InlineScript)._b
+
+      const body = new MagicString(s.slice(tagStart, tagEnd))
+      for (const [start, end] of file._l) {
+        const importer = body.slice(start + 1, end - 1)
+        body.overwrite(start, end, `"${resolveUrl(importer, url)}"`)
+      }
+      if (file._t === 'esm')
+        file._a.innerHTML = `\nconst {${desctructGlobal(globals)}}=${fakeGlobalName};\n${body.toString()}`
+      if (file._t === 'iife')
+        file._a.innerHTML = `(()=>{const {${desctructGlobal(globals)}}=${fakeGlobalName};${body.toString()}})()`
     }
     else {
-      file.merakAttrs.src = file.filePath
+      file._a.src = file._f
     }
 
-    const [start, end] = file.loc
+    const [start, end] = file._tl
     s.overwrite(start, end, '')
   }
 }
@@ -93,9 +98,9 @@ export function compileInlineJS(s: MagicString, scripts: { loc: [number, number]
   return s
 }
 
-export function compileCSSLink(s: MagicString, links: { [filePath in string]: { loc: [number, number] } }, baseURL: string) {
+export function compileCSSLink(s: MagicString, links: { [filePath in string]: { _l: [number, number] } }, baseURL: string) {
   for (const i in links) {
-    const [start, end] = links[i].loc
+    const [start, end] = links[i]._l
     s.overwrite(start, end, `"${resolveUrl(i, baseURL)}"`)
   }
 }

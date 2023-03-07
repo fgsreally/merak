@@ -12,6 +12,9 @@ export default defineConfig(({ mode }) => {
         'Cache-Control': 'public, max-age=600',
       },
     },
+    server:{
+      port:4002,
+    },
     css: {
       postcss: {
         plugins: [merakPostCss()],

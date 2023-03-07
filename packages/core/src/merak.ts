@@ -165,8 +165,9 @@ export class Merak {
 
       // work for spa
       if (this.loader) {
-      // template
+        // template
         this.sandDocument.innerHTML = this.template;
+
         // script
         (this.iframe?.contentDocument || this.sandDocument).querySelector('body')?.append(...this.templateScipts.map((scripts) => {
           const scriptTag = document.createElement('script')
@@ -177,8 +178,8 @@ export class Merak {
         }))
       }
       // work for ssr
-      const scriptEle = [...ele.querySelectorAll('script')].filter((item) => {
       if (ele) {
+        const scriptEle = [...ele.querySelectorAll('script')].filter((item) => {
           if (item.getAttribute('merak-ignore')) {
             item.parentNode?.removeChild(item)
             return false
@@ -186,10 +187,11 @@ export class Merak {
           return true
         })
         // script when use iframe
-        if (this.iframe)
+        if (this.iframe) {
           this.iframe.contentDocument!.querySelector('body')!.append(...scriptEle)
-        // template
-        this.sandDocument.append(ele)
+          // template
+          this.sandDocument.append(ele)
+        }
       }
       const shade = document.createElement('div')
       shade.setAttribute('style', MERAK_SHADE_STYLE)

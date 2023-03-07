@@ -105,14 +105,14 @@ export function createProxy(id: string, url: string, postHanler: CustomProxyHand
 
       if (
         p === 'getElementsByTagName'
-                || p === 'getElementsByClassName'
-                || p === 'getElementsByName' || p === 'getElementById'
+        || p === 'getElementsByClassName'
+        || p === 'getElementsByName' || p === 'getElementById'
       ) {
         return new Proxy((instance.sandDocument as HTMLElement).querySelectorAll, {
           apply(_, _ctx, args) {
             let arg = args[0] as string
             if (_ctx !== instance.proxyMap.document)
-            // eslint-disable-next-line prefer-spread
+              // eslint-disable-next-line prefer-spread
               return _ctx[p].apply(_ctx, args)
 
             if (p === 'getElementsByTagName' && arg === 'script')
@@ -123,8 +123,10 @@ export function createProxy(id: string, url: string, postHanler: CustomProxyHand
             if (p === 'getElementsByName')
               arg = `[name="${arg}"]`
 
-            if (p === 'getElementById')
-              return instance.shadowRoot.querySelectorAll(arg)[0]
+            if (p === 'getElementById') {
+              arg = `#${arg}`
+              return instance.shadowRoot.querySelector(arg)
+            }
             return instance.shadowRoot.querySelectorAll(arg)
           },
         })
@@ -158,7 +160,7 @@ export function createProxy(id: string, url: string, postHanler: CustomProxyHand
           const to = pathname + hash
           const queryMap = getUrlQuery(window.location.href)
 
-          queryMap[id] = to
+          queryMap[id] = to === '/undefined' ? '/' : to
           args[2] = `?${encodeURIComponent(JSON.stringify(queryMap))}`
           // args[2] = `?${to === '/' ? '' : `test=${to}`}`
           return history.replaceState(...args)
@@ -170,8 +172,8 @@ export function createProxy(id: string, url: string, postHanler: CustomProxyHand
           const { pathname, hash } = new URL(args[2], location.origin)
           const to = pathname + hash
           const queryMap = getUrlQuery(window.location.href)
+          queryMap[id] = to === '/undefined' ? '/' : to
 
-          queryMap[id] = to
           args[2] = `?${encodeURIComponent(JSON.stringify(queryMap))}`
           // args[2] = `?${to === '/' ? '' : `test=${to}`}`
           return history.pushState(...args)
@@ -193,7 +195,8 @@ export function createProxy(id: string, url: string, postHanler: CustomProxyHand
     get(target: any, p: string) {
       const { href } = window.location
       const queryMap = getUrlQuery(href)
-      const appUrl = new URL(queryMap[id] || '', location.origin)
+
+      const appUrl = new URL(queryMap[id] === '/undefined' ? '/' : queryMap[id] || '/', location.origin)
       if (
         p in appUrl
       )

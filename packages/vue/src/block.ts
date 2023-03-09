@@ -30,7 +30,6 @@ export const MerakBlock = defineComponent({
     const importPromise = import(url)
     onMounted(async () => {
       const { default: Comp } = await importPromise
-      console.log(Comp, app.sandDocument!.querySelector('body'))
       render(h(Comp, { ...MerakProps }, slots), app.sandDocument!.querySelector('body')!)
     })
     onUnmounted(() => {

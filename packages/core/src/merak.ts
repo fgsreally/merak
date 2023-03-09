@@ -3,8 +3,8 @@ import type { CustomProxyHandler, LoadDone, MerakEvents, ProxyMap, lifecycle, li
 import type { PureLoader } from './loaders'
 import { createProxy } from './proxy'
 import { MERAK_DATA_ID, MERAK_EVENT_DESTROY, MERAK_EVENT_LOAD, MERAK_EVENT_UNMOUNT, MERAK_SHADE_STYLE } from './common'
-import { eventTrigger } from './utils'
-import { MerakMap, bus } from './composable'
+import { eventTrigger, resolveUrl } from './utils'
+import { MerakMap, bus, getBodyStyle } from './composable'
 
 export class Merak {
   /** css隔离容器 */
@@ -49,6 +49,9 @@ export class Merak {
 
   /** 子应用激活标志 */
   public activeFlag = false
+
+  /** 子应用JS运行标志 */
+  public execFlag = false
 
   /** 子应用mount标志 */
   public mountFlag = false
@@ -123,16 +126,12 @@ export class Merak {
       cb(this)
   }
 
-  active({ template, scripts, fakeGlobalName }: LoadDone) {
-    if (this.activeFlag)
-      return
-
-    this.template = template
-
-    this.templateScipts = scripts
-    this.activeFlag = true
-    this.fakeGlobalName = fakeGlobalName
-    window[fakeGlobalName] = this.proxy
+  active(fakeGlobalName: string) {
+    if (!this.activeFlag) {
+      this.fakeGlobalName = fakeGlobalName
+      window[fakeGlobalName] = this.proxy
+      this.activeFlag = true
+    }
   }
 
   async load() {
@@ -141,7 +140,10 @@ export class Merak {
     const { id, url, configUrl } = this
     return this.loadPromise = (this.loader!.load(id, url, configUrl) as Promise<LoadDone>).then((loadRes) => {
       eventTrigger(window, MERAK_EVENT_LOAD, { id, loadRes })
-      this.active(loadRes)
+      const { template, scripts, fakeGlobalName } = loadRes
+      this.template = template
+      this.templateScipts = scripts
+      this.active(fakeGlobalName)
     })
   }
 
@@ -166,38 +168,52 @@ export class Merak {
       // work for spa
       if (this.loader) {
         // template
-        this.sandDocument.innerHTML = this.template;
+        this.sandDocument.innerHTML = this.template
 
         // script
-        (this.iframe?.contentDocument || this.sandDocument).querySelector('body')?.append(...this.templateScipts.map((scripts) => {
-          const scriptTag = document.createElement('script')
-          for (const i in scripts)
-            scriptTag[i] = scripts[i]
+        if (!this.execFlag) {
+          (this.iframe?.contentDocument || this.sandDocument).querySelector('body')?.append(...this.templateScipts.map((scripts) => {
+            const scriptTag = document.createElement('script')
+            for (const i in scripts)
+              scriptTag[i] = scripts[i]
 
-          return scriptTag
-        }))
+            return scriptTag
+          }))
+          this.execFlag = true
+        }
       }
       // work for ssr
       if (ele) {
         const scriptEle = [...ele.querySelectorAll('script')].filter((item) => {
-          if (item.getAttribute('merak-ignore')) {
-            item.parentNode?.removeChild(item)
+          item.parentNode?.removeChild(item)
+          if (this.execFlag)
             return false
-          }
+          const src = item.getAttribute('src')
+          if (src)
+            item.src = resolveUrl(src, this.url)
+
+          if (item.hasAttribute('merak-ignore'))
+            return false
+
           return true
         })
+        this.sandDocument.querySelector('body')?.appendChild(ele)
         // script when use iframe
-        if (this.iframe) {
-          this.iframe.contentDocument!.querySelector('body')!.append(...scriptEle)
-          // template
-          this.sandDocument.append(ele)
+        if (scriptEle.length > 0) {
+          if (this.iframe)
+            this.iframe.contentDocument!.querySelector('body')!.append(...scriptEle)
+          else this.sandDocument.querySelector('body')?.append(...scriptEle)
+
+          this.execFlag = true
         }
+        // template
+        // this.sandDocument.append(ele)
       }
       const shade = document.createElement('div')
       shade.setAttribute('style', MERAK_SHADE_STYLE)
       this.sandDocument.insertBefore(shade, this.sandDocument.firstChild)
       const body = this.sandDocument.querySelector('body')!
-      body.setAttribute('style', 'position:relative')
+      body.setAttribute('style', getBodyStyle())
       body.classList.add(`merak-${this.id}-body`)
     }
     this.shadowRoot.appendChild(this.sandDocument!)
@@ -218,17 +234,25 @@ export class Merak {
 
   unmount(isKeepAlive: boolean) {
     this.cacheFlag = isKeepAlive
+
     this.execHook('beforeUnmount')
     eventTrigger(window, MERAK_EVENT_UNMOUNT + this.id)
     this.execHook('afterUnmount')
     this.mountFlag = false
+
     if (!isKeepAlive)
+
       this.destroy()
   }
 
   destroy() {
     eventTrigger(window, MERAK_EVENT_DESTROY + this.id)
     this.execHook('deactivated')
+
+    delete window[this.fakeGlobalName]
+    this.activeFlag = false
+    if (this.iframe)
+      this.execFlag = false
     // MerakMap.delete(this.id)
     this.sandDocument = null
     if (this.iframe)

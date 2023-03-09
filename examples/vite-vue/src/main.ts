@@ -16,3 +16,5 @@ app.mount('#app')
 window.addEventListener('click', () => {
   console.log(1)
 })
+
+console.log('mount vue')

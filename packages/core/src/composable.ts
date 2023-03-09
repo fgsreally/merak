@@ -18,3 +18,12 @@ export function getHost(id: string) {
 export function getUrl(id: string) {
   return getInstance(id)?.proxyMap.location?.href
 }
+
+let MERAK_BODY_STYLE = 'position:relative'
+export function setBodyStyle(style: string) {
+  MERAK_BODY_STYLE = style
+}
+
+export function getBodyStyle() {
+  return MERAK_BODY_STYLE
+}

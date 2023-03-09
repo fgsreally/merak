@@ -3,10 +3,14 @@ import { Link, Outlet, Route, Routes } from 'react-router-dom'
 import { Button, Modal, Select } from 'antd'
 
 export default function App() {
+  const data = window.$Merak?.props.data || ''
+
   return (
     <div>
-      <h1>Merak in react</h1>
-
+      <div id="merak-symbol">vite-react app from merak</div>
+      <p style={{ color: 'blue' }}>
+        { data }
+      </p>
       <Routes>
         <Route path="/" element={<Layout />}>
           <Route index element={<Home />} />

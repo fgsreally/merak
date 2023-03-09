@@ -1,25 +1,25 @@
 import type { EventType } from 'mitt'
-import type { MerakFile, MerakHTMLFile, MerakJSFile } from 'merak-compile'
+import type { MerakHTMLFile } from 'merak-compile'
 import type { Merak } from './merak'
-export interface SpaMerakConfig {
-  files: MerakFile[]
+// export interface SpaMerakConfig {
+//   files: MerakFile[]
 
-  lazyFiles: {
-    [filePath: string]: MerakJSFile[]
-  }
-}
+//   lazyFiles: {
+//     [filePath: string]: MerakJSFile[]
+//   }
+// }
 
 export interface MerakConfig {
   _t: MerakHTMLFile
   _g: string[]
   _f: string
 }
-export interface SsrMerakConfig {
-  files: {
-    [filePath: string]: SpaMerakConfig
-  }
-  html: string
-}
+// export interface SsrMerakConfig {
+//   files: {
+//     [filePath: string]: SpaMerakConfig
+//   }
+//   html: string
+// }
 
 export type lifecycle = (app: Merak) => any
 

@@ -21,18 +21,18 @@ export function defineWebComponent() {
 
       const shadowRoot = this.attachShadow({ mode: 'open' })
       app.shadowRoot = shadowRoot
-      if (!app.activeFlag) {
-        app.fakeGlobalName = fakeGlobalName
-        window[fakeGlobalName] = app.proxy
-        app.activeFlag = true
-      }
+      if (!app.activeFlag)
+        app.active(fakeGlobalName)
+
       app.mount()
     }
 
     disconnectedCallback(): void {
       const id = this.getAttribute(MERAK_DATA_ID) as string
       const app = getInstance(id) as Merak
-      app.unmount(Boolean(this.getAttribute(MERAK_KEEP_ALIVE)))
+      const isKeepAlive = this.hasAttribute(MERAK_KEEP_ALIVE) && this.getAttribute(MERAK_KEEP_ALIVE) !== 'false'
+
+      app.unmount(isKeepAlive)
     }
   }
 
@@ -61,17 +61,16 @@ export function defineWebComponent() {
         const { fakeGlobalName } = JSON.parse(templateNode.getAttribute('merak-config')!) as {
           fakeGlobalName: string
         }
-        app.fakeGlobalName = fakeGlobalName
-        window[fakeGlobalName] = app.proxy
-        app.activeFlag = true
+        app.active(fakeGlobalName)
       }
-      app.mount(app.cacheFlag ? undefined : templateNode.content.cloneNode() as any)
+      app.mount(app.cacheFlag ? undefined : templateNode.content.cloneNode(true) as any)
     }
 
     disconnectedCallback(): void {
       const id = this.getAttribute(MERAK_DATA_ID) as string
       const app = getInstance(id) as Merak
-      app.unmount(Boolean(this.getAttribute(MERAK_KEEP_ALIVE)))
+      const isKeepAlive = this.hasAttribute(MERAK_KEEP_ALIVE) && this.getAttribute(MERAK_KEEP_ALIVE) !== 'false'
+      app.unmount(isKeepAlive)
     }
   }
 
@@ -101,8 +100,7 @@ export function defineWebComponent() {
       const shadowRoot = this.attachShadow({ mode: 'open' })
       app.shadowRoot = shadowRoot
 
-      if (!app.activeFlag)
-        await app.load()
+      await app.load()
 
       app.mount()
     }
@@ -110,7 +108,9 @@ export function defineWebComponent() {
     disconnectedCallback(): void {
       const id = this.getAttribute(MERAK_DATA_ID) as string
       const app = getInstance(id) as Merak
-      app.unmount(this.getAttribute(MERAK_KEEP_ALIVE) as any)
+      const isKeepAlive = this.hasAttribute(MERAK_KEEP_ALIVE) && this.getAttribute(MERAK_KEEP_ALIVE) !== 'false'
+
+      app.unmount(isKeepAlive)
     }
   }
 

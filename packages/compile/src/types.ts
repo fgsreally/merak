@@ -9,11 +9,11 @@ export interface SpaMerakConfig {
   }
 }
 
-export interface MerakConfig {
-  template: MerakHTMLFile
-  fakeGlobalName: string
-  globals: string[]
-}
+// export interface MerakConfig {
+//   template: MerakHTMLFile
+//   fakeGlobalName: string
+//   globals: string[]
+// }
 export interface SsrMerakConfig {
   files: {
     [filePath: string]: SpaMerakConfig

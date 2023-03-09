@@ -9,3 +9,13 @@ export function relativePath(from: string, to: string) {
 export function desctructGlobal(globals: string[]) {
   return globals.reduce((p, c) => `${p}${c},`, '')
 }
+
+export function resolveHtmlConfig(html: string) {
+  let config
+
+  html = html.replace(/<merak-base[^>]+config=['"](.*)['"][\s>]<\/merak-base>/, (js, conf) => {
+    config = JSON.parse(conf)
+    return ''
+  })
+  return { html, config }
+}

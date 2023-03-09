@@ -4,7 +4,7 @@ import MS from '../magic-string'
 import { compileCSSLink, compileHTMLJS } from '../compile'
 import type { LoadDone, LoaderHookParam, MerakConfig, MerakPlugin } from '../types'
 
-import { loadJSONFile, loadTextFile, resolveUrl } from '../utils'
+import { loadJSONFile, loadTextFile, resolveHtmlConfig, resolveUrl } from '../utils'
 
 export async function loadConfig(url: string) {
   return await loadJSONFile(resolveUrl('merak.json', url))
@@ -39,10 +39,10 @@ export class PureLoader {
     else { // inline config
       fileURL = resolveUrl('index.html', url)
       htmlStr = await loadTextFile(url)
-      htmlStr = htmlStr.replace(/<merak-base[^>]+config=['"](.*)['"][\s>]<\/merak-base>/, (js, conf) => {
-        config = JSON.parse(conf)
-        return ''
-      })
+
+      const ret = resolveHtmlConfig(htmlStr)
+      htmlStr = ret.html
+      config = ret.config as unknown as MerakConfig
     }
     const htmlInfo = config._t
     const { code } = await this.execHook('transform', { cmd: 'transform', code: htmlStr, id }) as any

@@ -1,25 +1,18 @@
 <script setup lang="ts">
 import { RouterLink, RouterView } from 'vue-router'
-const data = window.$Merak?.props.data || ''
+import HelloWorld from './components/HelloWorld.vue'
 </script>
 
 <template>
   <header>
+    <img alt="Vue logo" class="logo" src="@/assets/logo.svg" width="125" height="125" />
+
     <div class="wrapper">
-      <div id="merak-symbol">
-        vite-vue app from merak
-      </div>
-      <p style="color:greenyellow">
-        {{ data }}
-      </p>
+      <HelloWorld msg="You did it!" />
 
       <nav>
-        <RouterLink to="/">
-          Home
-        </RouterLink>
-        <RouterLink to="/about">
-          弹窗
-        </RouterLink>
+        <RouterLink to="/">Home</RouterLink>
+        <RouterLink to="/about">About</RouterLink>
       </nav>
     </div>
   </header>
@@ -27,7 +20,7 @@ const data = window.$Merak?.props.data || ''
   <RouterView />
 </template>
 
-<style>
+<style scoped>
 header {
   line-height: 1.5;
   max-height: 100vh;
@@ -38,9 +31,6 @@ header {
   margin: 0 auto 2rem;
 }
 
-body{
-  --el-color-primary:green
-}
 nav {
   width: 100%;
   font-size: 12px;

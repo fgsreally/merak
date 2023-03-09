@@ -21,9 +21,9 @@ export function revokeURL(url: string) {
   URL.revokeObjectURL(url)
 }
 
-export function desctructGlobal(globals: string[]) {
-  return globals.reduce((p, c) => `${p}${c},`, '')
-}
+// export function desctructGlobal(globals: string[]) {
+//   return globals.reduce((p, c) => `${p}${c},`, '')
+// }
 
 export function getUrlQuery(url: string) {
   const query = url.split('?')[1]
@@ -54,4 +54,18 @@ export function flow(...fns: CustomProxyHandler[]): CustomProxyHandler {
 }
 export function noop(arg: any) {
   return arg
+}
+
+export function resolveHtmlConfig(html: string) {
+  let config
+
+  html = html.replace(/<merak-base[^>]+config=['"](.*)['"][\s>]<\/merak-base>/, (js, conf) => {
+    config = JSON.parse(conf)
+    return ''
+  })
+  return { html, config }
+}
+
+export function desctructGlobal(globals: string[]) {
+  return globals.reduce((p, c) => `${p}${c},`, '')
 }

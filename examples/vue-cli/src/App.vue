@@ -1,10 +1,16 @@
 <template>
   <nav>
-    <router-link to="/">Home</router-link> |
+    <router-link to="/">Home</router-link> 
     <router-link to="/about">About</router-link>
   </nav>
-  <router-view/>
+  <div id="merak-symbol">vue-cli app from merak</div>
+  <p style="color:green">{{data}}</p>
+  <router-view />
 </template>
+
+<script setup lang="ts">
+const data=window.$Merak.props.data|| ''
+</script>
 
 <style>
 #app {
@@ -15,9 +21,10 @@
   color: #2c3e50;
 }
 
- body{
-  --el-color-primary:red
+body {
+  --el-color-primary: red
 }
+
 nav {
   padding: 30px;
 }

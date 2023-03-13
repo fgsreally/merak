@@ -2,19 +2,27 @@ import { createApp } from 'vue'
 import { createPinia } from 'pinia'
 import ElementPlus from 'element-plus'
 import 'element-plus/dist/index.css'
+import type { App as AppType } from 'vue'
 import App from './App.vue'
 import router from './router'
-
 import './assets/main.css'
-const app = createApp(App)
+let app: AppType
+function render() {
+  app = createApp(App)
 
-app.use(createPinia()).use(ElementPlus)
-app.use(router)
+  app.use(createPinia()).use(ElementPlus)
+  app.use(router)
 
-app.mount('#app')
+  app.mount('#app')
+}
 
-window.addEventListener('click', () => {
-  console.log(1)
-})
+render()
+if (window.$Merak) {
+  window.addEventListener('merak_relunch', () => {
+    render()
+  })
 
-console.log('mount vue')
+  window.addEventListener('merak_destroy', () => {
+    app.unmount()
+  })
+}

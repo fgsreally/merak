@@ -1,13 +1,12 @@
 import React, { useState } from 'react'
 import { Link, Outlet, Route, Routes } from 'react-router-dom'
 import { Button, Modal, Select } from 'antd'
+const data = window.$Merak ? window.$Merak.props.data : 'no data from merak'
 
 export default function App() {
-  const data = window.$Merak?.props.data || ''
-
   return (
     <div>
-      <div id="merak-symbol">vite-react app from merak</div>
+      <div className="merak-symbol">vite-react app from merak</div>
       <p style={{ color: 'blue' }}>
         { data }
       </p>

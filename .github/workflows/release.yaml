@@ -23,6 +23,6 @@ jobs:
             - recursive: true
               args: [--no-frozen-lockfile]
       - run: npm run build
-      - run: npm run publish  
-        env:
-          NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
+      # - run: npm run publish  
+      #   env:
+      #     NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}

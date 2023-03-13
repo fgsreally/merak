@@ -6,6 +6,7 @@ importers:
     specifiers:
       '@antfu/eslint-config': ^0.34.1
       '@changesets/cli': ^2.26.0
+      '@playwright/test': ^1.31.2
       eslint: ^8.31.0
       playwright: ^1.31.2
       puppeteer: ^19.7.3
@@ -17,6 +18,7 @@ importers:
     devDependencies:
       '@antfu/eslint-config': registry.npmmirror.com/@antfu/eslint-config/0.34.1_iukboom6ndih5an6iafl45j2fe
       '@changesets/cli': registry.npmmirror.com/@changesets/cli/2.26.0
+      '@playwright/test': 1.31.2
       eslint: registry.npmmirror.com/eslint/8.31.0
       playwright: 1.31.2
       puppeteer: 19.7.3_typescript@4.9.4
@@ -570,6 +572,17 @@ packages:
     os: [win32]
     requiresBuild: true
     optional: true
+
+  /@playwright/test/1.31.2:
+    resolution: {integrity: sha512-BYVutxDI4JeZKV1+ups6dt5WiqKhjBtIYowyZIJ3kBDmJgsuPKsqqKNIMFbUePLSCmp2cZu+BDL427RcNKTRYw==}
+    engines: {node: '>=14'}
+    hasBin: true
+    dependencies:
+      '@types/node': 18.14.6
+      playwright-core: 1.31.2
+    optionalDependencies:
+      fsevents: 2.3.2
+    dev: true
 
   /@sxzz/popperjs-es/2.11.7:
     resolution: {integrity: sha512-Ccy0NlLkzr0Ex2FKvh2X+OyERHXJ88XJ1MXtsI9y9fGexlaXaVTPzBCRBwIxFkORuOb+uBqeu+RqnpgYTEZRUQ==}

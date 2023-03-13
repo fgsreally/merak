@@ -1,15 +1,15 @@
 <template>
   <nav>
-    <router-link to="/">Home</router-link> 
-    <router-link to="/about">About</router-link>
+    <router-link to="/" id="tohome">Home</router-link> 
+    <router-link to="/about" id="toabout">About</router-link>
   </nav>
-  <div id="merak-symbol">vue-cli app from merak</div>
+  <div class="merak-symbol">vue-cli app from merak</div>
   <p style="color:green">{{data}}</p>
   <router-view />
 </template>
 
 <script setup lang="ts">
-const data=window.$Merak.props.data|| ''
+const data=window.$Merak?window.$Merak.props.data: 'no data from merak'
 </script>
 
 <style>
@@ -36,5 +36,9 @@ nav a {
 
 nav a.router-link-exact-active {
   color: #42b983;
+}
+
+.merak-symbol{
+  color: green;
 }
 </style>

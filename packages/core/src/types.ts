@@ -1,38 +1,10 @@
 import type { EventType } from 'mitt'
 import type { MerakHTMLFile } from 'merak-compile'
-import type { Merak } from './merak'
-// export interface SpaMerakConfig {
-//   files: MerakFile[]
-
-//   lazyFiles: {
-//     [filePath: string]: MerakJSFile[]
-//   }
-// }
 
 export interface MerakConfig {
   _t: MerakHTMLFile
   _g: string[]
   _f: string
-}
-// export interface SsrMerakConfig {
-//   files: {
-//     [filePath: string]: SpaMerakConfig
-//   }
-//   html: string
-// }
-
-export type lifecycle = (app: Merak) => any
-
-export type ErrorHandler = (url: string) => any
-
-export interface lifecycles {
-  beforeLoad: lifecycle[]
-  beforeMount: lifecycle[]
-  afterMount: lifecycle[]
-  beforeUnmount: lifecycle[]
-  afterUnmount: lifecycle[]
-  activated: lifecycle[]
-  deactivated: lifecycle[]
 }
 
 export type merakEvent = Record<EventType, unknown>
@@ -84,21 +56,9 @@ export interface MerakPlugin<LoaderInstance> {
   destroy?(loader: LoaderInstance): void
 }
 
-type ProxyObj = 'location' | 'history' | 'window' | 'document'
-
-export type ProxyGlobals = {
-  [key in ProxyObj]: ProxyHandler<any>
-}
-
-export interface RawProxyMap {
-  location: Location
-  history: History
-  document: Document
-  window: Window
+export interface ProxyGlobals {
+  window: ProxyHandler<Window>
+  [key: string]: ProxyHandler<any>
 }
 
 export type MerakEvents = Record<EventType, unknown>
-
-export type ProxyMap = Record<string, any> & RawProxyMap
-
-export type CustomProxyHandler = (globals: ProxyGlobals) => ProxyGlobals

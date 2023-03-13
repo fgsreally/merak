@@ -2,7 +2,6 @@ import { MERAK_EVENT_DESTROY, MERAK_EVENT_PREFIX } from './common'
 import { getUrlQuery } from './utils'
 import type { Merak } from './merak'
 import { getInstance } from './composable'
-import type { CustomProxyHandler } from './types'
 
 const cacheBindFn = new WeakMap()
 
@@ -21,8 +20,8 @@ export function getBindFn(target: any, p: any) {
   return v
 }
 
-export function createProxy(id: string, url: string, postHanler: CustomProxyHandler) {
-  const rawWindowHandler = {
+export function createProxyWindow(id: string, url: string) {
+  return {
     get(target: any, p: string) {
       if (p === '__merak_url__')
         return url
@@ -43,13 +42,15 @@ export function createProxy(id: string, url: string, postHanler: CustomProxyHand
         return (...params: Parameters<typeof addEventListener>) => {
           const eventName = params[0]
 
-          if (eventName.startsWith(MERAK_EVENT_PREFIX))
+          if (eventName.startsWith(MERAK_EVENT_PREFIX)) {
             params[0] = eventName + id
-
+          }
+          else {
+            addEventListener(MERAK_EVENT_DESTROY + id, () => {
+              removeEventListener(...params)
+            }, { once: true })
+          }
           addEventListener(...params)
-          addEventListener(MERAK_EVENT_DESTROY + id, () => {
-            removeEventListener(...params)
-          }, { once: true })
         }
       }
 
@@ -62,7 +63,10 @@ export function createProxy(id: string, url: string, postHanler: CustomProxyHand
     has: (target: any, p: string) => p in target || p in window,
 
   }
-  const rawDocumentHanler = {
+}
+
+export function createProxyDocument(id: string, url: string) {
+  return {
     get(target: any, p: string) {
       const instance = getInstance(id) as Merak
       // work for vite dev mode
@@ -98,7 +102,7 @@ export function createProxy(id: string, url: string, postHanler: CustomProxyHand
         return instance.sandDocument?.querySelector('body')
 
       if (p === 'documentURI' || p === 'URL')
-        return instance.proxyMap.location.href
+        return (instance as any).proxyMap.location.href
 
       if (p === 'querySelector')
         return (instance.sandDocument as HTMLElement).querySelector.bind((instance.sandDocument as HTMLElement))
@@ -152,7 +156,10 @@ export function createProxy(id: string, url: string, postHanler: CustomProxyHand
     has: (target: any, p: string) => p in target || p in document,
 
   }
-  const rawHistoryHanlder = {
+}
+
+export function createProxyHistory(id: string) {
+  return {
     get(target: any, p: string) {
       if (p === 'replaceState') {
         function replace(...args: [any, any, any]) {
@@ -189,8 +196,9 @@ export function createProxy(id: string, url: string, postHanler: CustomProxyHand
     has: (target: any, p: string) => p in history || p in target,
 
   }
-
-  const rawLocationHandler = {
+}
+export function createProxyLocation(id: string) {
+  return {
 
     get(target: any, p: string) {
       const { href } = window.location
@@ -211,6 +219,12 @@ export function createProxy(id: string, url: string, postHanler: CustomProxyHand
     has: (target: any, p: string) => p in target || p in location,
 
   }
+}
 
-  return postHanler({ document: rawDocumentHanler, window: rawWindowHandler, history: rawHistoryHanlder, location: rawLocationHandler })
+export function createProxy(id: string, url: string) {
+  return { document: createProxyDocument(id, url), window: createProxyWindow(id, url), history: createProxyHistory(id), location: createProxyLocation(id) }
+}
+
+export function createLibProxy(id: string, url: string) {
+  return { document: createProxyDocument(id, url), window: createProxyWindow(id, url) }
 }

@@ -14,4 +14,7 @@ export default defineConfig({
   define: {
     DEV: true,
   },
+  server: {
+    port: 5003,
+  },
 })

@@ -1,10 +1,11 @@
 import type { Emitter, EventType } from 'mitt'
-import type { CustomProxyHandler, LoadDone, MerakEvents, ProxyMap, lifecycle, lifecycles, merakEvent } from './types'
+import type { LoadDone, MerakEvents, ProxyGlobals, merakEvent } from './types'
 import type { PureLoader } from './loaders'
 import { createProxy } from './proxy'
-import { MERAK_DATA_ID, MERAK_EVENT_DESTROY, MERAK_EVENT_LOAD, MERAK_EVENT_UNMOUNT, MERAK_SHADE_STYLE } from './common'
+import { MERAK_DATA_ID, MERAK_EVENT_DESTROY, MERAK_EVENT_EXEC_SCRIPT, MERAK_EVENT_HIDDEN, MERAK_EVENT_MOUNT, MERAK_EVENT_RELUNCH, MERAK_SHADE_STYLE } from './common'
 import { eventTrigger, resolveUrl } from './utils'
 import { MerakMap, bus, getBodyStyle } from './composable'
+import { LifeCycle } from './lifecycle'
 
 export class Merak {
   /** css隔离容器 */
@@ -22,7 +23,7 @@ export class Merak {
   public proxy: Window
 
   /** 所有全局的代理 */
-  public proxyMap = {} as unknown as ProxyMap
+  public proxyMap = {} as unknown as ProxyGlobals
 
   /** 子应用的html */
   public template: string
@@ -37,16 +38,7 @@ export class Merak {
   public props: any
 
   /** 生命周期 */
-  public lifeCycles: lifecycles = {
-    beforeLoad: [],
-    beforeMount: [],
-    afterMount: [],
-    beforeUnmount: [],
-    afterUnmount: [],
-    activated: [],
-    deactivated: [],
-  }
-
+  public lifeCycle = new LifeCycle()
   /** 子应用激活标志 */
   public activeFlag = false
 
@@ -76,26 +68,23 @@ export class Merak {
 
   constructor(public id: string, public url: string, public options: {
     loader?: PureLoader
-    customHandler?: CustomProxyHandler
+    proxy?: ProxyGlobals
     configUrl?: string
     iframe?: boolean
   } = {},
   ) {
+    if (MerakMap.has(id))
+      return MerakMap.get(id) as Merak
     MerakMap.set(id, this)
 
-    const { customHandler = (param: any) => param, configUrl, loader } = options
+    const { proxy = createProxy(id, url), configUrl, loader } = options
     this.configUrl = configUrl
     this.loader = loader
-    const globals = createProxy(id, url, customHandler)
 
-    for (const i in globals)
-      this.proxyMap[i] = new Proxy({} as any, globals[i])
+    for (const i in proxy)
+      this.proxyMap[i] = new Proxy({} as any, proxy[i])
 
-    this.proxy = this.proxyMap.window
-  }
-
-  onMounted(cb: lifecycle) {
-    this.lifeCycles.afterMount.push(cb)
+    this.proxy = this.proxyMap.window as any
   }
 
   on(type: Parameters<Emitter<MerakEvents>['on']>[0], param: Parameters<Emitter<MerakEvents>['on']>[1]) {
@@ -109,21 +98,9 @@ export class Merak {
     this.bus.emit(type, event)
   }
 
-  onBeforeMounted(cb: lifecycle) {
-    this.lifeCycles.beforeMount.push(cb)
-  }
-
-  onActivated(cb: lifecycle) {
-    this.lifeCycles.activated.push(cb)
-  }
-
-  onBeforeUnmount(cb: lifecycle) {
-    this.lifeCycles.beforeUnmount.push(cb)
-  }
-
-  execHook(stage: keyof lifecycles) {
-    for (const cb of this.lifeCycles[stage])
-      cb(this)
+  execHook<Stage extends keyof LifeCycle>(stage: Stage, params?: Parameters<LifeCycle[Stage]>[0]) {
+    // @ts-expect-error work for lifecycle
+    this.lifeCycle[stage]?.(params)
   }
 
   active(fakeGlobalName: string) {
@@ -139,7 +116,6 @@ export class Merak {
       return this.loadPromise
     const { id, url, configUrl } = this
     return this.loadPromise = (this.loader!.load(id, url, configUrl) as Promise<LoadDone>).then((loadRes) => {
-      eventTrigger(window, MERAK_EVENT_LOAD, { id, loadRes })
       const { template, scripts, fakeGlobalName } = loadRes
       this.template = template
       this.templateScipts = scripts
@@ -155,10 +131,6 @@ export class Merak {
     this.isRender = true
   }
 
-  initIframe() {
-    this.iframe!.contentWindow![this.fakeGlobalName] = this.proxy
-  }
-
   private mountTemplateAndScript(ele?: ParentNode) {
     this.execHook('beforeMount')
 
@@ -169,21 +141,29 @@ export class Merak {
       if (this.loader) {
         // template
         this.sandDocument.innerHTML = this.template
-
-        // script
+        console.log(this.template)
+        // mount script on body or iframe
         if (!this.execFlag) {
-          (this.iframe?.contentDocument || this.sandDocument).querySelector('body')?.append(...this.templateScipts.map((scripts) => {
+          const scripts = this.templateScipts.map((scripts) => {
             const scriptTag = document.createElement('script')
             for (const i in scripts)
               scriptTag[i] = scripts[i]
 
             return scriptTag
-          }))
+          })
+          this.execHook('execScript', scripts);
+          (this.iframe?.contentDocument || this.sandDocument).querySelector('body')?.append(...scripts)
+
           this.execFlag = true
+        }
+        else {
+          eventTrigger(window, MERAK_EVENT_RELUNCH + this.id)
         }
       }
       // work for ssr
       if (ele) {
+        // mount script on body or iframe
+
         const scriptEle = [...ele.querySelectorAll('script')].filter((item) => {
           item.parentNode?.removeChild(item)
           if (this.execFlag)
@@ -198,14 +178,21 @@ export class Merak {
           return true
         })
         this.sandDocument.querySelector('body')?.appendChild(ele)
+
         // script when use iframe
-        if (scriptEle.length > 0) {
+        if (!this.execFlag) {
+          this.execHook('execScript', scriptEle)
+
           if (this.iframe)
             this.iframe.contentDocument!.querySelector('body')!.append(...scriptEle)
           else this.sandDocument.querySelector('body')?.append(...scriptEle)
 
           this.execFlag = true
         }
+        else {
+          eventTrigger(window, MERAK_EVENT_RELUNCH + this.id)
+        }
+
         // template
         // this.sandDocument.append(ele)
       }
@@ -214,10 +201,14 @@ export class Merak {
       this.sandDocument.insertBefore(shade, this.sandDocument.firstChild)
       const body = this.sandDocument.querySelector('body')!
       body.setAttribute('style', getBodyStyle())
-      body.classList.add(`merak-${this.id}-body`)
+      body.classList.add('merak-body', this.id)
     }
+
+    this.execHook('tranformTemplate', this.sandDocument!)
     this.shadowRoot.appendChild(this.sandDocument!)
     this.mountFlag = true
+
+    eventTrigger(window, MERAK_EVENT_MOUNT + this.id)
     this.execHook('afterMount')
   }
 
@@ -236,18 +227,19 @@ export class Merak {
     this.cacheFlag = isKeepAlive
 
     this.execHook('beforeUnmount')
-    eventTrigger(window, MERAK_EVENT_UNMOUNT + this.id)
-    this.execHook('afterUnmount')
     this.mountFlag = false
 
     if (!isKeepAlive)
 
       this.destroy()
+    else
+      eventTrigger(window, MERAK_EVENT_HIDDEN + this.id)
+    this.execHook('afterUnmount')
   }
 
   destroy() {
     eventTrigger(window, MERAK_EVENT_DESTROY + this.id)
-    this.execHook('deactivated')
+    this.execHook('destroy')
 
     delete window[this.fakeGlobalName]
     this.activeFlag = false

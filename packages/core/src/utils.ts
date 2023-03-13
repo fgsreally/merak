@@ -1,5 +1,3 @@
-import type { CustomProxyHandler, ProxyGlobals } from './types'
-
 export async function loadJSONFile(url: string) {
   const res = await fetch(url)
   return res.json()
@@ -9,20 +7,16 @@ export async function loadTextFile(url: string) {
   return res.text()
 }
 
-export function createUrl(code: string, type = 'text/javascript') {
-  const blob = new Blob([code], { type })
-  return URL.createObjectURL(blob)
-}
+// export function createUrl(code: string, type = 'text/javascript') {
+//   const blob = new Blob([code], { type })
+//   return URL.createObjectURL(blob)
+// }
 export function resolveUrl(filePath: string, baseURL: string) {
   return new URL(filePath, baseURL).href
 }
 
-export function revokeURL(url: string) {
-  URL.revokeObjectURL(url)
-}
-
-// export function desctructGlobal(globals: string[]) {
-//   return globals.reduce((p, c) => `${p}${c},`, '')
+// export function revokeURL(url: string) {
+//   URL.revokeObjectURL(url)
 // }
 
 export function getUrlQuery(url: string) {
@@ -45,16 +39,16 @@ export function eventTrigger(el: HTMLElement | Window | Document, eventName: str
   el.dispatchEvent(event)
 }
 
-export function flow(...fns: CustomProxyHandler[]): CustomProxyHandler {
-  return (arg: ProxyGlobals) => {
-    for (const fn of fns)
-      arg = fn(arg)
-    return arg
-  }
-}
-export function noop(arg: any) {
-  return arg
-}
+// export function flow(...fns: CustomProxyHandler[]): CustomProxyHandler {
+//   return (arg: ProxyGlobals) => {
+//     for (const fn of fns)
+//       arg = fn(arg)
+//     return arg
+//   }
+// }
+// export function noop(arg: any) {
+//   return arg
+// }
 
 export function resolveHtmlConfig(html: string) {
   let config

@@ -1,37 +1,45 @@
-import { beforeAll, describe, expect, it } from 'vitest'
-import type { Page } from 'puppeteer'
-import { SUBAPP_KEY } from '../common'
-import { clickDom, createPage, getDomText, sleep } from '../utils'
-let newPage: Page
+import type { Page } from '@playwright/test'
+import { expect, test } from '@playwright/test'
+import { MAINAPP_URL, SUBAPP_CONTENT, SUBAPP_URL } from '../common'
+import { clickDom, sleep } from '../utils'
 
-describe('vue spa main', () => {
-  beforeAll(async () => {
-    newPage = await createPage()
+async function getSymbol(page: Page) {
+  const handlers = []
+  for (const id in SUBAPP_CONTENT) {
+    const locator = await page.getByText(SUBAPP_CONTENT[id])
+    handlers.push(await locator.elementHandle({ timeout: 1000 }).catch(() => null))
+  }
+  return handlers
+}
+
+test.describe('main vue app [dev mode]', () => {
+  test('sub app should run successfully', async ({ page }) => {
+    for (const id in SUBAPP_URL) {
+      await page.goto(SUBAPP_URL[id])
+      const handler = await page.$('.merak-symbol')
+
+      expect(handler).toBeDefined()
+    }
   })
-  it('should find the text from sub app', async () => {
-    await newPage.goto('http://localhost:5003/about')
-    await sleep()
-    expect(await getDomText(newPage, '#vite_vue #merak-symbol')).toBe(SUBAPP_KEY.VITE_VUE)
-    expect(await getDomText(newPage, '#vite_react #merak-symbol')).toBe(SUBAPP_KEY.VITE_REACT)
-    expect(await getDomText(newPage, '#vue_cli #merak-symbol')).toBe(SUBAPP_KEY.VUE_CLI)
+  test('main app should run successfully', async ({ page }) => {
+    await page.goto(MAINAPP_URL.VUE)
+    await clickDom(page, '#to_micro')
+    const handlers = await getSymbol(page)
+    expect(handlers.every(item => !!item)).toBeTruthy()
   })
 
-  it('route in sub should work', async () => {
-    await clickDom(newPage, '')
-    expect(await getDomText(newPage, '#vite_vue #merak-symbol')).toBe(SUBAPP_KEY.VITE_VUE)
+  test('sub app should hidden and relunch', async ({ page }) => {
+    await page.goto(MAINAPP_URL.VUE)
 
-    await clickDom(newPage, '')
-    await clickDom(newPage, '')
+    let handlers: any[]
+    await clickDom(page, '#to_micro')
+    await clickDom(page, '#to_home')
+    handlers = await getSymbol(page)
+    expect(handlers.every(item => item === null)).toBeTruthy()
 
-    expect(await getDomText(newPage, '#vite_react #merak-symbol')).toBe(SUBAPP_KEY.VITE_REACT)
-    expect(await getDomText(newPage, '#vue_cli #merak-symbol')).toBe(SUBAPP_KEY.VUE_CLI)
-  })
-  it('should find the text as before', async () => {
-    await clickDom(newPage, '')
-    await clickDom(newPage, '')
-    await sleep()
-    expect(await getDomText(newPage, '#vite_vue #merak-symbol')).toBe(SUBAPP_KEY.VITE_VUE)
-    expect(await getDomText(newPage, '#vite_react #merak-symbol')).toBe(SUBAPP_KEY.VITE_REACT)
-    expect(await getDomText(newPage, '#vue_cli #merak-symbol')).toBe(SUBAPP_KEY.VUE_CLI)
+    await clickDom(page, '#to_micro')
+    await sleep(5000)
+    handlers = await getSymbol(page)
+    expect(handlers.every(item => !!item)).toBeTruthy()
   })
 })

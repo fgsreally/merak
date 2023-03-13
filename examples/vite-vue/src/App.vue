@@ -1,23 +1,23 @@
 <script setup lang="ts">
 import { RouterLink, RouterView } from 'vue-router'
-const data = window.$Merak?.props.data || ''
+const data = window.$Merak ? window.$Merak.props.data : 'no data from merak'
 </script>
 
 <template>
   <header>
     <div class="wrapper">
-      <div id="merak-symbol">
+      <div class="merak-symbol">
         vite-vue app from merak
       </div>
-      <p style="color:greenyellow">
+      <p style="color:red">
         {{ data }}
       </p>
 
       <nav>
-        <RouterLink to="/">
+        <RouterLink id="tohome" to="/">
           Home
         </RouterLink>
-        <RouterLink to="/about">
+        <RouterLink id="toabout" to="/about">
           弹窗
         </RouterLink>
       </nav>
@@ -91,5 +91,8 @@ nav a:first-of-type {
     padding: 1rem 0;
     margin-top: 1rem;
   }
+}
+.merak-symbol{
+  color:red
 }
 </style>

@@ -1,5 +1,5 @@
 {
-  "name": "main-vue-ssr",
+  "name": "example-vue-ssr",
   "version": "0.0.0",
   "private": true,
   "type": "module",

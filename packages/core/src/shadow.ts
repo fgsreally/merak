@@ -22,7 +22,7 @@ export function defineWebComponent() {
       const shadowRoot = this.attachShadow({ mode: 'open' })
       app.shadowRoot = shadowRoot
       if (!app.activeFlag)
-        app.active(fakeGlobalName)
+        app.setGlobalName(fakeGlobalName)
 
       app.mount()
     }
@@ -58,10 +58,10 @@ export function defineWebComponent() {
       const shadowRoot = this.attachShadow({ mode: 'open' })
       app.shadowRoot = shadowRoot
       if (!app.activeFlag) {
-        const { fakeGlobalName } = JSON.parse(templateNode.getAttribute('merak-config')!) as {
-          fakeGlobalName: string
+        const { _f: fakeGlobalName } = JSON.parse(templateNode.getAttribute('merak-config')!) as {
+          _f: string
         }
-        app.active(fakeGlobalName)
+        app.setGlobalName(fakeGlobalName)
       }
       app.mount(app.cacheFlag ? undefined : templateNode.content.cloneNode(true) as any)
     }
@@ -70,6 +70,9 @@ export function defineWebComponent() {
       const id = this.getAttribute(MERAK_DATA_ID) as string
       const app = getInstance(id) as Merak
       const isKeepAlive = this.hasAttribute(MERAK_KEEP_ALIVE) && this.getAttribute(MERAK_KEEP_ALIVE) !== 'false'
+      if (DEV && !isKeepAlive)
+        document.getElementById(id)!.innerHTML = app.sandDocument!.innerHTML
+
       app.unmount(isKeepAlive)
     }
   }

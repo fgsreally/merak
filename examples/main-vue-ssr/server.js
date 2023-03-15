@@ -117,6 +117,5 @@ if (!isTest) {
 
 function makeMerakTemplate(t) {
   const { html, config } = resolveHtmlConfig(t)
-  console.log(html)
-  return `<template id="${config._f}" merak-config=${JSON.stringify({ fakeGlobalName: config._f })}>${html}</template>`
+  return `<template id="${config._f}" merak-config=${JSON.stringify({ _f: config._f })}>${html}</template>`
 }

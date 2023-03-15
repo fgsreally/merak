@@ -10,16 +10,18 @@
     "build":"tsup"
   },
   "keywords": [],
+  "files": ["dist"],
+
   "author": "",
-  "license": "ISC",
+  "license": "MIT",
   "dependencies": {
     "html-webpack-plugin": "^5.5.0",
     "is-var-name": "^2.0.0",
     "merak-compile": "workspace:^1.0.0",
-    "webpack": "^5.75.0",
     "wrapper-webpack-plugin": "^2.2.2"
   },
   "devDependencies": {
+    "webpack": "^5.75.0",
     "tsup": "^6.5.0"
   }
 }

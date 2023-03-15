@@ -11,7 +11,8 @@
   },
   "keywords": [],
   "author": "",
-  "license": "ISC",
+  "files": ["dist"],
+  "license": "MIT",
   "devDependencies": {
     "tsup": "^6.5.0"
   },

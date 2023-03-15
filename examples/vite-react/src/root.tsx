@@ -12,8 +12,8 @@ export default function App() {
       </p>
       <Routes>
         <Route path="/" element={<Layout />}>
-          <Route index element={<Home />} />
-          <Route path="about" element={<About />} />
+          <Route index id={'tohome'} element={<Home />} />
+          <Route path="about" id={'toabout'} element={<About />} />
           <Route path="dashboard" element={<Dashboard />} />
 
           <Route path="*" element={<NoMatch />} />
@@ -52,7 +52,7 @@ function Layout() {
   )
 }
 
-function Home() {
+function About() {
   const [isModalOpen, setIsModalOpen] = useState(false)
 
   const showModal = () => {
@@ -69,7 +69,7 @@ function Home() {
 
   return (
     <>
-      <Button type="primary" onClick={showModal}>
+      <Button type="primary" onClick={showModal} data-testid="modal-btn">
         Open Modal
       </Button>
       <Modal
@@ -78,7 +78,9 @@ function Home() {
         onOk={handleOk}
         onCancel={handleCancel}
       >
-        <p>Some contents...</p>
+          <Button type="primary" data-testid="modal-content">
+        content
+      </Button>
         <p>Some contents...</p>
         <p>Some contents...</p>
       </Modal>
@@ -109,10 +111,10 @@ function Home() {
   )
 }
 
-function About() {
+function Home() {
   return (
     <div>
-      <h2>About</h2>
+      <h2>Home</h2>
     </div>
   )
 }

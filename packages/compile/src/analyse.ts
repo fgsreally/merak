@@ -8,7 +8,6 @@ import { desctructGlobal, isCdn, relativePath } from './utils'
 export const analyseHTML = (code: string) => {
   const ast = parse(code)
   const ret = {
-    _t: 'html',
     _f: '',
     _s: [],
     _l: {},

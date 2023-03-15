@@ -5,5 +5,5 @@ export class LifeCycle {
   afterUnmount: () => any
   destroy: () => any
   execScript: (scripts: HTMLScriptElement[]) => void
-  tranformTemplate: (ele: HTMLElement) => void
+  tranformDocument: (ele: HTMLElement) => void
 }

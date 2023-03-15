@@ -103,10 +103,18 @@ export class Merak {
     this.lifeCycle[stage]?.(params)
   }
 
-  active(fakeGlobalName: string) {
+  setGlobalName(fakeGlobalName: string) {
+    this.fakeGlobalName = fakeGlobalName
+  }
+
+  active() {
     if (!this.activeFlag) {
-      this.fakeGlobalName = fakeGlobalName
-      window[fakeGlobalName] = this.proxy
+      if (DEV && !this.fakeGlobalName)
+        throw new Error('miss fakeGlobalName')
+      if (this.iframe)
+        (this.iframe.contentWindow as Window)[this.fakeGlobalName] = this.proxy
+
+      else window[this.fakeGlobalName] = this.proxy
       this.activeFlag = true
     }
   }
@@ -119,7 +127,7 @@ export class Merak {
       const { template, scripts, fakeGlobalName } = loadRes
       this.template = template
       this.templateScipts = scripts
-      this.active(fakeGlobalName)
+      this.setGlobalName(fakeGlobalName)
     })
   }
 
@@ -133,6 +141,7 @@ export class Merak {
 
   private mountTemplateAndScript(ele?: ParentNode) {
     this.execHook('beforeMount')
+    this.active()
 
     if (!this.cacheFlag) {
       this.sandDocument = document.importNode(window.document.implementation.createHTMLDocument('').documentElement, true)
@@ -141,7 +150,6 @@ export class Merak {
       if (this.loader) {
         // template
         this.sandDocument.innerHTML = this.template
-        console.log(this.template)
         // mount script on body or iframe
         if (!this.execFlag) {
           const scripts = this.templateScipts.map((scripts) => {
@@ -204,7 +212,7 @@ export class Merak {
       body.classList.add('merak-body', this.id)
     }
 
-    this.execHook('tranformTemplate', this.sandDocument!)
+    this.execHook('tranformDocument', this.sandDocument!)
     this.shadowRoot.appendChild(this.sandDocument!)
     this.mountFlag = true
 
@@ -215,6 +223,7 @@ export class Merak {
   mount(ele?: HTMLElement) {
     if (this.options.iframe && !this.iframe) {
       this.iframe = document.createElement('iframe') as HTMLIFrameElement
+      this.iframe.style.display = 'none'
       this.iframe.onload = () => this.mountTemplateAndScript(ele)
       document.body.appendChild(this.iframe)
     }
@@ -230,7 +239,6 @@ export class Merak {
     this.mountFlag = false
 
     if (!isKeepAlive)
-
       this.destroy()
     else
       eventTrigger(window, MERAK_EVENT_HIDDEN + this.id)
@@ -240,12 +248,14 @@ export class Merak {
   destroy() {
     eventTrigger(window, MERAK_EVENT_DESTROY + this.id)
     this.execHook('destroy')
-
+    if (this.template)
+      this.template = this.sandDocument!.innerHTML
     delete window[this.fakeGlobalName]
     this.activeFlag = false
-    if (this.iframe)
+    if (this.iframe) {
+      this.iframe.remove()
       this.execFlag = false
-    // MerakMap.delete(this.id)
+    }
     this.sandDocument = null
     if (this.iframe)
       this.iframe = null

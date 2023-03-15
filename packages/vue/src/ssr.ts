@@ -1,33 +1,19 @@
-import type { ProxyGlobals } from 'merak-core'
 import { MERAK_DATA_ID, MERAK_KEEP_ALIVE, Merak } from 'merak-core'
-import type { PropType } from 'vue'
 import { defineComponent, h } from 'vue'
+import { shareEmits, shareProps } from './share'
 
 export const MerakSSR = defineComponent({
   props: {
-    // just project id
-    name: {
-      type: String,
-      required: true,
-    },
-    url: {
-      type: String,
-      required: true,
-    },
-    isKeep: {
-      type: Boolean,
-      default: true,
-    },
-    proxy: {
-      type: Object as PropType<ProxyGlobals>,
-
-    },
-
+    ...shareProps,
   },
-  setup(props, { expose }) {
-    const { name, url, proxy, isKeep } = props
-    const app = new Merak(name, url, { proxy })
+  emits: shareEmits,
+  setup(props, { expose, emit }) {
+    const { name, url, proxy, keepAlive, iframe, props: MerakProps } = props
+    const app = new Merak(name, url, { proxy, iframe })
+    app.props = MerakProps
+    for (const ev of shareEmits)
+      app.lifeCycle[ev] = (arg: any) => emit(ev, arg)
     expose({ app })
-    return () => h('merak-ssr', { [MERAK_DATA_ID]: props.name, [MERAK_KEEP_ALIVE]: isKeep })
+    return () => h('merak-ssr', { [MERAK_DATA_ID]: props.name, [MERAK_KEEP_ALIVE]: keepAlive })
   },
 })

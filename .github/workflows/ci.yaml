@@ -1,47 +1,30 @@
-name: Test
+name: CI pipe
 
 on:
   push:
-    branches:
-      - main
-
-  pull_request:
-    branches:
-      - main
-
+    branches: [ main ]
+    tags:
+      - "v*" 
 jobs:
   build:
-    runs-on: ${{ matrix.os }}
-
-    strategy:
-      matrix:
-        node-version: [14.x]
-        os: [ubuntu-latest]
-      fail-fast: false
-
+    runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v2
-
-      - name: Install pnpm
-        uses: pnpm/action-setup@v2.0.1
+      - uses: actions/checkout@v3
+      # Setup .npmrc file to publish to npm
+      - uses: actions/setup-node@v3
         with:
-          version: 6.15.1
-
-      - name: Set node version to ${{ matrix.node_version }}
-        uses: actions/setup-node@v2
+          node-version: '16.x'
+          registry-url: 'https://registry.npmjs.org'
+      - uses: pnpm/action-setup@v2.0.1
+        name: Install pnpm
+        id: pnpm-install
         with:
-          node-version: ${{ matrix.node_version }}
-          cache: pnpm
-
-      - name: Setup
-        run: npm i -g @antfu/ni
-
-      - name: Install
-        run: nci
-
-      - name: Install
-        run: nr build
-
-
-      # - name: Test
-      #   run: nr test --if-present
+          version: 7
+          run_install: |
+            - recursive: true
+              args: [--no-frozen-lockfile]
+      - run: npm run build
+      - run: npm run test --if-present
+      - run: npm run publish  
+        env:
+          NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}

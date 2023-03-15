@@ -33,7 +33,7 @@ const options = [
       <p>弹窗无需子应用做任何处理就可使用</p>
       <h3>1、打开弹窗</h3>
       <p>
-        <el-button @click="dialogVisible = true">
+        <el-button data-testid="modal-btn" @click="dialogVisible = true">
           点击打开el-dialog
         </el-button>
         <a-button style="margin-left: 20px" @click="modalVisible = true">
@@ -45,20 +45,6 @@ const options = [
         <el-select v-model="value" placeholder="el-select">
           <el-option v-for="item in options" :key="item.value" :label="item.label" :value="item.value" />
         </el-select>
-        <a-select placeholder="ant-select" style="margin-left: 20px; width: 200px">
-          <a-select-option value="jack">
-            Jack
-          </a-select-option>
-          <a-select-option value="lucy">
-            Lucy
-          </a-select-option>
-          <a-select-option value="disabled" disabled>
-            Disabled
-          </a-select-option>
-          <a-select-option value="Yiminghe">
-            yiminghe
-          </a-select-option>
-        </a-select>
       </p>
       <h3>3、打开气泡卡片</h3>
       <p>
@@ -93,7 +79,7 @@ const options = [
       <template #footer>
         <span class="dialog-footer">
           <el-button @click="dialogVisible = false">Cancel</el-button>
-          <el-button type="primary" @click="dialogVisible = false">Confirm</el-button>
+          <el-button type="primary" data-testid="modal-content" @click="dialogVisible = false">Confirm</el-button>
         </span>
       </template>
     </el-dialog>

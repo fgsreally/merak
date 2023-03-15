@@ -9,9 +9,10 @@
     "dev": "tsup --watch",
     "build": "tsup"
   },
+  "files": ["dist"],
   "keywords": [],
   "author": "",
-  "license": "ISC",
+  "license": "MIT",
   "devDependencies": {
     "@types/babel__core": "^7.20.0",
     "tsup": "^6.5.0"

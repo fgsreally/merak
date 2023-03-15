@@ -11,7 +11,8 @@
   },
   "keywords": [],
   "author": "",
-  "license": "ISC",
+  "files": ["dist"],
+  "license": "MIT",
   "dependencies": {
     "merak-core": "workspace:*",
     "vue": "^3.2.47"

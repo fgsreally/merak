@@ -17,12 +17,12 @@ function render() {
 }
 
 render()
-if (window.$Merak) {
-  window.addEventListener('merak_relunch', () => {
-    render()
-  })
+// if (window.$Merak) {
+//   window.addEventListener('merak_relunch', () => {
+//     render()
+//   })
 
-  window.addEventListener('merak_destroy', () => {
-    app.unmount()
-  })
-}
+//   window.addEventListener('merak_destroy', () => {
+//     app.unmount()
+//   })
+// }

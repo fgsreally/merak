@@ -1,5 +1,5 @@
 export default {
   define: {
-    DEV: true,
+    __DEV__: true,
   },
 }

@@ -14,7 +14,7 @@ export function defineWebComponent() {
       if (!app)
         throw new Error(`can't find app [${id}] `)
       if (app.mountFlag) {
-        if (DEV)
+        if (__DEV__)
           throw new Error(` app [${id}] has been mounted`)
         return
       }
@@ -47,7 +47,7 @@ export function defineWebComponent() {
       if (!app)
         throw new Error(`can't find app [${id}] `)
       if (app.mountFlag) {
-        if (DEV)
+        if (__DEV__)
           throw new Error(` app [${id}] has been mounted`)
         return
       }
@@ -70,7 +70,7 @@ export function defineWebComponent() {
       const id = this.getAttribute(MERAK_DATA_ID) as string
       const app = getInstance(id) as Merak
       const isKeepAlive = this.hasAttribute(MERAK_KEEP_ALIVE) && this.getAttribute(MERAK_KEEP_ALIVE) !== 'false'
-      if (DEV && !isKeepAlive)
+      if (__DEV__ && !isKeepAlive)
         document.getElementById(id)!.innerHTML = app.sandDocument!.innerHTML
 
       app.unmount(isKeepAlive)
@@ -95,7 +95,7 @@ export function defineWebComponent() {
       }
 
       if (app.mountFlag) {
-        if (DEV)
+        if (__DEV__)
           throw new Error(` app [${id}] has been mounted`)
         return
       }

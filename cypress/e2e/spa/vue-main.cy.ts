@@ -1,6 +1,6 @@
-import { MAINAPP_URL, SUBAPP_BG_STYLE, SUBAPP_CONTENT, SUBAPP_NAME } from './common'
+import { MAINAPP_URL, SUBAPP_BG_STYLE, SUBAPP_CONTENT, SUBAPP_NAME } from '../common'
 
-import { getModal, getModalBtn, getShadowSelector } from './utils'
+import { getModal, getModalBtn, getShadowSelector } from '../utils'
 
 function isSymbolExist() {
   for (const id of SUBAPP_NAME)

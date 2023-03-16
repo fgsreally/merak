@@ -12,7 +12,7 @@ export default defineConfig({
     },
   },
   define: {
-    DEV: true,
+    __DEV__: true,
   },
   server: {
     port: 5003,

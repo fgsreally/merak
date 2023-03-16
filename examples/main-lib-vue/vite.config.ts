@@ -13,6 +13,6 @@ export default defineConfig({
     },
   },
   define: {
-    DEV: true,
+    __DEV__: true,
   },
 })

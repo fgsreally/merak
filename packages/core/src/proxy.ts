@@ -71,7 +71,7 @@ export function createProxyDocument(id: string, url: string) {
       const instance = getInstance(id) as Merak
       // work for vite dev mode
       // to handle assets
-      if (DEV) {
+      if (__DEV__) {
         if (p === 'createElement') {
           return (tagName: any, options?: ElementCreationOptions | undefined) => {
             const el = document.createElement(tagName, options)

@@ -1,4 +1,5 @@
 import type { Emitter, EventType } from 'mitt'
+import { iframeInstance } from './iframe'
 import type { LoadDone, MerakEvents, ProxyGlobals, merakEvent } from './types'
 import type { PureLoader } from './loaders'
 import { createProxy } from './proxy'
@@ -70,7 +71,7 @@ export class Merak {
     loader?: PureLoader
     proxy?: ProxyGlobals
     configUrl?: string
-    iframe?: boolean
+    iframe?: string
   } = {},
   ) {
     if (MerakMap.has(id))
@@ -109,7 +110,7 @@ export class Merak {
 
   active() {
     if (!this.activeFlag) {
-      if (DEV && !this.fakeGlobalName)
+      if (__DEV__ && !this.fakeGlobalName)
         throw new Error('miss fakeGlobalName')
       if (this.iframe)
         (this.iframe.contentWindow as Window)[this.fakeGlobalName] = this.proxy
@@ -222,14 +223,17 @@ export class Merak {
 
   mount(ele?: HTMLElement) {
     if (this.options.iframe && !this.iframe) {
-      this.iframe = document.createElement('iframe') as HTMLIFrameElement
-      this.iframe.style.display = 'none'
-      this.iframe.onload = () => this.mountTemplateAndScript(ele)
-      document.body.appendChild(this.iframe)
+      iframeInstance.add(this.options.iframe).then((el) => {
+        this.iframe = el
+        this.mountTemplateAndScript(ele)
+      })
     }
-    else {
-      this.mountTemplateAndScript(ele)
-    }
+    // this.iframe = document.createElement('iframe') as HTMLIFrameElement
+    // this.iframe.style.display = 'none'
+    // this.iframe.onload = () => this.mountTemplateAndScript(ele)
+    // document.body.appendChild(this.iframe)
+
+    else { this.mountTemplateAndScript(ele) }
   }
 
   unmount(isKeepAlive: boolean) {
@@ -253,12 +257,13 @@ export class Merak {
     delete window[this.fakeGlobalName]
     this.activeFlag = false
     if (this.iframe) {
-      this.iframe.remove()
-      this.execFlag = false
+      const isIframeDestry = iframeInstance.remove(this.options.iframe as string)
+      this.iframe = null
+      if (isIframeDestry)
+        this.execFlag = false
     }
     this.sandDocument = null
-    if (this.iframe)
-      this.iframe = null
+
     while (this.cacheEvent.length > 0)
       this.cacheEvent.pop()!()
   }

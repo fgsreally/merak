@@ -6,4 +6,5 @@ export class LifeCycle {
   destroy: () => any
   execScript: (scripts: HTMLScriptElement[]) => void
   tranformDocument: (ele: HTMLElement) => void
+  prerender: (ele: HTMLElement) => void
 }

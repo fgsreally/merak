@@ -51,7 +51,7 @@ export function defineWebComponent() {
           throw new Error(` app [${id}] has been mounted`)
         return
       }
-      const templateNode = document.getElementById(id) as HTMLTemplateElement
+      const templateNode = document.querySelector(`[data-merak-ssr='${id}']`) as HTMLTemplateElement
       if (!templateNode)
         throw new Error(` can't find [${id}] template`)
 
@@ -90,7 +90,7 @@ export function defineWebComponent() {
       if (app.isRender) {
         const shadowRoot = this.attachShadow({ mode: 'open' })
         app.shadowRoot = shadowRoot
-        app.mount()
+        shadowRoot.appendChild(app.sandDocument!)
         return
       }
 

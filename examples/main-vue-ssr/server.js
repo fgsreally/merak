@@ -109,13 +109,13 @@ export async function createServer(
 
 if (!isTest) {
   createServer().then(({ app }) =>
-    app.listen(6173, () => {
-      console.log('http://localhost:6173')
+    app.listen(5004, () => {
+      console.log('http://localhost:5004')
     }),
   )
 }
 
 function makeMerakTemplate(t) {
   const { html, config } = resolveHtmlConfig(t)
-  return `<template id="${config._f}" merak-config=${JSON.stringify({ _f: config._f })}>${html}</template>`
+  return `<template data-merak-ssr="${config._f}" merak-config=${JSON.stringify({ _f: config._f })}>${html}</template>`
 }

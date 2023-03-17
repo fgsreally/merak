@@ -8,7 +8,7 @@
     "dev:example": "turbo run dev --filter=example-*",
     "docs:build": "vitepress build docs",
     "docs:preview": "vitepress preview docs",
-    "test:e2e": "playwright test e2e/ ",
+    "test:e2e": "cypress open ",
     "publish": "changeset publish"
   },
   "keywords": [],

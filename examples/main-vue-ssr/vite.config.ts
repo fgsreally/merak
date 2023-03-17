@@ -17,4 +17,7 @@ export default defineConfig({
     //   env: 'development',
     // },
   },
+  server: {
+    port: 5004,
+  },
 })

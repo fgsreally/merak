@@ -36,9 +36,6 @@ const options = [
         <el-button data-testid="modal-btn" @click="dialogVisible = true">
           点击打开el-dialog
         </el-button>
-        <a-button style="margin-left: 20px" @click="modalVisible = true">
-          点击打开ant-modal
-        </a-button>
       </p>
       <h3>2、打开选择器</h3>
       <p>
@@ -59,15 +56,6 @@ const options = [
             <el-button>el-popover hover 激活</el-button>
           </template>
         </el-popover>
-        <a-popover title="antd-popover">
-          <template #content>
-            <p>Content</p>
-            <p>Content</p>
-          </template>
-          <a-button style="margin-left: 15px">
-            ant-popover Hover me
-          </a-button>
-        </a-popover>
       </p>
       <!-- <h3>4、手动向body中append弹窗</h3>
       <p>
@@ -83,11 +71,6 @@ const options = [
         </span>
       </template>
     </el-dialog>
-    <a-modal v-model:visible="modalVisible" title="ant Modal" @ok="modalVisible = false">
-      <p>Some contents...</p>
-      <p>Some contents...</p>
-      <p>Some contents...</p>
-    </a-modal>
   </div>
 </template>
 

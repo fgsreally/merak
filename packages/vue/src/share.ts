@@ -25,6 +25,6 @@ export const shareProps = {
     default: true,
   },
   iframe: {
-    type: Boolean,
+    type: String,
   },
 }

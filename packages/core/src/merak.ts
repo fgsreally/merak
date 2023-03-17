@@ -112,9 +112,8 @@ export class Merak {
     if (!this.activeFlag) {
       if (__DEV__ && !this.fakeGlobalName)
         throw new Error('miss fakeGlobalName')
-      if (this.iframe)
+      if (this.iframe?.contentWindow)
         (this.iframe.contentWindow as Window)[this.fakeGlobalName] = this.proxy
-
       else window[this.fakeGlobalName] = this.proxy
       this.activeFlag = true
     }
@@ -136,7 +135,9 @@ export class Merak {
     const proxyEle = document.createElement('merak-app')
     proxyEle.setAttribute(MERAK_DATA_ID, this.id)
     proxyEle.setAttribute('style', 'display:none')
+    this.execHook('prerender', proxyEle)
     document.body.appendChild(proxyEle)
+
     this.isRender = true
   }
 
@@ -210,7 +211,7 @@ export class Merak {
       this.sandDocument.insertBefore(shade, this.sandDocument.firstChild)
       const body = this.sandDocument.querySelector('body')!
       body.setAttribute('style', getBodyStyle())
-      body.classList.add('merak-body', this.id)
+      body.classList.add('merak-body')
     }
 
     this.execHook('tranformDocument', this.sandDocument!)
@@ -254,13 +255,15 @@ export class Merak {
     this.execHook('destroy')
     if (this.template)
       this.template = this.sandDocument!.innerHTML
-    delete window[this.fakeGlobalName]
     this.activeFlag = false
     if (this.iframe) {
       const isIframeDestry = iframeInstance.remove(this.options.iframe as string)
       this.iframe = null
       if (isIframeDestry)
         this.execFlag = false
+    }
+    else {
+      delete window[this.fakeGlobalName]
     }
     this.sandDocument = null
 

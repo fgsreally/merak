@@ -24,7 +24,7 @@ jobs:
             - recursive: true
               args: [--no-frozen-lockfile]
       - run: npm run build
-      - run: npm run test --if-present
-      - run: npm run publish  
-        env:
-          NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
+      - run: npm run test:e2e
+      # - run: npm run publish  
+      #   env:
+      #     NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}

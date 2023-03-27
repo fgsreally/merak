@@ -8,9 +8,9 @@ export const MerakBlock = defineComponent({
   },
   emits: shareEmits,
   setup(props, { slots, emit }) {
-    const { name, url, props: MerakProps, proxy = createLibProxy(name, url), iframe, keepAlive } = props
+    const { name, id, url, props: MerakProps, proxy = createLibProxy(name, url), iframe, keepAlive } = props
 
-    const app = new Merak(name, url, { proxy, iframe })
+    const app = new Merak(id || name, url, { proxy, iframe })
     for (const ev of shareEmits)
       app.lifeCycle[ev] = (arg: any) => emit(ev, arg)
 
@@ -23,6 +23,6 @@ export const MerakBlock = defineComponent({
       app.unmount(false)
     })
 
-    return () => h('merak-block', { [MERAK_DATA_ID]: props.name, [MERAK_DATA_VARNAME]: name, [MERAK_KEEP_ALIVE]: keepAlive })
+    return () => h('merak-block', { [MERAK_DATA_ID]: id || name, [MERAK_DATA_VARNAME]: name, [MERAK_KEEP_ALIVE]: keepAlive })
   },
 })

@@ -1,11 +1,26 @@
 # 库模式
-如果执意使用模块联邦等方案（引入的是`js`文件而非`html`），Merak提供了库模式，当挂载一个来自远方的组件时（如果对象不是一个需要挂载的组件，这就意义不大了），会给它提供一个单独的上下文进行,对其进行隔离
+
+如果执意使用模块联邦等方案（引入的是`js`文件而非`html`），Merak 提供了库模式，当挂载一个来自远方的组件时（如果对象不是一个需要挂载的组件，这就意义不大了），会给它提供一个单独的上下文进行,对其进行隔离
+
+> 包括`dom`和样式的隔离!
+
+### 原生
+
+```js
+const app = new Merak(name, url, { proxy: createLibProxy(name, url) })
+```
+
+```html
+<merak-block data-merak-id="id" data-merak-varname="分配的变量名"></merak-block>
+```
+> js执行必须先于后者
 
 
 ::: warning 提醒
+
 1. 这是个实验性质的功能
-2. 目前仅有`vue`的版本
-3. 除去对`location`,`history`的隔离
-4. 这同样需要生产端使用vite/webpack插件进行编译 
-5. 可能的影响和普通模式一样，详见[]()
+2. 优点\缺点和普通模式一样
+3. 没有对`location`,`history`的隔离
+4. 这同样需要生产端使用 vite/webpack 插件进行编译
+
 :::

@@ -7,7 +7,7 @@
 ```html
 <html>
 ...
-<template id="data-merak-id" merak-config='{"fakeGlobalName":"name"}'>
+<template id="项目id" merak-config='{"fakeGlobalName":"name"}'>
     <!-- 子应用的ssr渲染结果 -->
 </template>
 </html>

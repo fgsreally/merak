@@ -9,6 +9,10 @@ export const shareProps = {
     type: String,
     required: true as const,
   },
+  id: {
+    type: String,
+
+  },
   url: {
     type: String,
     required: true as const,

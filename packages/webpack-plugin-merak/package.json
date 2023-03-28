@@ -1,6 +1,6 @@
 {
   "name": "webpack-plugin-merak",
-  "version": "1.0.0",
+  "version": "0.0.0",
   "description": "",
   "main": "dist/index.js",
   "types": "dist/index.d.ts",
@@ -17,7 +17,7 @@
   "dependencies": {
     "html-webpack-plugin": "^5.5.0",
     "is-var-name": "^2.0.0",
-    "merak-compile": "workspace:^1.0.0",
+    "merak-compile": "workspace:*",
     "wrapper-webpack-plugin": "^2.2.2"
   },
   "devDependencies": {

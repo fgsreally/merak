@@ -1,6 +1,6 @@
 {
   "name": "merak-compile",
-  "version": "0.0.0",
+  "version": "1.0.0-rc.0",
   "description": "",
   "main": "dist/index.js",
   "module": "dist/index.mjs",
@@ -9,7 +9,9 @@
     "dev": "tsup --watch",
     "build": "tsup"
   },
-  "files": ["dist"],
+  "files": [
+    "dist"
+  ],
   "keywords": [],
   "author": "",
   "license": "MIT",

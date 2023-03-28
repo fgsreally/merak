@@ -1,0 +1,22 @@
+{
+  "mode": "pre",
+  "tag": "rc",
+  "initialVersions": {
+    "example-main-lib-vue": "0.0.0",
+    "example-main-vanilla": "0.0.0",
+    "example-vue-host": "0.0.0",
+    "example-vue-ssr": "0.0.0",
+    "example-vite-react": "0.0.0",
+    "example-vite-vue": "0.0.0",
+    "example-vue-cli": "0.1.0",
+    "merak-cli": "0.0.0",
+    "merak-compile": "0.0.0",
+    "merak-core": "0.0.0",
+    "vite-plugin-merak": "0.0.0",
+    "merak-vue": "0.0.0",
+    "webpack-plugin-merak": "0.0.0"
+  },
+  "changesets": [
+    "olive-sheep-taste"
+  ]
+}

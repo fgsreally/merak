@@ -1,6 +1,6 @@
 {
   "name": "vite-plugin-merak",
-  "version": "0.0.0",
+  "version": "1.0.0-rc.0",
   "description": "",
   "main": "dist/index.js",
   "module": "dist/index.mjs",
@@ -11,7 +11,9 @@
   },
   "keywords": [],
   "author": "",
-  "files": ["dist"],
+  "files": [
+    "dist"
+  ],
   "license": "MIT",
   "devDependencies": {
     "tsup": "^6.5.0"

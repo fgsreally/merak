@@ -1,4 +1,3 @@
-import mitt from 'mitt'
 import { MERAK_DATA_ID, MERAK_DATA_VARNAME } from './common'
 import { Merak } from './merak'
 import type { ProxyGlobals } from './types'
@@ -19,8 +18,8 @@ export function execScript(idAndName: string, url: string, proxy: ProxyGlobals) 
 export const MerakMap: Map<string, Merak> = window.$MerakMap || new Map()
 window.$MerakMap = MerakMap
 
-export const bus = window.$MerakBus || mitt()
-window.$MerakBus = bus
+// export const bus = window.$MerakBus || mitt()
+// window.$MerakBus = bus
 
 export function getInstance(id: string) {
   return MerakMap.get(id)

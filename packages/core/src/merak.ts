@@ -1,14 +1,16 @@
-import type { Emitter, EventType } from 'mitt'
 import { iframeInstance } from './iframe'
-import type { LoadDone, MerakEvents, ProxyGlobals, merakEvent } from './types'
+import type { LoadDone, ProxyGlobals } from './types'
 import type { PureLoader } from './loaders'
 import { createProxy } from './proxy'
-import { MERAK_DATA_ID, MERAK_EVENT_DESTROY, MERAK_EVENT_EXEC_SCRIPT, MERAK_EVENT_HIDDEN, MERAK_EVENT_MOUNT, MERAK_EVENT_RELUNCH, MERAK_SHADE_STYLE } from './common'
+import { MERAK_DATA_ID, MERAK_EVENT_DESTROY, MERAK_EVENT_HIDDEN, MERAK_EVENT_MOUNT, MERAK_EVENT_RELUNCH, MERAK_SHADE_STYLE } from './common'
 import { eventTrigger, resolveUrl } from './utils'
-import { MerakMap, bus, getBodyStyle } from './composable'
+import { MerakMap, getBodyStyle } from './composable'
 import { LifeCycle } from './lifecycle'
 
 export class Merak {
+  /** 所有子应用共享 */
+  static namespace: Record<string, any> = {}
+
   /** css隔离容器 */
   public shadowRoot: ShadowRoot
   /** shadowroot 下的 document */
@@ -17,8 +19,8 @@ export class Merak {
   /** iframe 容器 */
   public iframe: HTMLIFrameElement | null
 
-  /** 事件总线 */
-  public bus: Emitter<merakEvent> = bus
+  // /** 事件总线 */
+  // public bus: Emitter<merakEvent> = bus
 
   /** window代理 */
   public proxy: Window
@@ -87,17 +89,17 @@ export class Merak {
 
     this.proxy = this.proxyMap.window as any
   }
+  // try to remove mitt
+  // on(type: Parameters<Emitter<MerakEvents>['on']>[0], param: Parameters<Emitter<MerakEvents>['on']>[1]) {
+  //   bus.on(type, param)
+  //   this.cacheEvent.push(() => {
+  //     bus.off(type, param)
+  //   })
+  // }
 
-  on(type: Parameters<Emitter<MerakEvents>['on']>[0], param: Parameters<Emitter<MerakEvents>['on']>[1]) {
-    bus.on(type, param)
-    this.cacheEvent.push(() => {
-      bus.off(type, param)
-    })
-  }
-
-  emit(type: EventType, event: unknown) {
-    this.bus.emit(type, event)
-  }
+  // emit(type: EventType, event: unknown) {
+  //   this.bus.emit(type, event)
+  // }
 
   execHook<Stage extends keyof LifeCycle>(stage: Stage, params?: Parameters<LifeCycle[Stage]>[0]) {
     // @ts-expect-error work for lifecycle

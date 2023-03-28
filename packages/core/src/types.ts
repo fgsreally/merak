@@ -7,8 +7,6 @@ export interface MerakConfig {
   _f: string
 }
 
-export type merakEvent = Record<EventType, unknown>
-
 export interface PreloadError {
   cmd: 'error'
   id: string

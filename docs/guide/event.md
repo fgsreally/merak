@@ -1,8 +1,7 @@
 ## 事件总线
 
-`merak`不提供事件总线，但实现它很容易
+`merak`不提供事件总线，但实现它很容易。本质上就是有一个东西可以所有应用共享，可以这样
 
-本质上就是有一个东西可以所有应用共享，可以这样
 ```ts
 Merak.namespace.emitter = emitter// your event emitter
 ```

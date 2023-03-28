@@ -1,4 +1,3 @@
-import type { EventType } from 'mitt'
 import type { MerakHTMLFile } from 'merak-compile'
 
 export interface MerakConfig {
@@ -58,5 +57,3 @@ export interface ProxyGlobals {
   window: ProxyHandler<Window>
   [key: string]: ProxyHandler<any>
 }
-
-export type MerakEvents = Record<EventType, unknown>

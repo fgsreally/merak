@@ -33,10 +33,11 @@
   "author": "",
   "license": "MIT",
   "devDependencies": {
-    "tsup": "^6.5.0"
+    "tsup": "^6.5.0",
+    "magic-string": "^0.27.0"
   },
   "dependencies": {
-    "magic-string": "^0.27.0",
+ 
     "merak-compile": "workspace:*"
   }
 }

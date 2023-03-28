@@ -101,6 +101,10 @@ export class Merak {
   //   this.bus.emit(type, event)
   // }
 
+  get namespace() {
+    return Merak.namespace
+  }
+
   execHook<Stage extends keyof LifeCycle>(stage: Stage, params?: Parameters<LifeCycle[Stage]>[0]) {
     // @ts-expect-error work for lifecycle
     this.lifeCycle[stage]?.(params)

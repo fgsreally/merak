@@ -23,8 +23,11 @@ export function getBindFn(target: any, p: any) {
 export function createProxyWindow(id: string, url: string) {
   return {
     get(target: any, p: string) {
+      // if you want to rewrite proxy logic,don't remove this part
+      /** start  */
       if (p === '__merak_url__')
         return url
+
       if (p === '$Merak')
         return getInstance(id)
 
@@ -36,8 +39,10 @@ export function createProxyWindow(id: string, url: string) {
 
       if (p in (getInstance(id) as Merak).proxyMap)
         return (getInstance(id) as Merak).proxyMap[p]
+      /** end  */
 
-      // custom event
+      // work for merak custom event
+      // prefer to keep it if you don't want to make break change
       if (p === 'addEventListener') {
         return (...params: Parameters<typeof addEventListener>) => {
           const eventName = params[0]

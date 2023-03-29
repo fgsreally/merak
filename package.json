@@ -9,7 +9,7 @@
     "build": "turbo run build --filter=./packages/*",
     "docs:build": "vitepress build docs",
     "docs:preview": "vitepress preview docs",
-    "lint": "eslint .",
+    "lint": "eslint . --ext .ts",
     "test:e2e": "cypress open",
     "publish": "changeset publish"
   },

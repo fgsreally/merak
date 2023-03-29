@@ -5,7 +5,7 @@ import { checkModalColor, getShadowSelector, isSymbolExist } from '../utils'
 describe('vanilla app [dev mode]', () => {
   beforeEach(() => {
     cy.visit(`${MAINAPP_URL.VANILLA}`)
-    cy.wait(800)
+    cy.wait(1000)
   })
 
   it('should preload right', () => {

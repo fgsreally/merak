@@ -74,6 +74,8 @@ export function createProxyDocument(id: string, url: string) {
   return {
     get(target: any, p: string) {
       const instance = getInstance(id) as Merak
+      if (p === 'rawDocument')
+        return document
       // work for vite dev mode
       // to handle assets
       if (__DEV__) {

@@ -8,10 +8,6 @@
     },
     "dev": {
       "cache": false
-    },
-    "test:e2e":{
-      "dependsOn": ["dev:example"],
-      "cache": false
     }
   }
 }

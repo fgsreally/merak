@@ -43,5 +43,12 @@ jobs:
       - name: Build
         run: pnpm run build
 
-      - name: E2E
-        run: pnpm run test:e2e        
+      - name: Hack Cypress
+        run: cp pnpm-lock.yaml package-lock.json
+
+      - name: Cypress
+        uses: cypress-io/github-action@v4
+        with:
+          install-command: echo
+          build: pnpm run build
+          start: pnpm run dev:example 

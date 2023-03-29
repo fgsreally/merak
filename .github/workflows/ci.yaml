@@ -49,4 +49,6 @@ jobs:
       - name: Cypress
         uses: cypress-io/github-action@v4
         with:
+          install-command: cypress install
+          build: pnpm run build
           start: pnpm run dev:example 

@@ -31,24 +31,15 @@ jobs:
   e2e:
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v3
-      - uses: pnpm/action-setup@v2
-      - uses: actions/setup-node@v3
+      - name: Checkout
+        uses: actions/checkout@v3
+      - name: Install pnpm
+        uses: pnpm/action-setup@v2
         with:
-          node-version: 16.x
-          cache: pnpm
-      - name: Install
-        run: pnpm install --no-frozen-lockfile
-
-      - name: Build
-        run: pnpm run build
-
-      - name: Hack Cypress
-        run: cp pnpm-lock.yaml package-lock.json
-
-      - name: Cypress
-        uses: cypress-io/github-action@v4
+          version: latest
+      - name: Cypress run
+        uses: cypress-io/github-action@v5
         with:
-          install-command: cypress install
+          working-directory: examples/basic-pnpm
           build: pnpm run build
-          start: pnpm run dev:example 
+          start: pnpm run dev:example

@@ -3,7 +3,6 @@
   "version": "1.0.0",
   "description": "",
   "packageManager": "pnpm@7.21.0",
-
   "scripts": {
     "dev": "turbo run dev --filter=./packages/*",
     "dev:example": "turbo run dev --filter=example-*",
@@ -21,6 +20,7 @@
     "@antfu/eslint-config": "^0.34.1",
     "@changesets/cli": "^2.26.0",
     "@playwright/test": "^1.31.2",
+    "@types/node": "^18.15.11",
     "cypress": "^12.8.0",
     "eslint": "^8.31.0",
     "playwright": "^1.31.2",

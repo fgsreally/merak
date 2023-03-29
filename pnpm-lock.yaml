@@ -7,6 +7,7 @@ importers:
       '@antfu/eslint-config': ^0.34.1
       '@changesets/cli': ^2.26.0
       '@playwright/test': ^1.31.2
+      '@types/node': ^18.15.11
       cypress: ^12.8.0
       eslint: ^8.31.0
       playwright: ^1.31.2
@@ -19,13 +20,14 @@ importers:
       '@antfu/eslint-config': registry.npmmirror.com/@antfu/eslint-config/0.34.1_iukboom6ndih5an6iafl45j2fe
       '@changesets/cli': registry.npmmirror.com/@changesets/cli/2.26.0
       '@playwright/test': 1.31.2
+      '@types/node': 18.15.11
       cypress: 12.8.0
       eslint: registry.npmmirror.com/eslint/8.31.0
       playwright: 1.31.2
       tsup: registry.npmmirror.com/tsup/6.5.0_typescript@4.9.4
       turbo: registry.npmmirror.com/turbo/1.7.0
       typescript: registry.npmmirror.com/typescript/4.9.4
-      vitepress: registry.npmmirror.com/vitepress/1.0.0-alpha.40
+      vitepress: registry.npmmirror.com/vitepress/1.0.0-alpha.40_@types+node@18.15.11
       vitest: registry.npmmirror.com/vitest/0.26.3
 
   examples/main-lib-vue:
@@ -616,7 +618,7 @@ packages:
     engines: {node: '>=14'}
     hasBin: true
     dependencies:
-      '@types/node': 18.14.6
+      '@types/node': 18.15.11
       playwright-core: 1.31.2
     optionalDependencies:
       fsevents: 2.3.2
@@ -684,6 +686,10 @@ packages:
   /@types/node/18.14.6:
     resolution: {integrity: sha512-93+VvleD3mXwlLI/xASjw0FzKcwzl3OdTCzm1LaRfqgS21gfFtK3zDXM5Op9TeeMsJVOaJ2VRDpT9q4Y3d0AvA==}
 
+  /@types/node/18.15.11:
+    resolution: {integrity: sha512-E5Kwq2n4SbMzQOn6wnmBjuK9ouqlURrcZDVfbo9ftDDTFt3nk7ZKK4GMOzoYgnpQJKcxwQw+lGaBvvlMo0qN/Q==}
+    dev: true
+
   /@types/qs/6.9.7:
     resolution: {integrity: sha512-FGa1F62FT09qcrueBA6qYTrJPVDzah9a+493+o2PCXsesWHIn27G98TsSMs3WPNbZIEj4+VJf6saSFpvD+3Zsw==}
     dev: true
@@ -711,7 +717,7 @@ packages:
     resolution: {integrity: sha512-Cn6WYCm0tXv8p6k+A8PvbDG763EDpBoTzHdA+Q/MF6H3sapGjCm9NzoaJncJS9tUKSuCoDs9XHxYYsQDgxR6kw==}
     requiresBuild: true
     dependencies:
-      '@types/node': 18.14.6
+      '@types/node': 18.15.11
     dev: true
     optional: true
 
@@ -3785,40 +3791,6 @@ packages:
       extsprintf: 1.3.0
     dev: true
 
-  /vite/4.1.4_@types+node@18.11.18:
-    resolution: {integrity: sha512-3knk/HsbSTKEin43zHu7jTwYWv81f8kgAL99G5NWBcA1LKvtvcVAC4JjBH1arBunO9kQka+1oGbrMKOjk4ZrBg==}
-    engines: {node: ^14.18.0 || >=16.0.0}
-    hasBin: true
-    peerDependencies:
-      '@types/node': '>= 14'
-      less: '*'
-      sass: '*'
-      stylus: '*'
-      sugarss: '*'
-      terser: ^5.4.0
-    peerDependenciesMeta:
-      '@types/node':
-        optional: true
-      less:
-        optional: true
-      sass:
-        optional: true
-      stylus:
-        optional: true
-      sugarss:
-        optional: true
-      terser:
-        optional: true
-    dependencies:
-      '@types/node': registry.npmmirror.com/@types/node/18.11.18
-      esbuild: 0.16.16
-      postcss: 8.4.21
-      resolve: 1.22.1
-      rollup: 3.18.0
-    optionalDependencies:
-      fsevents: 2.3.2
-    dev: true
-
   /vite/4.1.4_@types+node@18.14.6:
     resolution: {integrity: sha512-3knk/HsbSTKEin43zHu7jTwYWv81f8kgAL99G5NWBcA1LKvtvcVAC4JjBH1arBunO9kQka+1oGbrMKOjk4ZrBg==}
     engines: {node: ^14.18.0 || >=16.0.0}
@@ -3845,6 +3817,40 @@ packages:
         optional: true
     dependencies:
       '@types/node': 18.14.6
+      esbuild: 0.16.16
+      postcss: 8.4.21
+      resolve: 1.22.1
+      rollup: 3.18.0
+    optionalDependencies:
+      fsevents: 2.3.2
+    dev: true
+
+  /vite/4.1.4_@types+node@18.15.11:
+    resolution: {integrity: sha512-3knk/HsbSTKEin43zHu7jTwYWv81f8kgAL99G5NWBcA1LKvtvcVAC4JjBH1arBunO9kQka+1oGbrMKOjk4ZrBg==}
+    engines: {node: ^14.18.0 || >=16.0.0}
+    hasBin: true
+    peerDependencies:
+      '@types/node': '>= 14'
+      less: '*'
+      sass: '*'
+      stylus: '*'
+      sugarss: '*'
+      terser: ^5.4.0
+    peerDependenciesMeta:
+      '@types/node':
+        optional: true
+      less:
+        optional: true
+      sass:
+        optional: true
+      stylus:
+        optional: true
+      sugarss:
+        optional: true
+      terser:
+        optional: true
+    dependencies:
+      '@types/node': 18.15.11
       esbuild: 0.16.16
       postcss: 8.4.21
       resolve: 1.22.1
@@ -7467,7 +7473,7 @@ packages:
       vite: ^4.0.0
       vue: ^3.2.25
     dependencies:
-      vite: registry.npmmirror.com/vite/4.0.4
+      vite: registry.npmmirror.com/vite/4.0.4_@types+node@18.15.11
       vue: registry.npmmirror.com/vue/3.2.47
     dev: true
 
@@ -16576,7 +16582,7 @@ packages:
       vfile-message: registry.npmmirror.com/vfile-message/3.1.4
     dev: true
 
-  registry.npmmirror.com/vite-node/0.26.3_@types+node@18.11.18:
+  registry.npmmirror.com/vite-node/0.26.3_@types+node@18.15.11:
     resolution: {integrity: sha512-Te2bq0Bfvq6XiO718I+1EinMjpNYKws6SNHKOmVbILAQimKoZKDd+IZLlkaYcBXPpK3HFe2U80k8Zw+m3w/a2w==, registry: https://registry.npm.taobao.org/, tarball: https://registry.npmmirror.com/vite-node/-/vite-node-0.26.3.tgz}
     id: registry.npmmirror.com/vite-node/0.26.3
     name: vite-node
@@ -16589,7 +16595,7 @@ packages:
       pathe: registry.npmmirror.com/pathe/0.2.0
       source-map: 0.6.1
       source-map-support: registry.npmmirror.com/source-map-support/0.5.21
-      vite: 4.1.4_@types+node@18.11.18
+      vite: 4.1.4_@types+node@18.15.11
     transitivePeerDependencies:
       - '@types/node'
       - less
@@ -16688,6 +16694,43 @@ packages:
       fsevents: 2.3.2
     dev: true
 
+  registry.npmmirror.com/vite/4.0.4_@types+node@18.15.11:
+    resolution: {integrity: sha512-xevPU7M8FU0i/80DMR+YhgrzR5KS2ORy1B4xcX/cXLsvnUWvfHuqMmVU6N0YiJ4JWGRJJsLCgjEzKjG9/GKoSw==, registry: https://registry.npm.taobao.org/, tarball: https://registry.npmmirror.com/vite/-/vite-4.0.4.tgz}
+    id: registry.npmmirror.com/vite/4.0.4
+    name: vite
+    version: 4.0.4
+    engines: {node: ^14.18.0 || >=16.0.0}
+    hasBin: true
+    peerDependencies:
+      '@types/node': '>= 14'
+      less: '*'
+      sass: '*'
+      stylus: '*'
+      sugarss: '*'
+      terser: ^5.4.0
+    peerDependenciesMeta:
+      '@types/node':
+        optional: true
+      less:
+        optional: true
+      sass:
+        optional: true
+      stylus:
+        optional: true
+      sugarss:
+        optional: true
+      terser:
+        optional: true
+    dependencies:
+      '@types/node': 18.15.11
+      esbuild: registry.npmmirror.com/esbuild/0.16.16
+      postcss: registry.npmmirror.com/postcss/8.4.21
+      resolve: registry.npmmirror.com/resolve/1.22.1
+      rollup: registry.npmmirror.com/rollup/3.9.1
+    optionalDependencies:
+      fsevents: 2.3.2
+    dev: true
+
   registry.npmmirror.com/vite/4.1.4:
     resolution: {integrity: sha512-3knk/HsbSTKEin43zHu7jTwYWv81f8kgAL99G5NWBcA1LKvtvcVAC4JjBH1arBunO9kQka+1oGbrMKOjk4ZrBg==, registry: https://registry.npm.taobao.org/, tarball: https://registry.npmmirror.com/vite/-/vite-4.1.4.tgz}
     name: vite
@@ -16760,8 +16803,9 @@ packages:
       fsevents: 2.3.2
     dev: true
 
-  registry.npmmirror.com/vitepress/1.0.0-alpha.40:
+  registry.npmmirror.com/vitepress/1.0.0-alpha.40_@types+node@18.15.11:
     resolution: {integrity: sha512-axhLI/wq/V9RjzFQZ00Ur0WhvoZXG7E1H88NxnglZm6wU/FAePP4bGaWPzU2WZwy3Nzpb9cbf1oXC+1DNgv9cQ==, registry: https://registry.npm.taobao.org/, tarball: https://registry.npmmirror.com/vitepress/-/vitepress-1.0.0-alpha.40.tgz}
+    id: registry.npmmirror.com/vitepress/1.0.0-alpha.40
     name: vitepress
     version: 1.0.0-alpha.40
     hasBin: true
@@ -16773,7 +16817,7 @@ packages:
       '@vueuse/core': registry.npmmirror.com/@vueuse/core/9.11.1_vue@3.2.47
       body-scroll-lock: registry.npmmirror.com/body-scroll-lock/4.0.0-beta.0
       shiki: registry.npmmirror.com/shiki/0.12.1
-      vite: registry.npmmirror.com/vite/4.0.4
+      vite: registry.npmmirror.com/vite/4.0.4_@types+node@18.15.11
       vue: registry.npmmirror.com/vue/3.2.47
     transitivePeerDependencies:
       - '@algolia/client-search'
@@ -16815,7 +16859,7 @@ packages:
     dependencies:
       '@types/chai': registry.npmmirror.com/@types/chai/4.3.4
       '@types/chai-subset': registry.npmmirror.com/@types/chai-subset/1.3.3
-      '@types/node': registry.npmmirror.com/@types/node/18.11.18
+      '@types/node': 18.15.11
       acorn: registry.npmmirror.com/acorn/8.8.1
       acorn-walk: registry.npmmirror.com/acorn-walk/8.2.0
       chai: registry.npmmirror.com/chai/4.3.7
@@ -16826,8 +16870,8 @@ packages:
       tinybench: registry.npmmirror.com/tinybench/2.3.1
       tinypool: registry.npmmirror.com/tinypool/0.3.0
       tinyspy: registry.npmmirror.com/tinyspy/1.0.2
-      vite: registry.npmmirror.com/vite/4.0.4_@types+node@18.11.18
-      vite-node: registry.npmmirror.com/vite-node/0.26.3_@types+node@18.11.18
+      vite: registry.npmmirror.com/vite/4.0.4_@types+node@18.15.11
+      vite-node: registry.npmmirror.com/vite-node/0.26.3_@types+node@18.15.11
     transitivePeerDependencies:
       - less
       - sass

@@ -1,6 +1,6 @@
 import { MAINAPP_URL } from '../common'
 
-import { checkModalColor, getShadowSelector, isSymbolExist } from '../utils'
+import { getShadowSelector } from '../utils'
 
 describe('vue ssr [dev mode]', () => {
   beforeEach(() => {

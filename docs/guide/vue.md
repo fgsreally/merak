@@ -25,3 +25,4 @@ import { MerakApp } from 'merak-vue'
 ```
 
 具体可见[example]()
+参数可见[类型定义]()

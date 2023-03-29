@@ -1,8 +1,11 @@
-export class LifeCycle {
+## 生命周期
+
+```ts
+interface LifeCycle {
   beforeMount: () => any
   afterMount: () => any
   beforeUnmount: () => any
-  afterUnmount: () => any
+  afterUnmount: () => anyw
   destroy: () => any
   // 执行script前
   execScript: (scripts: HTMLScriptElement[]) => void
@@ -11,3 +14,9 @@ export class LifeCycle {
   // 渲染结果挂载前
   prerender: (ele: HTMLElement) => void
 }
+```
+
+```ts
+const app = new Merak(/** */)
+app.lifeCycle.beforeMount = () => {}
+```

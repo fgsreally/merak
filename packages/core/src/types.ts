@@ -15,7 +15,7 @@ export interface LoadDone {
   cmd: 'load'
   id: string
   url: string
-  fakeGlobalName: string
+  fakeGlobalVar: string
   template: string
   // files: string[]
   // lazyFiles: string[]

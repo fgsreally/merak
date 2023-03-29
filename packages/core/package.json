@@ -37,7 +37,6 @@
     "magic-string": "^0.27.0"
   },
   "dependencies": {
- 
     "merak-compile": "workspace:*"
   }
 }

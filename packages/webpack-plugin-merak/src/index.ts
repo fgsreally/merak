@@ -12,28 +12,28 @@ import isVarName from 'is-var-name'
  * it would inject all globalVars to each chunk with no treeshake
  */
 export class Merak {
-  constructor(public fakeGlobalName: string, public globals: string[], public options?: { filter?: RegExp }) {
-    if (!isVarName(fakeGlobalName))
-      throw new Error(`${fakeGlobalName} is not a valid var`)
+  constructor(public fakeGlobalVar: string, public globals: string[], public options?: { filter?: RegExp }) {
+    if (!isVarName(fakeGlobalVar))
+      throw new Error(`${fakeGlobalVar} is not a valid var`)
   }
 
   apply(compiler: Compiler) {
     const format = compiler.options.output.chunkFormat
-    const { fakeGlobalName, globals } = this
+    const { fakeGlobalVar, globals } = this
     globals.push(...DEFAULT_INJECT)
 
     const globalVars = [...new Set(globals)] as string[]
     if (format === 'module') {
       new WrapperPlugin({
         test: this.options?.filter || /\.js$/, // only wrap output of bundle files with '.js' extension
-        header: `const {${desctructGlobal(globalVars)}}=${fakeGlobalName};`,
+        header: `const {${desctructGlobal(globalVars)}}=${fakeGlobalVar};`,
         footer: '',
       }).apply(compiler)
     }
     else {
       new WrapperPlugin({
         test: /\.js$/, // only wrap output of bundle files with '.js' extension
-        header: `(()=>{const {${desctructGlobal(globalVars)}}=${fakeGlobalName};`,
+        header: `(()=>{const {${desctructGlobal(globalVars)}}=${fakeGlobalVar};`,
         footer: '})()',
       }).apply(compiler)
     }
@@ -48,7 +48,7 @@ export class Merak {
             tagName: 'script',
             voidTag: false,
             meta: { plugin: 'webpack-merak' },
-            innerHTML: `const ${fakeGlobalName}=window.${fakeGlobalName}||window`,
+            innerHTML: `const ${fakeGlobalVar}=window.${fakeGlobalVar}||window`,
             attributes: {
               'merak-ignore': true,
             },
@@ -58,7 +58,7 @@ export class Merak {
         },
       )
       HtmlWebpackPlugin.getHooks(compilation).beforeEmit.tap('webpack-merak', (data) => {
-        const merakConfig = { _f: fakeGlobalName, _g: globalVars, _t: analyseHTML(data.html) }
+        const merakConfig = { _f: fakeGlobalVar, _g: globalVars, _t: analyseHTML(data.html) }
 
         data.html = data.html.replace('</body>', `<merak-base config='${JSON.stringify(merakConfig)}'></merak-base></body`)
 
@@ -68,8 +68,8 @@ export class Merak {
   }
 }
 
-export function injectGlobals(fakeGlobalName: string, globals: string[], code: string) {
-  return `(()=>{const {${desctructGlobal(globals)}}=${fakeGlobalName}\n${code})()`
+export function injectGlobals(fakeGlobalVar: string, globals: string[], code: string) {
+  return `(()=>{const {${desctructGlobal(globals)}}=${fakeGlobalVar}\n${code})()`
 }
 
 export { merakPostCss } from 'merak-compile'

@@ -1,5 +1,5 @@
 export const MERAK_DATA_ID = 'data-merak-id'
-export const MERAK_DATA_VARNAME = 'data-merak-varname'
+export const MERAK_DATA_FAKEGLOBALVAR = 'data-merak-var'
 export const MERAK_KEEP_ALIVE = 'keep-alive'
 
 export const MERAK_EVENT_PREFIX = 'merak_'

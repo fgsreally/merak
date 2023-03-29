@@ -55,7 +55,7 @@ export class Merak {
   public cacheFlag = false
 
   /** 子应用中的虚拟变量名 */
-  public fakeGlobalName: string
+  public fakeGlobalVar: string
 
   /** 配置文件地址，配置内联时为空 */
   public configUrl?: string
@@ -110,17 +110,17 @@ export class Merak {
     this.lifeCycle[stage]?.(params)
   }
 
-  setGlobalName(fakeGlobalName: string) {
-    this.fakeGlobalName = fakeGlobalName
+  setGlobalName(fakeGlobalVar: string) {
+    this.fakeGlobalVar = fakeGlobalVar
   }
 
   active() {
     if (!this.activeFlag) {
-      if (__DEV__ && !this.fakeGlobalName)
-        throw new Error('miss fakeGlobalName')
+      if (__DEV__ && !this.fakeGlobalVar)
+        throw new Error('miss fakeGlobalVar')
       if (this.iframe?.contentWindow)
-        (this.iframe.contentWindow as Window)[this.fakeGlobalName] = this.proxy
-      else window[this.fakeGlobalName] = this.proxy
+        (this.iframe.contentWindow as Window)[this.fakeGlobalVar] = this.proxy
+      else window[this.fakeGlobalVar] = this.proxy
       this.activeFlag = true
     }
   }
@@ -130,10 +130,10 @@ export class Merak {
       return this.loadPromise
     const { id, url, configUrl } = this
     return this.loadPromise = (this.loader!.load(id, url, configUrl) as Promise<LoadDone>).then((loadRes) => {
-      const { template, scripts, fakeGlobalName } = loadRes
+      const { template, scripts, fakeGlobalVar } = loadRes
       this.template = template
       this.templateScipts = scripts
-      this.setGlobalName(fakeGlobalName)
+      this.setGlobalName(fakeGlobalVar)
     })
   }
 
@@ -269,7 +269,7 @@ export class Merak {
         this.execFlag = false
     }
     else {
-      delete window[this.fakeGlobalName]
+      delete window[this.fakeGlobalVar]
     }
     this.sandDocument = null
 

@@ -3,8 +3,8 @@ import MagicString from 'magic-string'
 import type { ImportFile, ImportScript, InlineScript } from 'merak-compile'
 import { desctructGlobal, resolveUrl } from './utils'
 
-export function compileGlobals(s: MagicString, globals: string[], insertPos: number, fakeGlobalName: string) {
-  s.appendRight(insertPos || 0, `\nconst {${desctructGlobal(globals)}}=${fakeGlobalName};\n`)
+export function compileGlobals(s: MagicString, globals: string[], insertPos: number, fakeGlobalVar: string) {
+  s.appendRight(insertPos || 0, `\nconst {${desctructGlobal(globals)}}=${fakeGlobalVar};\n`)
   return s
 }
 
@@ -61,7 +61,7 @@ export function compileDynamicImports(s: MagicString, dynamicImport: { [filePath
   return s
 }
 
-export function compileHTMLJS(s: MagicString, url: string, files: (ImportScript | InlineScript)[], globals: string[], fakeGlobalName: string) {
+export function compileHTMLJS(s: MagicString, url: string, files: (ImportScript | InlineScript)[], globals: string[], fakeGlobalVar: string) {
   for (const file of files) {
     if (file._t !== 'outline') {
       const [tagStart, tagEnd] = (file as InlineScript)._b
@@ -72,9 +72,9 @@ export function compileHTMLJS(s: MagicString, url: string, files: (ImportScript 
         body.overwrite(start, end, `"${resolveUrl(importer, url)}"`)
       }
       if (file._t === 'esm')
-        file._a.innerHTML = `\nconst {${desctructGlobal(globals)}}=${fakeGlobalName};\n${body.toString()}`
+        file._a.innerHTML = `\nconst {${desctructGlobal(globals)}}=${fakeGlobalVar};\n${body.toString()}`
       if (file._t === 'iife')
-        file._a.innerHTML = `(()=>{const {${desctructGlobal(globals)}}=${fakeGlobalName};${body.toString()}})()`
+        file._a.innerHTML = `(()=>{const {${desctructGlobal(globals)}}=${fakeGlobalVar};${body.toString()}})()`
     }
     else {
       file._a.src = file._f
@@ -85,13 +85,13 @@ export function compileHTMLJS(s: MagicString, url: string, files: (ImportScript 
   }
 }
 
-export function compileInlineJS(s: MagicString, scripts: { loc: [number, number]; type: 'esm' | 'iife' }[], globals: string[], fakeGlobalName: string) {
+export function compileInlineJS(s: MagicString, scripts: { loc: [number, number]; type: 'esm' | 'iife' }[], globals: string[], fakeGlobalVar: string) {
   for (const script of scripts) {
     if (script.type === 'esm')
-      s.appendRight(script.loc[0], `\nconst {${desctructGlobal(globals)}}=${fakeGlobalName};\n`)
+      s.appendRight(script.loc[0], `\nconst {${desctructGlobal(globals)}}=${fakeGlobalVar};\n`)
 
     if (script.type === 'iife') {
-      s.appendRight(script.loc[0], `(()=>{const {${desctructGlobal(globals)}}=${fakeGlobalName};\n`)
+      s.appendRight(script.loc[0], `(()=>{const {${desctructGlobal(globals)}}=${fakeGlobalVar};\n`)
       s.appendLeft(script.loc[1], '})()')
     }
   }

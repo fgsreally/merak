@@ -12,10 +12,10 @@ cli
   .command('', 'parse all file to merak-format')
   .action(async () => {
     const {
-      dir = '', globals, fakeGlobalName, format = 'esm', isinLine = true,
+      dir = '', globals, fakeGlobalVar, format = 'esm', isinLine = true,
     } = getConfig()
-    if (!isVarName(fakeGlobalName))
-      throw new Error(`${fakeGlobalName} is not a valid var`)
+    if (!isVarName(fakeGlobalVar))
+      throw new Error(`${fakeGlobalVar} is not a valid var`)
 
     const cwd = resolve(process.cwd(), dir)
     const entries = await fg(['index.html', '**/*.js'], { cwd })
@@ -27,16 +27,16 @@ cli
 
       if (entry.endsWith('.js')) {
         if (format === 'esm')
-          await fs.promises.writeFile(filePath, injectGlobalToESM(raw, fakeGlobalName, globalVars))
+          await fs.promises.writeFile(filePath, injectGlobalToESM(raw, fakeGlobalVar, globalVars))
 
         else
-          await fs.promises.writeFile(filePath, injectGlobalToIIFE(raw, fakeGlobalName, globalVars))
+          await fs.promises.writeFile(filePath, injectGlobalToIIFE(raw, fakeGlobalVar, globalVars))
       }
       else {
         const merakConfig = {
-          fakeGlobalName, globals: globalVars,
+          fakeGlobalVar, globals: globalVars,
         }
-        let html = raw.replace('</head>', `</head><script merak-ignore>const ${fakeGlobalName}=window.${fakeGlobalName}||window</script>`)
+        let html = raw.replace('</head>', `</head><script merak-ignore>const ${fakeGlobalVar}=window.${fakeGlobalVar}||window</script>`)
         merakConfig.template = analyseHTML(html)
         if (isinLine)
           html = html.replace('</body>', `<merak-base config="${JSON.stringify(merakConfig)}"></merak-base></body>`)
@@ -51,7 +51,7 @@ function getConfig() {
   /**
    * {
    *  "globals":[...],
-   *  "fakeGlobalName":'..'
+   *  "fakeGlobalVar":'..'
    *  "dir":'..',
    *  "isInline":true/false,
    *  "format":esm/iife

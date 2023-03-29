@@ -3,9 +3,14 @@
   "pipeline": {
     "build": {
       "dependsOn": ["^build"],
+      "cache": false,
       "outputs": ["dist/**", ".vitepress/dist/**"]
     },
     "dev": {
+      "cache": false
+    },
+    "test:e2e":{
+      "dependsOn": ["dev:example"],
       "cache": false
     }
   }

@@ -2,29 +2,46 @@ name: CI pipe
 
 on:
   push:
-    branches: [ main ]
-    tags:
-      - "v*" 
+    branches:
+      - main
+      - prelease
+
+  pull_request:
+    branches:
+      - main
+      - prelease
+      
 jobs:
-  build:
+  lint:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v3
-      # Setup .npmrc file to publish to npm
+      - uses: pnpm/action-setup@v2
       - uses: actions/setup-node@v3
         with:
-          node-version: '16.x'
-          registry-url: 'https://registry.npmjs.org'
-      - uses: pnpm/action-setup@v2.0.1
-        name: Install pnpm
-        id: pnpm-install
+          node-version: 16.x
+          cache: pnpm
+
+      - name: Install
+        run: pnpm install
+
+      - name: Lint
+        run: pnpm run lint
+
+  e2e:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v3
+      - uses: pnpm/action-setup@v2
+      - uses: actions/setup-node@v3
         with:
-          version: 7
-          run_install: |
-            - recursive: true
-              args: [--no-frozen-lockfile]
-      - run: npm run build
-      - run: npm run test:e2e
-      # - run: npm run publish  
-      #   env:
-      #     NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
+          node-version: 16.x
+          cache: pnpm
+      - name: Install
+        run: pnpm install
+
+      - name: Build
+        run: pnpm run build
+
+      - name: E2E
+        run: pnpm run test:e2e        

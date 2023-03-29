@@ -2,17 +2,18 @@
   "name": "merak",
   "version": "1.0.0",
   "description": "",
-  "main": "index.js",
   "scripts": {
     "dev": "turbo run dev --filter=./packages/*",
     "dev:example": "turbo run dev --filter=example-*",
+    "build": "turbo run build --filter=./packages/*",
     "docs:build": "vitepress build docs",
     "docs:preview": "vitepress preview docs",
-    "test:e2e": "cypress open ",
+    "lint": "eslint .",
+    "test:e2e": "cypress open",
     "publish": "changeset publish"
   },
   "keywords": [],
-  "author": "",
+  "author": "fgsreally",
   "license": "MIT",
   "devDependencies": {
     "@antfu/eslint-config": "^0.34.1",

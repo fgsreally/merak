@@ -1,4 +1,4 @@
-import { MERAK_DATA_ID, MERAK_DATA_VARNAME } from './common'
+import { MERAK_DATA_FAKEGLOBALVAR, MERAK_DATA_ID } from './common'
 import { Merak } from './merak'
 import type { ProxyGlobals } from './types'
 
@@ -8,7 +8,7 @@ export function execScript(idAndName: string, url: string, proxy: ProxyGlobals) 
   new Merak(idAndName, url, { proxy })
     const el = document.createElement('merak-block')
     el.setAttribute(MERAK_DATA_ID, idAndName)
-    el.setAttribute(MERAK_DATA_VARNAME, idAndName)
+    el.setAttribute(MERAK_DATA_FAKEGLOBALVAR, idAndName)
     document.body.appendChild(el)
   }
 

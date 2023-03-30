@@ -31,26 +31,28 @@ jobs:
   e2e:
     runs-on: ubuntu-latest
     steps:
-      - name: Checkout
-        uses: actions/checkout@v3
-      - name: Install pnpm
-        uses: pnpm/action-setup@v2
+      - uses: actions/checkout@v3
+      - uses: pnpm/action-setup@v2
+      - uses: actions/setup-node@v3
         with:
-          version: latest
-          run_install: |
-            - args: [--no-frozen-lockfile]
-             
-      - name: Cypress run
-        uses: cypress-io/github-action@v5
+          node-version: 16.x
+          cache: pnpm
+
+      - name: Install
+        run: pnpm install --no-frozen-lockfile
+
+      - name: build
+        run:  pnpm run build
+ 
+      - name: Run cypress test
+        uses: cypress-io/github-action@v4
         with:
-          browser: edge
-          build: pnpm run build
-          start: pnpm run dev:example
-          record: true
+          install: false
+          start: node scripts/e2e.js
+          wait-on: 'http://localhost:5001,http://localhost:5002,http://localhost:5003,,http://localhost:5004'
+          wait-on-timeout: 600
           parallel: true
-        env:
-          # pass the Cypress Cloud record key as an environment variable
-          CYPRESS_RECORD_KEY: ${{ secrets.CYPRESS_RECORD_KEY }}
-          # Recommended: pass the GitHub token lets this action correctly
-          # determine the unique run id necessary to re-run the checks
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          record: true
+      env:
+        CYPRESS_RECORD_KEY: ${{ secrets.CYPRESS_RECORD_KEY }}
+        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}

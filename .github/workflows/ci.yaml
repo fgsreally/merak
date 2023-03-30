@@ -50,8 +50,5 @@ jobs:
           start: node scripts/before-e2e.js
           wait-on: 'http://localhost:5001,http://localhost:5002,http://localhost:5003,http://localhost:5004'
           wait-on-timeout: 600
-          parallel: true
-          record: true
         env:
-          CYPRESS_RECORD_KEY: ${{ secrets.CYPRESS_RECORD_KEY }}
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}

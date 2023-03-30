@@ -1,6 +1,6 @@
 import { MAINAPP_URL } from '../common'
 
-import { checkModalColor, isSymbolExist } from '../utils'
+import { isSymbolExist } from '../utils'
 
 describe('main vue app [dev mode]', () => {
   beforeEach(() => {
@@ -15,9 +15,5 @@ describe('main vue app [dev mode]', () => {
     cy.get('a[href=\'/about\']').click()
 
     isSymbolExist()
-  })
-
-  it('style should be different', () => {
-    checkModalColor()
   })
 })

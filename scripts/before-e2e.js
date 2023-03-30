@@ -1,5 +1,5 @@
 #!/usr/bin/env zx
-import { execa } from 'execa'
+import { $ } from 'zx'
 import waitOn from 'wait-on'
 import killPort from 'kill-port'
 import config from './config.js'
@@ -26,26 +26,26 @@ export async function runAllExample() {
   try {
     if (process.env.CI || process.env.PROD) {
       step('\n building sub project...')
-      await execa('pnpm --filter example-sub-* run build')
+      await $`pnpm --filter example-sub-* run build`
 
       step('\n http-server dev dist...')
 
       for (const { port, name } of config)
-        execa(`pnpm --filter ${name} exec -- http-server ./dist --cors -p ${port}`)
+        $`pnpm --filter ${name} exec -- http-server ./dist --cors -p ${port}`
 
       step('\n main project running ...')
 
-      execa('pnpm --filter example-main-* run dev')
+      $`pnpm --filter example-main-* run dev`
 
       await waitOn(opts)
       step('\n start e2e test...')
     }
     else {
       step('\n building package...')
-      await execa ('pnpm run build')
+      await $`pnpm run build`
 
       step('\n run dev project...')
-      execa('pnpm run dev:example')
+      $`pnpm run dev:example`
 
       step('\n wait project start...')
       await waitOn(opts)

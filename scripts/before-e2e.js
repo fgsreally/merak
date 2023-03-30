@@ -5,6 +5,8 @@ import killPort from 'kill-port'
 import config from './config.js'
 import { step } from './utils.js'
 const ports = config.map(item => item.port)
+// main app
+ports.push(5001, 5002, 5003, 5004)
 
 const opts = {
   resources: ports.map(port => `http-get://localhost:${port}`),
@@ -22,16 +24,21 @@ export async function runAllExample() {
   console.time('runAllExample')
 
   try {
-    if (process.env.CI) {
-      step('\n building dev project...')
-      await execa('pnpm run build:example')
+    if (process.env.CI || process.env.PROD) {
+      step('\n building sub project...')
+      await execa('pnpm --filter example-sub-* run build')
 
       step('\n http-server dev dist...')
-      config.forEach(({ name, port }) => {
+
+      for (const { port, name } of config)
         execa(`pnpm --filter ${name} exec -- http-server ./dist --cors -p ${port}`)
-      })
+
+      step('\n main project running ...')
+
+      execa('pnpm --filter example-main-* run dev')
 
       await waitOn(opts)
+      step('\n start e2e test...')
     }
     else {
       step('\n building package...')
@@ -52,3 +59,5 @@ export async function runAllExample() {
   }
   console.timeEnd('runAllExample')
 }
+
+runAllExample()

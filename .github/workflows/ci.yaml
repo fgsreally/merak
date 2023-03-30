@@ -45,7 +45,7 @@ jobs:
         uses: cypress-io/github-action@v4
         with:
           install: false
-          start: node scripts/e2e.js
+          start: node scripts/before-e2e.js
           wait-on: 'http://localhost:5001,http://localhost:5002,http://localhost:5003,,http://localhost:5004'
           wait-on-timeout: 600
           parallel: true

@@ -9,6 +9,7 @@ importers:
       '@playwright/test': ^1.31.2
       '@types/node': ^18.15.11
       chalk: ^5.2.0
+      cross-env: ^7.0.3
       cypress: ^12.8.0
       eslint: ^8.31.0
       execa: ^7.1.1
@@ -27,6 +28,7 @@ importers:
       '@playwright/test': 1.31.2
       '@types/node': 18.15.11
       chalk: 5.2.0
+      cross-env: 7.0.3
       cypress: 12.8.0
       eslint: registry.npmmirror.com/eslint/8.31.0
       execa: 7.1.1
@@ -1633,6 +1635,14 @@ packages:
   /corser/2.0.1:
     resolution: {integrity: sha512-utCYNzRSQIZNPIcGZdQc92UVJYAhtGAteCFg0yRaFm8f0P+CPtyGyHXJcGXnffjCybUCEx3FQ2G7U3/o9eIkVQ==}
     engines: {node: '>= 0.4.0'}
+    dev: true
+
+  /cross-env/7.0.3:
+    resolution: {integrity: sha512-+/HKd6EgcQCJGh2PSjZuUitQBQynKor4wrFbRg4DtAgS1aWO+gU52xpH7M9ScGgXSYmAVS9bIJ8EzuaGw0oNAw==}
+    engines: {node: '>=10.14', npm: '>=6', yarn: '>=1'}
+    hasBin: true
+    dependencies:
+      cross-spawn: 7.0.3
     dev: true
 
   /cross-spawn/5.1.0:

@@ -23,9 +23,6 @@ export async function runAllExample() {
 
   try {
     if (process.env.CI) {
-      step('\n clear ports...')
-      await Promise.all(ports.map(port => killPort(port)))
-
       step('\n building dev project...')
       await execa('pnpm run build:example')
 
@@ -37,9 +34,6 @@ export async function runAllExample() {
       await waitOn(opts)
     }
     else {
-      step('\n clear ports...')
-      await Promise.all(ports.map(port => killPort(port)))
-
       step('\n building package...')
       await execa ('pnpm run build')
 

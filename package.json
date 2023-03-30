@@ -26,6 +26,7 @@
     "chalk": "^5.2.0",
     "cypress": "^12.8.0",
     "eslint": "^8.31.0",
+    "execa": "^7.1.1",
     "http-server": "^14.1.1",
     "kill-port": "^2.0.1",
     "playwright": "^1.31.2",

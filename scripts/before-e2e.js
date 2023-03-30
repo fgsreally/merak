@@ -1,5 +1,5 @@
 #!/usr/bin/env zx
-import { $ } from 'zx'
+import { execa } from 'execa'
 import waitOn from 'wait-on'
 import killPort from 'kill-port'
 import config from './config.js'
@@ -27,11 +27,11 @@ export async function runAllExample() {
       await Promise.all(ports.map(port => killPort(port)))
 
       step('\n building dev project...')
-      await $`pnpm run build:example`
+      await execa('pnpm run build:example')
 
       step('\n http-server dev dist...')
       config.forEach(({ name, port }) => {
-        $`pnpm --filter ${name} exec -- http-server ./dist --cors -p ${port}`
+        execa(`pnpm --filter ${name} exec -- http-server ./dist --cors -p ${port}`)
       })
 
       await waitOn(opts)
@@ -41,10 +41,10 @@ export async function runAllExample() {
       await Promise.all(ports.map(port => killPort(port)))
 
       step('\n building package...')
-      await $`pnpm run build`
+      await execa ('pnpm run build')
 
       step('\n run dev project...')
-      $`pnpm run dev:example`
+      execa('pnpm run dev:example')
 
       step('\n wait project start...')
       await waitOn(opts)

@@ -41,7 +41,7 @@ jobs:
       - name: Install
         run: pnpm install --no-frozen-lockfile
 
-      - name: build
+      - name: Build
         run:  pnpm run build
  
       - name: Run cypress test
@@ -53,6 +53,6 @@ jobs:
           wait-on-timeout: 600
           parallel: true
           record: true
-      env:
-        CYPRESS_RECORD_KEY: ${{ secrets.CYPRESS_RECORD_KEY }}
-        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        env:
+          CYPRESS_RECORD_KEY: ${{ secrets.CYPRESS_RECORD_KEY }}
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}

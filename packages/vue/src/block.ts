@@ -1,5 +1,5 @@
 import { defineComponent, h, onMounted, onUnmounted, render } from 'vue'
-import { MERAK_DATA_ID, MERAK_DATA_VARNAME, MERAK_KEEP_ALIVE, Merak, createLibProxy } from 'merak-core'
+import { MERAK_DATA_FAKEGLOBALVAR, MERAK_DATA_ID, MERAK_KEEP_ALIVE, Merak, createLibProxy } from 'merak-core'
 import { shareEmits, shareProps } from './share'
 
 export const MerakBlock = defineComponent({
@@ -23,6 +23,6 @@ export const MerakBlock = defineComponent({
       app.unmount(false)
     })
 
-    return () => h('merak-block', { [MERAK_DATA_ID]: id || name, [MERAK_DATA_VARNAME]: name, [MERAK_KEEP_ALIVE]: keepAlive })
+    return () => h('merak-block', { [MERAK_DATA_ID]: id || name, [MERAK_DATA_FAKEGLOBALVAR]: name, [MERAK_KEEP_ALIVE]: keepAlive })
   },
 })

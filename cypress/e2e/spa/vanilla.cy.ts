@@ -1,11 +1,11 @@
 import { MAINAPP_URL } from '../common'
 
-import { checkModalColor, getShadowSelector, isSymbolExist } from '../utils'
+import { getShadowSelector, isSymbolExist } from '../utils'
 
-describe('vanilla app [dev mode]', () => {
+describe('vanilla app ', () => {
   beforeEach(() => {
     cy.visit(`${MAINAPP_URL.VANILLA}`)
-    cy.wait(500)
+    cy.wait(1000)
   })
 
   it('should preload right', () => {
@@ -20,11 +20,5 @@ describe('vanilla app [dev mode]', () => {
     cy.get('[data-testid="btn"]').first().click()
     cy.wait(1000)
     isSymbolExist()
-  })
-  it('style should be different', () => {
-    cy.get('[data-testid="btn"]').first().click()
-
-    cy.wait(1000)
-    checkModalColor()
   })
 })

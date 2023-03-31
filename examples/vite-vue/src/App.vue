@@ -14,10 +14,10 @@ const data = window.$Merak ? window.$Merak.props.data : 'no data from merak'
       </p>
 
       <nav>
-        <RouterLink id="tohome" to="/">
+        <RouterLink to="/">
           Home
         </RouterLink>
-        <RouterLink id="toabout" to="/about">
+        <RouterLink to="/about">
           弹窗
         </RouterLink>
       </nav>

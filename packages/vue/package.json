@@ -1,6 +1,6 @@
 {
   "name": "merak-vue",
-  "version": "1.0.0",
+  "version": "1.0.0-rc.0",
   "description": "",
   "main": "dist/index.js",
   "module": "dist/index.mjs",
@@ -11,7 +11,9 @@
   },
   "keywords": [],
   "author": "",
-  "files": ["dist"],
+  "files": [
+    "dist"
+  ],
   "license": "MIT",
   "dependencies": {
     "merak-core": "workspace:*",

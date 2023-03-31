@@ -2,29 +2,53 @@ name: CI pipe
 
 on:
   push:
-    branches: [ main ]
-    tags:
-      - "v*" 
+    branches:
+      - main
+      - prelease
+
+  pull_request:
+    branches:
+      - main
+      - prelease
+      
 jobs:
-  build:
+  lint:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v3
-      # Setup .npmrc file to publish to npm
+      - uses: pnpm/action-setup@v2
       - uses: actions/setup-node@v3
         with:
-          node-version: '16.x'
-          registry-url: 'https://registry.npmjs.org'
-      - uses: pnpm/action-setup@v2.0.1
-        name: Install pnpm
-        id: pnpm-install
+          node-version: 16.x
+          cache: pnpm
+
+      - name: Install
+        run: pnpm install --no-frozen-lockfile
+
+      - name: Lint
+        run: pnpm run lint
+
+  e2e:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v3
+      - uses: pnpm/action-setup@v2
+      - uses: actions/setup-node@v3
         with:
-          version: 7
-          run_install: |
-            - recursive: true
-              args: [--no-frozen-lockfile]
-      - run: npm run build
-      - run: npm run test:e2e
-      # - run: npm run publish  
-      #   env:
-      #     NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
+          node-version: 16.x
+          cache: pnpm
+
+      - name: Install
+        run: pnpm install --no-frozen-lockfile
+      - name: Build
+        run: pnpm run build
+      - name: Cypress Install
+        run: npx cypress install --force  
+      - name: Run cypress test
+        uses: cypress-io/github-action@v4
+        with:
+          start: node scripts/before-e2e.js
+          wait-on: 'http://localhost:5001,http://localhost:5002,http://localhost:5003,http://localhost:5004'
+          wait-on-timeout: 600
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}

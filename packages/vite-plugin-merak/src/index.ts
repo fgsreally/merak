@@ -8,14 +8,14 @@ import isVarName from 'is-var-name'
 import type { TransformOptions } from './transform'
 
 import { transformAsset, transformChunk, transformHtml } from './transform'
-export function Merak(fakeGlobalName: string, globals: string[], opts: { isinLine?: boolean; includes?: FilterPattern; excludes?: FilterPattern; debug?: boolean }): PluginOption {
-  if (!isVarName(fakeGlobalName))
-    throw new Error(`${fakeGlobalName} is not a valid var`)
+export function Merak(fakeGlobalVar: string, globals: string[], opts: { isinLine?: boolean; includes?: FilterPattern; excludes?: FilterPattern; debug?: boolean }): PluginOption {
+  if (!isVarName(fakeGlobalVar))
+    throw new Error(`${fakeGlobalVar} is not a valid var`)
 
   globals.push(...DEFAULT_INJECT)
 
   const globalVars = [...new Set(globals)] as string[]
-  const merakConfig = { _f: fakeGlobalName, _g: globalVars } as any
+  const merakConfig = { _f: fakeGlobalVar, _g: globalVars } as any
   const resolvedOpts = {
     includes: /\.(vue|ts|js|tsx|jsx|mjs)/,
     excludes: /\.(css|scss|sass|less)$/,
@@ -26,7 +26,7 @@ export function Merak(fakeGlobalName: string, globals: string[], opts: { isinLin
   const filter = createFilter(includes, excludes)
   const PATH_PLACEHOLDER = '/dynamic_base__/'
   let config: ResolvedConfig
-  const publicPath = `${fakeGlobalName}.__merak_url__`
+  const publicPath = `${fakeGlobalVar}.__merak_url__`
   // const preloadHelperId = 'vite/preload-helper'
 
   const baseOptions: TransformOptions = { assetsDir: 'assets', base: PATH_PLACEHOLDER, publicPath: ` ${publicPath}` }
@@ -46,7 +46,7 @@ export function Merak(fakeGlobalName: string, globals: string[], opts: { isinLin
     enforce: 'post',
 
     async transformIndexHtml(html) {
-      html = html.replace('</head>', `</head><script merak-ignore>const ${fakeGlobalName}=window.${fakeGlobalName}||window</script>`)
+      html = html.replace('</head>', `</head><script merak-ignore>const ${fakeGlobalVar}=window.${fakeGlobalVar}||window</script>`)
       merakConfig._t = analyseHTML(html)
       html = html.replace('</body>', `<merak-base config="${JSON.stringify(merakConfig)}"></merak-base></body>`)
       return html
@@ -56,7 +56,7 @@ export function Merak(fakeGlobalName: string, globals: string[], opts: { isinLin
       if (filter(id)) {
         // if (extname(id) === '.css')
         //   return
-        return `const {${desctructGlobal(globalVars)}}=${fakeGlobalName}\n${code}`
+        return `const {${desctructGlobal(globalVars)}}=${fakeGlobalVar}\n${code}`
       }
     },
   }, {
@@ -77,10 +77,10 @@ export function Merak(fakeGlobalName: string, globals: string[], opts: { isinLin
         return
       let ret: { code: string; map: SourceMap }
       if (opts.format === 'es')
-        ret = injectGlobalToESM(raw, fakeGlobalName, globalVars)
+        ret = injectGlobalToESM(raw, fakeGlobalVar, globalVars)
 
       else
-        ret = injectGlobalToIIFE(raw, fakeGlobalName, globalVars)
+        ret = injectGlobalToIIFE(raw, fakeGlobalVar, globalVars)
 
       if (config.build.sourcemap)
         return ret
@@ -90,7 +90,7 @@ export function Merak(fakeGlobalName: string, globals: string[], opts: { isinLin
       }
     },
     transformIndexHtml(html) {
-      html = html.replace('</head>', `</head><script merak-ignore>const ${fakeGlobalName}=window.${fakeGlobalName}||window</script>`)
+      html = html.replace('</head>', `</head><script merak-ignore>const ${fakeGlobalVar}=window.${fakeGlobalVar}||window</script>`)
       return html
     },
 

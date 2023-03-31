@@ -1,5 +1,5 @@
 {
-  "name": "example-vue-cli",
+  "name": "example-sub-vue-cli",
   "version": "0.1.0",
   "private": true,
   "scripts": {
@@ -12,7 +12,7 @@
     "element-plus": "^2.2.30",
     "vue": "^3.2.13",
     "vue-router": "^4.0.3",
-    "webpack-plugin-merak": "workspace:^1.0.0"
+    "webpack-plugin-merak": "workspace:*"
   },
   "devDependencies": {
     "@types/node": "^18.11.12",
@@ -26,7 +26,7 @@
     "@vue/eslint-config-typescript": "^9.1.0",
     "eslint": "^7.32.0",
     "eslint-plugin-vue": "^8.0.3",
-    "merak-cli": "workspace:^1.0.0",
+    "merak-cli": "workspace:*",
     "typescript": "~4.5.5"
   },
   "eslintConfig": {

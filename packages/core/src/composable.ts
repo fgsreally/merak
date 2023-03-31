@@ -1,5 +1,4 @@
-import mitt from 'mitt'
-import { MERAK_DATA_ID, MERAK_DATA_VARNAME } from './common'
+import { MERAK_DATA_FAKEGLOBALVAR, MERAK_DATA_ID } from './common'
 import { Merak } from './merak'
 import type { ProxyGlobals } from './types'
 
@@ -9,7 +8,7 @@ export function execScript(idAndName: string, url: string, proxy: ProxyGlobals) 
   new Merak(idAndName, url, { proxy })
     const el = document.createElement('merak-block')
     el.setAttribute(MERAK_DATA_ID, idAndName)
-    el.setAttribute(MERAK_DATA_VARNAME, idAndName)
+    el.setAttribute(MERAK_DATA_FAKEGLOBALVAR, idAndName)
     document.body.appendChild(el)
   }
 
@@ -19,8 +18,8 @@ export function execScript(idAndName: string, url: string, proxy: ProxyGlobals) 
 export const MerakMap: Map<string, Merak> = window.$MerakMap || new Map()
 window.$MerakMap = MerakMap
 
-export const bus = window.$MerakBus || mitt()
-window.$MerakBus = bus
+// export const bus = window.$MerakBus || mitt()
+// window.$MerakBus = bus
 
 export function getInstance(id: string) {
   return MerakMap.get(id)

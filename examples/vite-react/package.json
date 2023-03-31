@@ -1,5 +1,5 @@
 {
-  "name": "example-vite-react",
+  "name": "example-sub-vite-react",
   "private": true,
   "version": "0.0.0",
   "type": "module",
@@ -13,7 +13,7 @@
     "react": "^18.2.0",
     "react-dom": "^18.2.0",
     "react-router-dom": "^6.8.2",
-    "vite-plugin-merak": "workspace:^1.0.0"
+    "vite-plugin-merak": "workspace:*"
   },
   "devDependencies": {
     "@types/react": "^18.0.26",

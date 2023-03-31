@@ -1,5 +1,5 @@
 {
-  "name": "example-main-lib-vue",
+  "name": "example-main-vue-lib",
   "private": true,
   "version": "0.0.0",
   "type": "module",
@@ -9,7 +9,7 @@
     "preview": "vite preview"
   },
   "dependencies": {
-    "merak-vue": "workspace:^1.0.0",
+    "merak-vue": "workspace:*",
     "vue": "^3.2.45"
   },
   "devDependencies": {

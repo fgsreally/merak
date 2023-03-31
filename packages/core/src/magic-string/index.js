@@ -1,6 +1,6 @@
 /* eslint-disable no-tabs */
 /* eslint-disable no-cond-assign */
-import Chunk from './Chunk.js'
+import Chunk from './chunk.js'
 
 const warned = {
   insertLeft: false,

@@ -54,7 +54,7 @@ export class PureLoader {
 
     const template = this.compileHTML(code, htmlInfo, url, config._g, config._f)
 
-    const loadRes = { cmd: 'load' as const, id, url, fakeGlobalName: config._f, template, scripts: htmlInfo._s.map(item => item._a) as Record<string, any>[] }
+    const loadRes = { cmd: 'load' as const, id, url, fakeGlobalVar: config._f, template, scripts: htmlInfo._s.map(item => item._a) as Record<string, any>[] }
 
     await this.execHook('load', loadRes)
 
@@ -62,10 +62,10 @@ export class PureLoader {
     return loadRes
   }
 
-  compileHTML(code: string, file: MerakHTMLFile, baseURL: string, globals: string[], fakeGlobalName: string) {
+  compileHTML(code: string, file: MerakHTMLFile, baseURL: string, globals: string[], fakeGlobalVar: string) {
     const s = new MS(code) as unknown as MagicString
     compileCSSLink(s, file._l, baseURL)
-    compileHTMLJS(s, baseURL, file._s, globals, fakeGlobalName)
+    compileHTMLJS(s, baseURL, file._s, globals, fakeGlobalVar)
     return s.toString()
   }
 }

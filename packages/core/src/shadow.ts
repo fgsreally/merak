@@ -1,4 +1,4 @@
-import { MERAK_DATA_ID, MERAK_DATA_VARNAME, MERAK_KEEP_ALIVE } from './common'
+import { MERAK_DATA_FAKEGLOBALVAR, MERAK_DATA_ID, MERAK_KEEP_ALIVE } from './common'
 import type { Merak } from './merak'
 import { getInstance } from './composable'
 
@@ -9,7 +9,7 @@ export function defineWebComponent() {
         return
 
       const id = this.getAttribute(MERAK_DATA_ID) as string
-      const fakeGlobalName = this.getAttribute(MERAK_DATA_VARNAME) as string
+      const fakeGlobalVar = this.getAttribute(MERAK_DATA_FAKEGLOBALVAR) as string
       const app = getInstance(id) as Merak
       if (!app)
         throw new Error(`can't find app [${id}] `)
@@ -22,7 +22,7 @@ export function defineWebComponent() {
       const shadowRoot = this.attachShadow({ mode: 'open' })
       app.shadowRoot = shadowRoot
       if (!app.activeFlag)
-        app.setGlobalName(fakeGlobalName)
+        app.setGlobalName(fakeGlobalVar)
 
       app.mount()
     }
@@ -58,10 +58,10 @@ export function defineWebComponent() {
       const shadowRoot = this.attachShadow({ mode: 'open' })
       app.shadowRoot = shadowRoot
       if (!app.activeFlag) {
-        const { _f: fakeGlobalName } = JSON.parse(templateNode.getAttribute('merak-config')!) as {
+        const { _f: fakeGlobalVar } = JSON.parse(templateNode.getAttribute('merak-config')!) as {
           _f: string
         }
-        app.setGlobalName(fakeGlobalName)
+        app.setGlobalName(fakeGlobalVar)
       }
       app.mount(app.cacheFlag ? undefined : templateNode.content.cloneNode(true) as any)
     }

@@ -1,4 +1,3 @@
-import type { EventType } from 'mitt'
 import type { MerakHTMLFile } from 'merak-compile'
 
 export interface MerakConfig {
@@ -6,8 +5,6 @@ export interface MerakConfig {
   _g: string[]
   _f: string
 }
-
-export type merakEvent = Record<EventType, unknown>
 
 export interface PreloadError {
   cmd: 'error'
@@ -18,7 +15,7 @@ export interface LoadDone {
   cmd: 'load'
   id: string
   url: string
-  fakeGlobalName: string
+  fakeGlobalVar: string
   template: string
   // files: string[]
   // lazyFiles: string[]
@@ -60,5 +57,3 @@ export interface ProxyGlobals {
   window: ProxyHandler<Window>
   [key: string]: ProxyHandler<any>
 }
-
-export type MerakEvents = Record<EventType, unknown>

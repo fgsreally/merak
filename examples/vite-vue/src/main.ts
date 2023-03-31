@@ -7,6 +7,7 @@ import App from './App.vue'
 import router from './router'
 import './assets/main.css'
 let app: AppType
+
 function render() {
   app = createApp(App)
 

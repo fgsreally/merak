@@ -1,8 +1,7 @@
 /* eslint-disable no-console */
-import { DEFAULT_INJECT, analyseHTML, analyseJSGlobals, desctructGlobal, injectGlobalToESM, injectGlobalToIIFE } from 'merak-compile'
+import { DEFAULT_INJECT_GLOBALS, analyseHTML, analyseJSGlobals, createWarning, desctructGlobal, injectGlobalToESM, injectGlobalToIIFE } from 'merak-compile'
 import { createFilter } from 'vite'
 import type { FilterPattern, PluginOption, ResolvedConfig } from 'vite'
-import type { SourceMap } from 'magic-string'
 // @ts-expect-error miss types
 import isVarName from 'is-var-name'
 import type { TransformOptions } from './transform'
@@ -12,7 +11,7 @@ export function Merak(fakeGlobalVar: string, globals: string[], opts: { isinLine
   if (!isVarName(fakeGlobalVar))
     throw new Error(`${fakeGlobalVar} is not a valid var`)
 
-  globals.push(...DEFAULT_INJECT)
+  globals.push(...DEFAULT_INJECT_GLOBALS)
 
   const globalVars = [...new Set(globals)] as string[]
   const merakConfig = { _f: fakeGlobalVar, _g: globalVars } as any
@@ -72,21 +71,22 @@ export function Merak(fakeGlobalVar: string, globals: string[], opts: { isinLine
       config = _conf
       baseOptions.assetsDir = _conf.build.assetsDir
     },
+    transform(code, id) {
+      const { warning } = injectGlobalToESM(code, fakeGlobalVar, globalVars)
+      warning.forEach(warn => createWarning(warn.info, id, warn.loc.start.line, warn.loc.start.column),
+      )
+    },
     async renderChunk(raw, chunk, opts) {
       if (!filter(chunk.fileName))
         return
-      let ret: { code: string; map: SourceMap }
-      if (opts.format === 'es')
-        ret = injectGlobalToESM(raw, fakeGlobalVar, globalVars)
 
-      else
-        ret = injectGlobalToIIFE(raw, fakeGlobalVar, globalVars)
+      const { map, code } = opts.format === 'es' ? injectGlobalToESM(raw, fakeGlobalVar, globalVars) : injectGlobalToIIFE(raw, fakeGlobalVar, globalVars)
 
       if (config.build.sourcemap)
-        return ret
+        return { map, code }
 
       return {
-        code: ret.code,
+        code,
       }
     },
     transformIndexHtml(html) {

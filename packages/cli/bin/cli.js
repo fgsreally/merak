@@ -4,7 +4,7 @@ import { createRequire } from 'module'
 import cac from 'cac'
 import fg from 'fast-glob'
 import isVarName from 'is-var-name'
-import { DEFAULT_INJECT, analyseHTML, injectGlobalToESM, injectGlobalToIIFE } from 'merak-compile'
+import { DEFAULT_INJECT_GLOBALS, analyseHTML, injectGlobalToESM, injectGlobalToIIFE } from 'merak-compile'
 const cli = cac()
 const require = createRequire(process.cwd())
 
@@ -19,7 +19,7 @@ cli
 
     const cwd = resolve(process.cwd(), dir)
     const entries = await fg(['index.html', '**/*.js'], { cwd })
-    const globalVars = [...new Set([...DEFAULT_INJECT, ...globals])]
+    const globalVars = [...new Set([...DEFAULT_INJECT_GLOBALS, ...globals])]
 
     entries.forEach(async (entry) => {
       const filePath = resolve(cwd, entry)

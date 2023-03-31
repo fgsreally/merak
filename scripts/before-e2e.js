@@ -32,7 +32,6 @@ export async function runAllExample() {
 
       for (const { port, name } of config)
         $`pnpm --filter ${name} exec -- http-server ./dist --cors -p ${port}`
-
       step('\n main project running ...')
 
       $`pnpm --filter example-main-* run dev`

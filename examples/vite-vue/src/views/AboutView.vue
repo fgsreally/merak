@@ -3,6 +3,7 @@ import { ref } from 'vue'
 const dialogVisible = ref(false)
 const value = ref('')
 const modalVisible = ref(false)
+
 const options = [
   {
     value: '选项1',
@@ -77,5 +78,9 @@ const options = [
 <style>
 :root {
   --host-color: #0239d0;
+}
+@font-face {
+  font-family: 'Times New Roman', Times, serif;
+  src: url();
 }
 </style>

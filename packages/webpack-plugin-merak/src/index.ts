@@ -1,5 +1,5 @@
 import type { Compiler } from 'webpack'
-import { DEFAULT_INJECT, analyseHTML, desctructGlobal } from 'merak-compile'
+import { DEFAULT_INJECT_GLOBALS, analyseHTML, desctructGlobal } from 'merak-compile'
 import HtmlWebpackPlugin from 'html-webpack-plugin'
 // @ts-expect-error miss types
 import WrapperPlugin from 'wrapper-webpack-plugin'
@@ -20,7 +20,7 @@ export class Merak {
   apply(compiler: Compiler) {
     const format = compiler.options.output.chunkFormat
     const { fakeGlobalVar, globals } = this
-    globals.push(...DEFAULT_INJECT)
+    globals.push(...DEFAULT_INJECT_GLOBALS)
 
     const globalVars = [...new Set(globals)] as string[]
     if (format === 'module') {

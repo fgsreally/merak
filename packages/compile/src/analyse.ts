@@ -1,10 +1,12 @@
 import { resolve } from 'path'
 import { parseSync, traverse } from '@babel/core'
+import type { SourceLocation } from '@babel/types'
 import type { IText } from 'html5parser'
 import { parse, walk } from 'html5parser'
 import MagicString from 'magic-string'
 import type { MerakAttrs, MerakHTMLFile, MerakJSFile } from './types'
-import { desctructGlobal, isCdn, relativePath } from './utils'
+import { checkIsDanger, desctructGlobal, isCdn, relativePath } from './utils'
+import { DANGER_IDENTIFIERS } from './common'
 export const analyseHTML = (code: string) => {
   const ast = parse(code)
   const ret = {
@@ -20,9 +22,6 @@ export const analyseHTML = (code: string) => {
           const outScriptNode = node.attributes.find(item => item.name.value === 'src')
           const merakAttrs = {} as unknown as MerakAttrs
 
-          // node.attributes.filter(item => item.name.value.startsWith('data-merak-')).forEach((item) => {
-          //   merakAttrs[item.name.value.slice(11)] = item.value?.value || true
-          // })
           if (node.attributes.some(item => item.name.value === 'merak-ignore'))
             return
           node.attributes.filter(item => item.name.value !== 'src' && item.name.value !== 'merak-src').forEach((item) => {
@@ -98,13 +97,7 @@ export function analyseInlineESM(code: string) {
   const ast = parseSync(code)
 
   traverse(ast, {
-    // record all global variable
-    // Identifier(path) {
-    //   const { scope } = path
-    //   Object.keys((scope as any).globals).forEach(item => globals.includes(item) && globalSet.add(item))
-    // },
-    // static import
-    //  relative path
+
     ImportDeclaration(path) {
       const { node } = path
 
@@ -171,11 +164,14 @@ export function injectGlobalToIIFE(code: string, globalVar: string, globals: str
   const globalSet = new Set<string>()
   const ast = parseSync(code, { filename: 'any' })
   const s = new MagicString(code)
+  const warning: { info: string; loc: SourceLocation }[] = []
 
   traverse(ast, {
 
     Identifier(path) {
       const { scope } = path
+      checkIsDanger(path, warning)
+
       Object.keys((scope as any).globals).forEach(item => globals.includes(item) && globalSet.add(item))
     },
     Program(path) {
@@ -184,29 +180,34 @@ export function injectGlobalToIIFE(code: string, globalVar: string, globals: str
       s.appendRight(end || 0, '})()')
     },
   })
-  return { code: s.toString(), map: s.generateMap({ hires: true }) }
+  return { code: s.toString(), map: s.generateMap({ hires: true }), warning }
 }
 
 export function injectGlobalToESM(code: string, globalVar: string, globals: string[]) {
   const globalSet = new Set<string>()
   const ast = parseSync(code)
   const s = new MagicString(code)
+  const warning: { info: string; loc: SourceLocation }[] = []
   let lastImport
   traverse(ast, {
 
     Identifier(path) {
       const { scope } = path
+
+      checkIsDanger(path, warning)
+
+      // console.log((scope as any).globals)
       Object.keys((scope as any).globals).forEach(item => globals.includes(item) && globalSet.add(item))
     },
     ImportDeclaration(path) {
       const { node } = path
-
       const { end } = node.source
       lastImport = end
     },
+
   })
 
   s.appendRight(lastImport || 0, `\nconst {${desctructGlobal([...globalSet])}}=${globalVar};`)
 
-  return { code: s.toString(), map: s.generateMap({ hires: true }) }
+  return { code: s.toString(), map: s.generateMap({ hires: true }), warning }
 }

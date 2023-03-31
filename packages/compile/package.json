@@ -23,6 +23,7 @@
     "@babel/core": "^7.20.12",
     "fs-extra": "^11.1.0",
     "html5parser": "^2.0.2",
-    "magic-string": "^0.27.0"
+    "magic-string": "^0.27.0",
+    "picocolors": "^1.0.0"
   }
 }

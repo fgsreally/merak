@@ -39,17 +39,6 @@ export function eventTrigger(el: HTMLElement | Window | Document, eventName: str
   el.dispatchEvent(event)
 }
 
-// export function flow(...fns: CustomProxyHandler[]): CustomProxyHandler {
-//   return (arg: ProxyGlobals) => {
-//     for (const fn of fns)
-//       arg = fn(arg)
-//     return arg
-//   }
-// }
-// export function noop(arg: any) {
-//   return arg
-// }
-
 export function resolveHtmlConfig(html: string) {
   let config
 

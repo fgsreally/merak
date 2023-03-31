@@ -30,18 +30,13 @@ export interface MerakJSFile {
 }
 
 export interface MerakHTMLFile {
-  // type (html)
   // fake
   _f: string
-  // loc
+  // link
   _l: { [filePath in string]: { _l: [number, number] } }
   // script
   _s: (ImportScript | InlineScript)[]
-  // inlineScripts: (MerakAttrs & {
-  //   type: 'esm' | 'iife'
-  //   loc: [number, number]
-  // })[]
-  // dynamicImports: { [filePath in string]: { loc: [number, number] } }
+
 }
 
 export type ImportScript = MerakAttrs &

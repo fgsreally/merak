@@ -8,35 +8,6 @@ export function compileGlobals(s: MagicString, globals: string[], insertPos: num
   return s
 }
 
-// export function analyseHTML(template: string) {
-//   const ast = parse(template)
-//   const ret = {
-//     type: 'html',
-//     filePath: '',
-//     imports: [],
-//     links: {},
-//     dynamicImports: {},
-//   } as unknown as MerakHTMLFile
-//   walk(ast, {
-//     enter: (node) => {
-//       if (node.type === SyntaxKind.Tag && node.name === 'script') {
-//         const outScriptNode = node.attributes.find(item => item.name.value === 'src')
-//         if (outScriptNode) {
-//           const { start, end } = node
-//           const { value: { value } } = outScriptNode as { value: IAttributeValue }
-//           ret.imports.push({ filePath: value, loc: [start, end] })
-//         }
-//       }
-//       if (node.type === SyntaxKind.Tag && node.name === 'link' && node.attributes.some(item => item.name.value === 'rel' && (item.value as IAttributeValue).value === 'stylesheet')) {
-//         const outLinkNode = node.attributes.find(item => item.name.value === 'href')
-//         const { value: { start, end, value } } = outLinkNode as any
-//         ret.links[value] = { loc: [start, end] }
-//       }
-//     },
-//   })
-//   return ret
-// }
-
 export function compileStaticImports(s: MagicString, staticImport: ImportFile[], baseURL: string, urlMap: Map<string, string>) {
   for (const importInfo of staticImport) {
     const url = resolveUrl(importInfo.filePath, baseURL)

@@ -3,7 +3,7 @@
   "changelog": "@changesets/cli/changelog",
   "commit": false,
   "fixed": [["merak-core","merak-vue"]],
-  "linked": [],
+  "linked": [["merak-core","merak-compile"]],
   "access": "public",
   "baseBranch": "main",
   "updateInternalDependencies": "patch",

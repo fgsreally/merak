@@ -6,7 +6,6 @@ import { parse, walk } from 'html5parser'
 import MagicString from 'magic-string'
 import type { MerakAttrs, MerakHTMLFile, MerakJSFile } from './types'
 import { checkIsDanger, desctructGlobal, isCdn, relativePath } from './utils'
-import { DANGER_IDENTIFIERS } from './common'
 export const analyseHTML = (code: string) => {
   const ast = parse(code)
   const ret = {

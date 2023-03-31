@@ -1,7 +1,8 @@
 import { MERAK_EVENT_DESTROY, MERAK_EVENT_PREFIX } from './common'
-import { getUrlQuery } from './utils'
+import { getMerakEvent, getUrlQuery } from './utils'
 import type { Merak } from './merak'
 import { getInstance } from './composable'
+import { patchTimer } from './patch/timer'
 
 const cacheBindFn = new WeakMap()
 
@@ -229,7 +230,9 @@ export function createProxyLocation(id: string) {
 }
 
 export function createProxy(id: string, url: string) {
-  return { document: createProxyDocument(id, url), window: createProxyWindow(id, url), history: createProxyHistory(id), location: createProxyLocation(id) }
+  const { globals: { setTimeout, setInterval }, free } = patchTimer()
+  window.addEventListener(getMerakEvent('destory', id), free)
+  return { document: createProxyDocument(id, url), window: createProxyWindow(id, url), history: createProxyHistory(id), location: createProxyLocation(id), setTimeout, setInterval }
 }
 
 export function createLibProxy(id: string, url: string) {

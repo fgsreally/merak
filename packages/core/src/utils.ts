@@ -15,9 +15,9 @@ export function resolveUrl(filePath: string, baseURL: string) {
   return new URL(filePath, baseURL).href
 }
 
-// export function revokeURL(url: string) {
-//   URL.revokeObjectURL(url)
-// }
+export function getMerakEvent(event: string, id: string) {
+  return `merak_${event}${id}`
+}
 
 export function getUrlQuery(url: string) {
   const query = url.split('?')[1]

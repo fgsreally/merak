@@ -1,7 +1,5 @@
-import type { MerakHTMLFile } from 'merak-compile'
-
 export interface MerakConfig {
-  _t: MerakHTMLFile
+  _l: [number, number][]
   _g: string[]
   _f: string
 }
@@ -17,9 +15,10 @@ export interface LoadDone {
   url: string
   fakeGlobalVar: string
   template: string
-  // files: string[]
+
+  globals: string[]
   // lazyFiles: string[]
-  scripts: Record<string, any>[]
+  // scripts: Record<string, any>[]
 }
 
 export interface PreLoadDone {

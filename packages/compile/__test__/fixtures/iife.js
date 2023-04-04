@@ -1,4 +1,5 @@
-/*
+
+const {self,}=vanilla;/*
  * ATTENTION: An "eval-source-map" devtool has been used.
  * This devtool is neither made for production nor for readable output files.
  * It uses "eval()" calls to create a separate source file with attached SourceMaps in the browser devtools.

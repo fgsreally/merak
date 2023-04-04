@@ -67,7 +67,7 @@ data-merak-id='id'
 keep-alive/>
 <merak-block  
 data-merak-id='id' 
-data-merak-var='fakeGlobalName'
+data-merak-var='fakeGlobalVar'
 keep-alive/>
 ```
 

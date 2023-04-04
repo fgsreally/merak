@@ -30,7 +30,7 @@ export interface MerakJSFile {
 }
 
 export interface MerakHTMLFile {
-  // fakeglobalname
+  // fakeGlobalVar
   _f: string
   _g: string[]
   // link

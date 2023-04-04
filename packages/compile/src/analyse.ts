@@ -9,11 +9,7 @@ import type { MerakAttrs, MerakHTMLFile, MerakJSFile } from './types'
 import { checkIsDanger, desctructGlobal, isCdn, relativePath } from './utils'
 export const analyseHTML = (code: string) => {
   const ast = parse(code)
-  const ret = {
-    _f: '',
-    _g: [],
-    _l: [],
-  } as unknown as MerakHTMLFile
+  const ret = [] as [number, number][]
 
   walk(ast, {
     enter: (node) => {
@@ -28,7 +24,7 @@ export const analyseHTML = (code: string) => {
           if (outScriptNode) {
             const { start, end, value } = node.attributes.find(item => item.name.value === 'src')?.value!
             if (!isCdn(value))
-              ret._l.push([start + 1, end - 1])
+              ret.push([start + 1, end - 1])
             // ret._s.push({ _f: merakSrc || value, _tl: [start, end], _a: merakAttrs, _t: 'outline' })
           }
           else {
@@ -38,7 +34,7 @@ export const analyseHTML = (code: string) => {
             const source = code.slice(end, start)
 
             const { _l } = analyseInlineESM(source)
-            _l.forEach(item => ret._l.push([end + item[0] + 1, end + item[1] - 1]))
+            _l.forEach(item => ret.push([end + item[0] + 1, end + item[1] - 1]))
           }
         }
 
@@ -48,7 +44,7 @@ export const analyseHTML = (code: string) => {
           const outLinkNode = node.attributes.find(item => item.name.value === 'href')
           const { value: { start, end, value } } = outLinkNode as any
           if (!isCdn(value))
-            ret._l.push([start + 1, end - 1])
+            ret.push([start + 1, end - 1])
         }
       }
     },

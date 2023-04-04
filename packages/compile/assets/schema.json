@@ -1,0 +1,32 @@
+{
+    "$schema": "http://json-schema.org/draft-07/schema#",
+    "type": "object",
+    "properties": {
+      "dir": {
+        "type": "string"
+      },
+      "outDir": {
+        "type": "string"
+      },
+      "globals": {
+        "type": "array",
+        "items": {
+          "type": "string"
+        }
+      },
+      "fakeGlobalVar": {
+        "type": "string"
+      },
+      "format": {
+        "type": "string",
+        "enum": [
+          "esm",
+          "iife"
+        ]
+      },
+      "isinLine": {
+        "type": "boolean"
+      }
+    }
+  }
+  

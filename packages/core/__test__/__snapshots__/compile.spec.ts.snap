@@ -1,6 +1,6 @@
 // Vitest Snapshot v1
 
-exports[`analyse file > compileInlineJS 1`] = `
+exports[`analyse file > compileScript 1`] = `
 "<!DOCTYPE html>
 <html lang=\\"en\\">
   <head>

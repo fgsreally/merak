@@ -6,6 +6,7 @@ import { MERAK_DATA_ID, MERAK_EVENT_DESTROY, MERAK_EVENT_HIDDEN, MERAK_EVENT_MOU
 import { eventTrigger, resolveUrl } from './utils'
 import { MerakMap, getBodyStyle } from './composable'
 import { LifeCycle } from './lifecycle'
+import { compileScript } from './compile'
 
 export class Merak {
   /** 所有子应用共享 */
@@ -35,7 +36,7 @@ export class Merak {
   public loader: PureLoader | undefined
 
   /** html中的script标签 */
-  public templateScipts: any[]
+  // public templateScipts: any[]
 
   /** 挂载数据 */
   public props: any
@@ -60,6 +61,7 @@ export class Merak {
   /** 配置文件地址，配置内联时为空 */
   public configUrl?: string
 
+  public globalVars: string[]
   /** 是否被预渲染 */
   public isRender = false
 
@@ -130,9 +132,10 @@ export class Merak {
       return this.loadPromise
     const { id, url, configUrl } = this
     return this.loadPromise = (this.loader!.load(id, url, configUrl) as Promise<LoadDone>).then((loadRes) => {
-      const { template, scripts, fakeGlobalVar } = loadRes
+      const { template, fakeGlobalVar, globals } = loadRes
       this.template = template
-      this.templateScipts = scripts
+      this.globalVars = globals
+      // this.templateScipts = scripts
       this.setGlobalName(fakeGlobalVar)
     })
   }
@@ -160,13 +163,7 @@ export class Merak {
         this.sandDocument.innerHTML = this.template
         // mount script on body or iframe
         if (!this.execFlag) {
-          const scripts = this.templateScipts.map((scripts) => {
-            const scriptTag = document.createElement('script')
-            for (const i in scripts)
-              scriptTag[i] = scripts[i]
-
-            return scriptTag
-          })
+          const scripts = Array.from(this.sandDocument.querySelectorAll('script')).map(script => compileScript(script, this.fakeGlobalVar, this.globalVars))
           this.execHook('execScript', scripts);
           (this.iframe?.contentDocument || this.sandDocument).querySelector('body')?.append(...scripts)
 

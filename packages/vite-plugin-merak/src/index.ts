@@ -46,7 +46,7 @@ export function Merak(fakeGlobalVar: string, globals: string[], opts: { isinLine
 
     async transformIndexHtml(html) {
       html = html.replace('</head>', `</head><script merak-ignore>const ${fakeGlobalVar}=window.${fakeGlobalVar}||window</script>`)
-      merakConfig._t = analyseHTML(html)
+      merakConfig._l = analyseHTML(html)
       html = html.replace('</body>', `<merak-base config="${JSON.stringify(merakConfig)}"></merak-base></body>`)
       return html
     },
@@ -109,7 +109,7 @@ export function Merak(fakeGlobalVar: string, globals: string[], opts: { isinLine
             }
             else {
               chunk.source = transformHtml(chunk.source, baseOptions)
-              merakConfig._t = analyseHTML(chunk.source)
+              merakConfig._l = analyseHTML(chunk.source)
 
               if (!isinLine) {
                 this.emitFile({

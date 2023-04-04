@@ -14,14 +14,24 @@ export function compileHTML(code: string, baseUrl: string, loc: [number, number]
 }
 
 export function compileScript(script: HTMLScriptElement, fakeGlobalVar: string, globalVars: string[]) {
-  const { innerHTML, type } = script
-  script.remove()
+  const { src, async, defer, type, innerHTML } = script
+  const newScriptEl = document.createElement('script')
+
+  if (src)
+    newScriptEl.src = src
+  if (type)
+    newScriptEl.type = type
+  if (async)
+    newScriptEl.async = async
+  if (async)
+    newScriptEl.defer = defer
+
   if (innerHTML) {
     if (type === 'module')
-      script.innerHTML = `const {${desctructGlobal(globalVars)}}=${fakeGlobalVar};\n${innerHTML}`
+      newScriptEl.innerHTML = `const {${desctructGlobal(globalVars)}}=${fakeGlobalVar};\n${innerHTML}`
 
     else
       script.innerHTML = `(()=>{const {${desctructGlobal(globalVars)}}=${fakeGlobalVar};${innerHTML}\n})()`
   }
-  return script
+  return newScriptEl
 }

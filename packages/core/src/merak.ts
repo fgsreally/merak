@@ -87,7 +87,7 @@ export class Merak {
     this.loader = loader
 
     for (const i in proxy)
-      this.proxyMap[i] = new Proxy({} as any, proxy[i])
+      this.proxyMap[i] = typeof proxy[i] === 'function' ? proxy[i] : new Proxy({} as any, proxy[i])
 
     this.proxy = this.proxyMap.window as any
   }
@@ -163,8 +163,12 @@ export class Merak {
         this.sandDocument.innerHTML = this.template
         // mount script on body or iframe
         if (!this.execFlag) {
-          const scripts = Array.from(this.sandDocument.querySelectorAll('script')).map(script => compileScript(script, this.fakeGlobalVar, this.globalVars))
-          this.execHook('execScript', scripts);
+          const originScripts = Array.from(this.sandDocument.querySelectorAll('script'))
+          const scripts = originScripts.filter((script) => {
+            script.remove()
+            return !script.hasAttribute('merak-ignore')
+          }).map(script => compileScript(script, this.fakeGlobalVar, this.globalVars))
+          this.execHook('execScript', { originScripts, scripts });
           (this.iframe?.contentDocument || this.sandDocument).querySelector('body')?.append(...scripts)
 
           this.execFlag = true
@@ -274,46 +278,3 @@ export class Merak {
       this.cacheEvent.pop()!()
   }
 }
-
-// for worker loader
-// export function createWorkerApp(app: Merak, worker: Worker, configUrl?: string) {
-//   app.load = () => {
-//     return new Promise((resolve, reject) => {
-//       worker.postMessage({ cmd: 'load', id: app.id, url: app.url, configUrl })
-//       function message(e: MessageEvent) {
-//         const { cmd, msg, type } = e.data
-
-//         if (cmd === 'load') {
-//           app.active(e.data)
-//           resolve(app.id)
-//           worker.removeEventListener('message', message)
-//         }
-//         if (cmd === 'error' && type === 'load') {
-//           reject(msg)
-//           worker.removeEventListener('message', message)
-//         }
-//       }
-//       worker.addEventListener('message', message)
-//     })
-//   }
-
-//   app.preload = (filePath) => {
-//     worker.postMessage({ cmd: 'preload', id: app.id, filePath })
-//     return new Promise((resolve, reject) => {
-//       function message(e: MessageEvent) {
-//         const { cmd, id, msg, type, url } = e.data
-//         if (id !== app.id)
-//           return
-//         if (cmd === 'preload') {
-//           resolve(url)
-//           worker.removeEventListener('message', message)
-//         }
-//         if (cmd === 'error' && type === 'preload') {
-//           reject(msg)
-//           worker.removeEventListener('message', message)
-//         }
-//       }
-//       worker.addEventListener('message', message)
-//     })
-//   }
-// }

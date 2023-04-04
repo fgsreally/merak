@@ -4,11 +4,13 @@ export function patchTimer() {
   const fakeTimeOut = (...args: Parameters<typeof setTimeout>) => {
     const timer = setTimeout(...args)
     timeOutStack.push(timer)
+    return timer
   }
 
   const fakeTimeInterval = (...args: Parameters<typeof setTimeout>) => {
     const timer = setInterval(...args)
     timeNoopStack.push(timer)
+    return timer
   }
 
   return {

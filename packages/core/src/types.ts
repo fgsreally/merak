@@ -54,5 +54,5 @@ export interface MerakPlugin<LoaderInstance> {
 
 export interface ProxyGlobals {
   window: ProxyHandler<Window>
-  [key: string]: ProxyHandler<any>
+  [key: string]: ProxyHandler<any> | Function
 }

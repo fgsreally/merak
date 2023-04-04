@@ -67,7 +67,8 @@ export function createProxyWindow(id: string, url: string) {
     },
 
     set(target: any, p: string, v: any) {
-      return target[p] = v
+      target[p] = v
+      return true
     },
     has: (target: any, p: string) => p in target || p in window,
 

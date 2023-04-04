@@ -28,7 +28,7 @@ export async function runAllExample() {
       step('\n building sub project...')
       await $`pnpm --filter example-sub-* run build`
 
-      step('\n http-server dev dist...')
+      step('\n http-server  dist...')
 
       for (const { port, name } of config)
         $`pnpm --filter ${name} exec -- http-server ./dist --cors -p ${port}`

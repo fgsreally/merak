@@ -1,0 +1,29 @@
+// Vitest Snapshot v1
+
+exports[`analyse file > compileInlineJS 1`] = `
+"<!DOCTYPE html>
+<html lang=\\"en\\">
+  <head>
+    <meta charset=\\"UTF-8\\" />
+    <link rel=\\"icon\\" href=\\"http://localhost:5002/favicon.ico\\" />
+    <link rel=\\"stylesheet\\" href=\\"http://localhost:5002/assets/index-28fadf32.css\\" />
+    <meta name=\\"viewport\\" content=\\"width=device-width, initial-scale=1.0\\" />
+  </head>
+
+  <body>
+    <script type=\\"module\\" src=\\"http://localhost:5002/src/main.js\\"></script>
+    <script type=\\"module\\">
+      import y from 'y'
+import xx from 'http://localhost:5002/xx'
+document.write(xx)
+console.log(y)
+    </script>
+    <script>
+      window.addEventListener('click', async () => {
+        await import('http://localhost:5002/esm.js')
+})
+    </script>
+  </body>
+</html>
+"
+`;

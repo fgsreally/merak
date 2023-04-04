@@ -26,6 +26,9 @@ export function createProxyWindow(id: string, url: string) {
     get(target: any, p: string) {
       // if you want to rewrite proxy logic,don't remove this part
       /** start  */
+      if (p === 'isMerak')
+        return true
+
       if (p === '__merak_url__')
         return url
 
@@ -35,7 +38,7 @@ export function createProxyWindow(id: string, url: string) {
       if (p === 'rawWindow')
         return window
 
-      if (p === 'window' || p === 'self')
+      if (['self', 'window', 'globalThis'].includes(p))
         return (getInstance(id) as Merak).proxy
 
       if (p in (getInstance(id) as Merak).proxyMap)

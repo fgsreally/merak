@@ -30,28 +30,37 @@ export interface MerakJSFile {
 }
 
 export interface MerakHTMLFile {
-  // fake
+  // fakeglobalname
   _f: string
+  _g: string[]
   // link
-  _l: { [filePath in string]: { _l: [number, number] } }
+  _l: [number, number][]
   // script
-  _s: (ImportScript | InlineScript)[]
+  // _s: (ImportScript | InlineScript)[]
 
 }
 
 export type ImportScript = MerakAttrs &
-{ _t: 'outline'
+{ // type
+  _t: 'outline'
+  // filepath
   _f: string
+  // tag loc
   _tl: [number, number] }
 
 export type InlineScript = MerakAttrs &
-{ _t: 'esm' | 'iife'
+{ // type
+  _t: 'esm' | 'iife'
+  // content loc
   _b: [number, number]
+  // tag loc
   _tl: [number, number]
+  // import loc
   _l: [number, number][]
 }
 
 export interface MerakAttrs {
+  // attrs
   _a: Record<string, any>
 }
 

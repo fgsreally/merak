@@ -1,6 +1,6 @@
 import { defineConfig } from 'vitest/config'
 
-defineConfig({
+export default defineConfig({
   test: {
     include: ['packages/**/*.{test,spec}.{js,mjs,cjs,ts,mts,cts,jsx,tsx}'],
   },

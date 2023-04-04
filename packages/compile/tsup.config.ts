@@ -7,5 +7,5 @@ export const tsup: Options = {
   splitting: true,
   clean: true,
   shims: false,
-  sourcemap: true,
+  sourcemap: !process.env.CI,
 }

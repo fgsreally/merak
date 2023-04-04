@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-non-null-asserted-optional-chain */
 import { resolve } from 'path'
 import { parseSync, traverse } from '@babel/core'
 import type { SourceLocation } from '@babel/types'
@@ -10,48 +11,34 @@ export const analyseHTML = (code: string) => {
   const ast = parse(code)
   const ret = {
     _f: '',
-    _s: [],
-    _l: {},
+    _g: [],
+    _l: [],
   } as unknown as MerakHTMLFile
 
   walk(ast, {
     enter: (node) => {
       if (node.type === 'Tag') {
         if (node.name === 'script') {
-          const outScriptNode = node.attributes.find(item => item.name.value === 'src')
-          const merakAttrs = {} as unknown as MerakAttrs
+          const outScriptNode = node.attributes.some(item => item.name.value === 'src')
 
           if (node.attributes.some(item => item.name.value === 'merak-ignore'))
             return
-          node.attributes.filter(item => item.name.value !== 'src' && item.name.value !== 'merak-src').forEach((item) => {
-            merakAttrs[item.name.value] = item.value?.value || true
-          })
+
           // recording external script node to replace them in browser
           if (outScriptNode) {
-            const merakSrc = node.attributes.find(item => item.name.value === 'merak-src')?.value?.value
-
-            const { start, end } = node
-            const { value: { value } } = outScriptNode as any
-            ret._s.push({ _f: merakSrc || value, _tl: [start, end], _a: merakAttrs, _t: 'outline' })
+            const { start, end, value } = node.attributes.find(item => item.name.value === 'src')?.value!
+            if (!isCdn(value))
+              ret._l.push([start + 1, end - 1])
+            // ret._s.push({ _f: merakSrc || value, _tl: [start, end], _a: merakAttrs, _t: 'outline' })
           }
           else {
-            const scriptType = node.attributes.find(item => item.name.value === 'type')?.value?.value
-            const { start: tagStart, end: tagEnd } = node
             const { start } = node.close as IText
             const { end } = node.open
 
             const source = code.slice(end, start)
 
             const { _l } = analyseInlineESM(source)
-            switch (scriptType) {
-              case undefined:
-
-                ret._s.push({ _tl: [tagStart, tagEnd], _b: [end, start], _t: 'iife', _a: merakAttrs, _l })
-                break
-              case 'module':
-
-                ret._s.push({ _tl: [tagStart, tagEnd], _b: [end, start], _t: 'esm', _a: merakAttrs, _l })
-            }
+            _l.forEach(item => ret._l.push([end + item[0] + 1, end + item[1] - 1]))
           }
         }
 
@@ -60,7 +47,8 @@ export const analyseHTML = (code: string) => {
         if (node.name === 'link' && node.attributes.some(item => item.name.value === 'href')) {
           const outLinkNode = node.attributes.find(item => item.name.value === 'href')
           const { value: { start, end, value } } = outLinkNode as any
-          ret._l[value] = { _l: [start, end] }
+          if (!isCdn(value))
+            ret._l.push([start + 1, end - 1])
         }
       }
     },
@@ -101,14 +89,13 @@ export function analyseInlineESM(code: string) {
       const { node } = path
 
       const { value, start, end } = node.source as any
-      if (value.startsWith('.') || value.startsWith('/'))
+      if (!isCdn(value))
         importLoc.push([start, end])
     },
     // dynamic import
     Import(path) {
-      const { start, end } = path.parent as { start: number; end: number }
-      const { value } = (path.parent as any).arguments[0]
-      if (value.startsWith('.') || value.startsWith('/'))
+      const { value, start, end } = (path.parent as any).arguments[0]
+      if (!isCdn(value))
         importLoc.push([start, end])
     },
 
@@ -164,22 +151,27 @@ export function injectGlobalToIIFE(code: string, globalVar: string, globals: str
   const ast = parseSync(code, { filename: 'any' })
   const s = new MagicString(code)
   const warning: { info: string; loc: SourceLocation }[] = []
-
+  let start = 0
+  let end = 0
   traverse(ast, {
 
     Identifier(path) {
       const { scope } = path
       checkIsDanger(path, warning)
-
       Object.keys((scope as any).globals).forEach(item => globals.includes(item) && globalSet.add(item))
     },
     Program(path) {
-      const { start, end } = path.node
-      s.appendLeft(start || 0, `(()=>{const {${desctructGlobal([...globalSet])}}=${globalVar};`)
-      s.appendRight(end || 0, '})()')
+      start = path.node.start as number
+      end = path.node.end as number
     },
   })
-  return { code: s.toString(), map: s.generateMap({ hires: true }), warning }
+  const injectGlobals = [...globalSet]
+  if (!injectGlobals.length)
+    injectGlobals.push(...globals)
+
+  s.appendLeft(start, `(()=>{const {${desctructGlobal(injectGlobals)}}=${globalVar};`)
+  s.appendRight(end, '})()')
+  return { code: s.toString(), map: s.generateMap({ hires: true }), warning, globals: injectGlobals }
 }
 
 export function injectGlobalToESM(code: string, globalVar: string, globals: string[]) {
@@ -206,7 +198,10 @@ export function injectGlobalToESM(code: string, globalVar: string, globals: stri
 
   })
 
-  s.appendRight(lastImport || 0, `\nconst {${desctructGlobal([...globalSet])}}=${globalVar};`)
+  const injectGlobals = [...globalSet]
 
-  return { code: s.toString(), map: s.generateMap({ hires: true }), warning }
+  if (injectGlobals.length)
+    s.appendRight(lastImport || 0, `\nconst {${desctructGlobal(injectGlobals)}}=${globalVar};`)
+
+  return { code: s.toString(), map: s.generateMap({ hires: true }), warning, globals: injectGlobals }
 }

@@ -1,10 +1,11 @@
 import type { Compiler } from 'webpack'
-import { DEFAULT_INJECT_GLOBALS, analyseHTML, desctructGlobal } from 'merak-compile'
+import { DEFAULT_INJECT_GLOBALS, analyseHTML, createWarning, desctructGlobal, injectGlobalToESM, injectGlobalToIIFE } from 'merak-compile'
 import HtmlWebpackPlugin from 'html-webpack-plugin'
 // @ts-expect-error miss types
 import WrapperPlugin from 'wrapper-webpack-plugin'
 // @ts-expect-error miss types
 import isVarName from 'is-var-name'
+import { Compilation, sources } from 'webpack'
 
 /**
  * @TODO
@@ -23,20 +24,53 @@ export class Merak {
     globals.push(...DEFAULT_INJECT_GLOBALS)
 
     const globalVars = [...new Set(globals)] as string[]
-    if (format === 'module') {
-      new WrapperPlugin({
-        test: this.options?.filter || /\.js$/, // only wrap output of bundle files with '.js' extension
-        header: `const {${desctructGlobal(globalVars)}}=${fakeGlobalVar};`,
-        footer: '',
-      }).apply(compiler)
-    }
-    else {
-      new WrapperPlugin({
-        test: /\.js$/, // only wrap output of bundle files with '.js' extension
-        header: `(()=>{const {${desctructGlobal(globalVars)}}=${fakeGlobalVar};`,
-        footer: '})()',
-      }).apply(compiler)
-    }
+    compiler.hooks.thisCompilation.tap('MerakPlugin', (compilation) => {
+      compilation.hooks.processAssets.tap(
+        {
+          name: 'MerakPlugin',
+          stage: Compilation.PROCESS_ASSETS_STAGE_ADDITIONS,
+        },
+        () => {
+          const chunks = compilation.chunks
+          chunks.forEach((chunk) => {
+            chunk.files.forEach((file) => {
+              if (file.endsWith('.js')) {
+                const source = compilation.getAsset(file)!.source.source() as string
+                const { code, warning } = (format === 'module' ? injectGlobalToESM : injectGlobalToIIFE)(source, fakeGlobalVar, globalVars)
+                warning.forEach(warn => createWarning(warn.info, file, warn.loc.start.line, warn.loc.start.column))
+
+                compilation.updateAsset(file, new sources.RawSource(code))
+              }
+            })
+          })
+        },
+      )
+    })
+    // compiler.hooks.thisCompilation.tapAsync('MerakPlugin', (compilation, callback) => {
+    //   const chunks = compilation.chunks
+    //   chunks.forEach((chunk) => {
+    //     chunk.files.forEach((file) => {
+    //       if (file.endsWith('.js')) { // 只对 JavaScript 文件进行处理
+
+    //       }
+    //     })
+    //   })
+    //   callback()
+    // })
+    // if (format === 'module') {
+    //   new WrapperPlugin({
+    //     test: this.options?.filter || /\.js$/, // only wrap output of bundle files with '.js' extension
+    //     header: `const {${desctructGlobal(globalVars)}}=${fakeGlobalVar};`,
+    //     footer: '',
+    //   }).apply(compiler)
+    // }
+    // else {
+    //   new WrapperPlugin({
+    //     test: /\.js$/, // only wrap output of bundle files with '.js' extension
+    //     header: `(()=>{const {${desctructGlobal(globalVars)}}=${fakeGlobalVar};`,
+    //     footer: '})()',
+    //   }).apply(compiler)
+    // }
 
     compiler.hooks.compilation.tap('webpack-merak', (compilation) => {
       HtmlWebpackPlugin.getHooks(compilation).alterAssetTags.tap(

@@ -71,17 +71,14 @@ export function Merak(fakeGlobalVar: string, globals: string[], opts: { isinLine
       config = _conf
       baseOptions.assetsDir = _conf.build.assetsDir
     },
-    transform(code, id) {
-      const { warning } = injectGlobalToESM(code, fakeGlobalVar, globalVars)
-      warning.forEach(warn => createWarning(warn.info, id, warn.loc.start.line, warn.loc.start.column),
-      )
-    },
+
     async renderChunk(raw, chunk, opts) {
       if (!filter(chunk.fileName))
         return
 
-      const { map, code } = opts.format === 'es' ? injectGlobalToESM(raw, fakeGlobalVar, globalVars) : injectGlobalToIIFE(raw, fakeGlobalVar, globalVars)
-
+      const { map, code, warning } = (opts.format === 'es' ? injectGlobalToESM : injectGlobalToIIFE)(raw, fakeGlobalVar, globalVars)
+      warning.forEach(warn => createWarning(warn.info, chunk.fileName, warn.loc.start.line, warn.loc.start.column),
+      )
       if (config.build.sourcemap)
         return { map, code }
 

@@ -56,22 +56,50 @@ export function compileHTMLJS(s: MagicString, url: string, files: (ImportScript 
   }
 }
 
-export function compileInlineJS(s: MagicString, scripts: { loc: [number, number]; type: 'esm' | 'iife' }[], globals: string[], fakeGlobalVar: string) {
-  for (const script of scripts) {
-    if (script.type === 'esm')
-      s.appendRight(script.loc[0], `\nconst {${desctructGlobal(globals)}}=${fakeGlobalVar};\n`)
+// export function compileInlineJS(s: MagicString, scripts: { loc: [number, number]; type: 'esm' | 'iife' }[], globals: string[], fakeGlobalVar: string) {
+//   for (const script of scripts) {
+//     if (script.type === 'esm')
+//       s.appendRight(script.loc[0], `\nconst {${desctructGlobal(globals)}}=${fakeGlobalVar};\n`)
 
-    if (script.type === 'iife') {
-      s.appendRight(script.loc[0], `(()=>{const {${desctructGlobal(globals)}}=${fakeGlobalVar};\n`)
-      s.appendLeft(script.loc[1], '})()')
-    }
-  }
-  return s
-}
+//     if (script.type === 'iife') {
+//       s.appendRight(script.loc[0], `(()=>{const {${desctructGlobal(globals)}}=${fakeGlobalVar};\n`)
+//       s.appendLeft(script.loc[1], '})()')
+//     }
+//   }
+//   return s
+// }
 
 export function compileCSSLink(s: MagicString, links: { [filePath in string]: { _l: [number, number] } }, baseURL: string) {
   for (const i in links) {
     const [start, end] = links[i]._l
     s.overwrite(start, end, `"${resolveUrl(i, baseURL)}"`)
   }
+}
+
+export function compileInlineJS(type: string, url: string, content: string, importLoc: [number, number][], fakeGlobalVar: string, globals: string[]) {
+  let str = ''
+  let lastPos = 0
+  for (const [start, end] of importLoc) {
+    const importer = content.slice(start, end)
+    str += content.slice(lastPos, start)
+    str += resolveUrl(importer, url)
+    lastPos = end
+  }
+  if (type === 'esm')
+    return `\nconst {${desctructGlobal(globals)}}=${fakeGlobalVar};\n${str}`
+
+  return `(()=>{const {${desctructGlobal(globals)}}=${fakeGlobalVar};\n${str}`
+}
+
+export function compileHTML(code: string, baseUrl: string, loc: [number, number][]) {
+  const originStr = code
+  let index = 0
+  code = ''
+  loc.forEach(([start, end]) => {
+    code += originStr.slice(index, start)
+    code += resolveUrl(originStr.slice(start, end), baseUrl)
+    index = end
+  })
+  code += originStr.slice(index)
+  return code
 }

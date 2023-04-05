@@ -8,7 +8,4 @@ import { $onExec } from 'merak-helper'
 __webpack_public_path__ = window.__merak_url__ || '/'
 
 $onExec(() => createApp(App).use(router).use(ElementPlus).mount('#app'))
-document.addEventListener('click', () => {
-    setInterval(() => console.log(2)
-        , 4000)
-})
+setInterval(() => console.log('VUE_CLI'), 4000)

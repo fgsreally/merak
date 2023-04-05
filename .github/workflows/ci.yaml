@@ -43,7 +43,7 @@ jobs:
 
       - name: Build
         run: pnpm run build
-        
+
       - name: Test
         run: pnpm run test:unit
 
@@ -67,6 +67,7 @@ jobs:
         uses: cypress-io/github-action@v4
         with:
           start: node scripts/before-e2e.js
+          browser: edge
           wait-on: 'http://localhost:5001,http://localhost:5002,http://localhost:5003,http://localhost:5004'
           wait-on-timeout: 600
         env:

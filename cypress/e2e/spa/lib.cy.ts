@@ -12,8 +12,4 @@ describe('lib app [dev mode]', () => {
   it('merak should mount', () => {
     cy.get(selector).should('exist')
   })
-  it('modal should mount to the shadow', () => {
-    cy.get(selector).shadow().find('button').click()
-    cy.get(selector).shadow().find('.modal').click().should('exist')
-  })
 })

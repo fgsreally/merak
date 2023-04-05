@@ -2,7 +2,7 @@ import type { Merak as $Merak } from 'merak-core'
 
 export type Merak = $Merak
 
-export type MerakEvent = 'mount' | 'destroy' | 'hidden' | 'unmount' | 'retry'
+export type MerakEvent = 'mount' | 'destroy' | 'hidden' | 'unmount' | 'relunch'
 
 export function $window(): Window {
   return isMerak() ? window.rawWindow : window
@@ -40,7 +40,7 @@ export function $onMount(cb: () => any) {
 }
 
 export function $onRetry(cb: () => any) {
-  return $on('retry', cb)
+  return $on('relunch', cb)
 }
 
 export function $onHidden(cb: () => any) {
@@ -52,7 +52,7 @@ export function $onDestroy(cb: () => any) {
 }
 
 export function $onExec(cb: () => any) {
-  $on('retry', cb)
+  $on('relunch', cb)
   return cb()
 }
 

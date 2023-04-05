@@ -1,5 +1,5 @@
 /* eslint-disable no-prototype-builtins */
-import { MERAK_EVENT_DESTROY, MERAK_EVENT_PREFIX } from './common'
+import { HMR_VAR, MERAK_EVENT_DESTROY, MERAK_EVENT_PREFIX } from './common'
 import { getMerakEvent, getUrlQuery, isBoundedFunction, isCallable, isConstructable } from './utils'
 import type { Merak } from './merak'
 import { getInstance } from './composable'
@@ -73,6 +73,11 @@ export function createProxyWindow(id: string, url: string) {
     },
 
     set(target: any, p: string, v: any) {
+      if (__DEV__) {
+        if (HMR_VAR.includes(p))
+          window[p] = v
+      }
+
       target[p] = v
       return true
     },

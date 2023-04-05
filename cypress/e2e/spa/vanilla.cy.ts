@@ -16,6 +16,7 @@ describe('vanilla app ', () => {
   it('should prerender', () => {
     cy.get(getShadowSelector('vite_react')).should('be.hidden')
   })
+
   it('should mount successfully', () => {
     cy.get('[data-testid="btn"]').first().click()
     cy.wait(1000)

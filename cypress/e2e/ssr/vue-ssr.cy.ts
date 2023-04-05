@@ -1,5 +1,4 @@
-import { MAINAPP_URL } from '../common'
-
+import { MAINAPP_URL, SUBAPP_CONTENT } from '../common'
 import { getShadowSelector } from '../utils'
 
 describe('vue ssr [dev mode]', () => {
@@ -13,7 +12,6 @@ describe('vue ssr [dev mode]', () => {
 
   it('should work', () => {
     cy.get('a[href="/test/about"]').click()
-
-    cy.get(getShadowSelector('vite_vue')).should('exist')
+    cy.get(getShadowSelector('vite_vue')).shadow().find('.merak-symbol').contains(SUBAPP_CONTENT.vite_vue)
   })
 })

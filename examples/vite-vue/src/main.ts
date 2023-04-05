@@ -21,4 +21,6 @@ function render() {
 
 $onExec(render)
 
-$onDestroy(() => app.unmount())
+$onDestroy(() => {
+  app.unmount()
+})

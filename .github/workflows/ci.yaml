@@ -5,6 +5,7 @@ on:
     branches:
       - main
       - prelease
+      - development
 
   pull_request:
     branches:

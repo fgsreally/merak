@@ -40,11 +40,8 @@ export async function runAllExample() {
       step('\n start e2e test...')
     }
     else {
-      step('\n building package...')
-      await $`pnpm run build`
-
       step('\n run dev project...')
-      $`pnpm run dev:example`
+      $`pnpm run example:dev`
 
       step('\n wait project start...')
       await waitOn(opts)

@@ -11,7 +11,6 @@ import { compileScript } from './compile'
 export class Merak {
   /** 所有子应用共享 */
   static namespace: Record<string, any> = {}
-
   /** css隔离容器 */
   public shadowRoot: ShadowRoot
   /** shadowroot 下的 document */
@@ -19,9 +18,6 @@ export class Merak {
 
   /** iframe 容器 */
   public iframe: HTMLIFrameElement | null
-
-  // /** 事件总线 */
-  // public bus: Emitter<merakEvent> = bus
 
   /** window代理 */
   public proxy: Window
@@ -34,9 +30,6 @@ export class Merak {
 
   /** 加载器，仅spa使用 */
   public loader: PureLoader | undefined
-
-  /** html中的script标签 */
-  // public templateScipts: any[]
 
   /** 挂载数据 */
   public props: any
@@ -61,7 +54,9 @@ export class Merak {
   /** 配置文件地址，配置内联时为空 */
   public configUrl?: string
 
+  /** 隔离的全局变量 */
   public globalVars: string[]
+
   /** 是否被预渲染 */
   public isRender = false
 
@@ -168,6 +163,7 @@ export class Merak {
             script.remove()
             return !script.hasAttribute('merak-ignore')
           }).map(script => compileScript(script, this.fakeGlobalVar, this.globalVars))
+
           this.execHook('execScript', { originScripts, scripts });
           (this.iframe?.contentDocument || this.sandDocument).querySelector('body')?.append(...scripts)
 
@@ -180,8 +176,8 @@ export class Merak {
       // work for ssr
       if (ele) {
         // mount script on body or iframe
-
-        const scriptEle = [...ele.querySelectorAll('script')].filter((item) => {
+        const originScripts = [...ele.querySelectorAll('script')]
+        const scripts = originScripts.filter((item) => {
           item.parentNode?.removeChild(item)
           if (this.execFlag)
             return false
@@ -198,11 +194,9 @@ export class Merak {
 
         // script when use iframe
         if (!this.execFlag) {
-          this.execHook('execScript', scriptEle)
+          this.execHook('execScript', { originScripts, scripts });
 
-          if (this.iframe)
-            this.iframe.contentDocument!.querySelector('body')!.append(...scriptEle)
-          else this.sandDocument.querySelector('body')?.append(...scriptEle)
+          (this.iframe ? this.iframe.contentDocument : this.sandDocument)!.querySelector('body')!.append(...scripts)
 
           this.execFlag = true
         }

@@ -1,8 +1,9 @@
 
+import type { Merak } from "merak-core"
 declare global {
     interface Window {
-        $Merak: any
-        $MerakMap: any
+        $Merak: Merak
+        $MerakMap: Map<string,Merak>
         isMerak: boolean
         rawWindow: Window
     }

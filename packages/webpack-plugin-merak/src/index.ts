@@ -2,8 +2,6 @@ import type { Compiler } from 'webpack'
 import { DEFAULT_INJECT_GLOBALS, analyseHTML, createWarning, desctructGlobal, injectGlobalToESM, injectGlobalToIIFE } from 'merak-compile'
 import HtmlWebpackPlugin from 'html-webpack-plugin'
 // @ts-expect-error miss types
-import WrapperPlugin from 'wrapper-webpack-plugin'
-// @ts-expect-error miss types
 import isVarName from 'is-var-name'
 import { Compilation, sources } from 'webpack'
 

@@ -3,13 +3,12 @@ import App from './App.vue'
 import router from './router'
 import ElementPlus from "element-plus";
 import "element-plus/dist/index.css";
+import { $onExec } from 'merak-helper'
 //@ts-expect-error webpack conf
-console.log(window.__merak_url__)
-//@ts-expect-error webpack conf
-__webpack_public_path__=window.__merak_url__||'/'
-createApp(App).use(router).use(ElementPlus).mount('#app')
+__webpack_public_path__ = window.__merak_url__ || '/'
 
-
-document.addEventListener('click',()=>{
-    console.log(2)
+$onExec(() => createApp(App).use(router).use(ElementPlus).mount('#app'))
+document.addEventListener('click', () => {
+    setInterval(() => console.log(2)
+        , 4000)
 })

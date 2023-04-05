@@ -6,6 +6,8 @@ import type { App as AppType } from 'vue'
 import App from './App.vue'
 import router from './router'
 import './assets/main.css'
+import { $onDestroy, $onExec } from 'merak-helper'
+
 let app: AppType
 
 function render() {
@@ -17,13 +19,6 @@ function render() {
   app.mount('#app')
 }
 
-render()
-if (window.$Merak) {
-  window.addEventListener('merak_relunch', () => {
-    render()
-  })
+$onExec(render)
 
-  window.addEventListener('merak_destroy', () => {
-    app.unmount()
-  })
-}
+$onDestroy(() => app.unmount())

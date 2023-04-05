@@ -1,51 +1,59 @@
-import fs from 'fs'
 import { resolve } from 'path'
 import { createRequire } from 'module'
+import fse from 'fs-extra'
 import cac from 'cac'
 import fg from 'fast-glob'
-//@ts-expect-error misstypes
+// @ts-expect-error misstypes
 import isVarName from 'is-var-name'
-import { injectGlobalToESM, injectGlobalToIIFE, analyseHTML } from './analyse'
+import { analyseHTML, injectGlobalToESM, injectGlobalToIIFE } from './analyse'
 import { DEFAULT_INJECT_GLOBALS } from './common'
 const cli = cac()
-const require = createRequire(process.cwd())
+const root = process.cwd()
+const require = createRequire(root)
 
 cli
   .command('', 'parse all file to merak-format')
   .action(async () => {
     const {
-      dir = '', globals, fakeGlobalVar, format = 'esm', isinLine = true,outDir='dist'
+      dir = '', globals, fakeGlobalVar, format = 'esm', isinLine = true, outDir = 'dist', includes = ['index.html', '**/*.js', '*.js', '**/*.css'], exclude = ['node_modules/**/*'],
     } = getConfig()
     if (!isVarName(fakeGlobalVar))
       throw new Error(`${fakeGlobalVar} is not a valid var`)
 
-    const cwd = resolve(process.cwd(), dir)
-    const entries = await fg(['index.html', '**/*.js','*.js'], { cwd })
+    const cwd = resolve(root, dir)
+    fse.ensureDir(resolve(root, outDir))
+    const entries = await fg(includes, { cwd, ignore: exclude })
     const globalVars = [...new Set([...DEFAULT_INJECT_GLOBALS, ...globals])]
-
+    console.table(entries)
+    console.table(globalVars)
     entries.forEach(async (entry) => {
-      const filePath = resolve(cwd, entry)
-      const raw = await fs.promises.readFile(filePath, 'utf-8')
+      const filePath = resolve(root, outDir, entry)
+      const raw = await fse.readFile(resolve(cwd, entry), 'utf-8')
 
       if (entry.endsWith('.js')) {
         if (format === 'esm')
-          await fs.promises.writeFile(filePath, injectGlobalToESM(raw, fakeGlobalVar, globalVars).code)
+          await fse.outputFile(filePath, injectGlobalToESM(raw, fakeGlobalVar, globalVars).code)
 
         else
-          await fs.promises.writeFile(filePath, injectGlobalToIIFE(raw, fakeGlobalVar, globalVars).code)
+          await fse.outputFile(filePath, injectGlobalToIIFE(raw, fakeGlobalVar, globalVars).code)
+
+        return
       }
-      else {
+
+      if (entry.endsWith('.html')) {
         const merakConfig = {
-          _f:fakeGlobalVar,_g: globalVars,
+          _f: fakeGlobalVar, _g: globalVars,
         } as any
         let html = raw.replace('</head>', `</head><script merak-ignore>const ${fakeGlobalVar}=window.${fakeGlobalVar}||window</script>`)
         merakConfig._l = analyseHTML(html)
         if (isinLine)
           html = html.replace('</body>', `<merak-base config="${JSON.stringify(merakConfig)}"></merak-base></body>`)
-        else await fs.promises.writeFile(resolve(filePath, '../merak.json'), JSON.stringify(merakConfig), 'utf-8')
+        else await fse.outputFile(resolve(filePath, '../merak.json'), JSON.stringify(merakConfig), 'utf-8')
 
-        await fs.promises.writeFile(filePath, html, 'utf-8')
+        await fse.outputFile(filePath, html, 'utf-8')
+        return
       }
+      await fse.copyFile(resolve(cwd, entry), filePath)
     })
   })
 
@@ -59,7 +67,7 @@ function getConfig() {
    *  "format":esm/iife
    * }
    */
-  return require(resolve(process.cwd(), 'merak.config.json'))
+  return require(resolve(root, 'merak.config.json'))
 }
 
 cli.help()

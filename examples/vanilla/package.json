@@ -5,7 +5,9 @@
   "description": "",
   "main": "index.js",
   "scripts": {
-    "dev": "http-server --cors -p=4002"
+    "predev":"npm run build",
+    "dev": "http-server dist --cors -p=4002",
+    "build": "merak"
   },
   "keywords": [],
   "author": "",

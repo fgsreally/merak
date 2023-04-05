@@ -11,6 +11,7 @@
   },
   "dependencies": {
     "element-plus": "^2.2.30",
+    "merak-helper": "workspace:1.0.0-rc.0",
     "pinia": "^2.0.28",
     "vite-plugin-merak": "workspace:*",
     "vue": "^3.2.45",

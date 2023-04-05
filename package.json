@@ -7,7 +7,7 @@
   "scripts": {
     "dev": "turbo run dev --filter=./packages/*",
     "build": "turbo run build --filter=./packages/*",
-    "example:dev": "turbo run dev --filter=example-*",
+    "example:dev": "pnpm --filter=example-* run dev ",
     "example:prod": "cross-env CI=true node scripts/before-e2e.js ",
     "docs:build": "vitepress build docs",
     "docs:preview": "vitepress preview docs",

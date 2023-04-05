@@ -5,7 +5,7 @@ import type { SourceLocation } from '@babel/types'
 import type { IText } from 'html5parser'
 import { parse, walk } from 'html5parser'
 import MagicString from 'magic-string'
-import type { MerakAttrs, MerakHTMLFile, MerakJSFile } from './types'
+import type { MerakJSFile } from './types'
 import { checkIsDanger, desctructGlobal, isCdn, relativePath } from './utils'
 export const analyseHTML = (code: string) => {
   const ast = parse(code)
@@ -150,11 +150,13 @@ export function injectGlobalToIIFE(code: string, globalVar: string, globals: str
   let start = 0
   let end = 0
   traverse(ast, {
-
-    Identifier(path) {
-      const { scope } = path
-      checkIsDanger(path, warning)
-      Object.keys((scope as any).globals).forEach(item => globals.includes(item) && globalSet.add(item))
+    // @ts-expect-error miss type
+    ReferencedIdentifier: (path) => {
+      const name = path.node.name
+      if (!path.scope.hasBinding(name, true)) {
+        globals.includes(name) && globalSet.add(name)
+        checkIsDanger(path.node, warning)
+      }
     },
     Program(path) {
       start = path.node.start as number
@@ -162,11 +164,10 @@ export function injectGlobalToIIFE(code: string, globalVar: string, globals: str
     },
   })
   const injectGlobals = [...globalSet]
-  if (!injectGlobals.length)
-    injectGlobals.push(...globals)
-
-  s.appendLeft(start, `(()=>{const {${desctructGlobal(injectGlobals)}}=${globalVar};`)
-  s.appendRight(end, '})()')
+  if (injectGlobals.length) {
+    s.appendLeft(start, `(()=>{const {${desctructGlobal(injectGlobals)}}=${globalVar};`)
+    s.appendRight(end, '})()')
+  }
   return { code: s.toString(), map: s.generateMap({ hires: true }), warning, globals: injectGlobals }
 }
 
@@ -177,15 +178,15 @@ export function injectGlobalToESM(code: string, globalVar: string, globals: stri
   const warning: { info: string; loc: SourceLocation }[] = []
   let lastImport
   traverse(ast, {
-
-    Identifier(path) {
-      const { scope } = path
-
-      checkIsDanger(path, warning)
-
-      // console.log((scope as any).globals)
-      Object.keys((scope as any).globals).forEach(item => globals.includes(item) && globalSet.add(item))
+    // @ts-expect-error miss type
+    ReferencedIdentifier: (path) => {
+      const name = path.node.name
+      if (!path.scope.hasBinding(name, true)) {
+        globals.includes(name) && globalSet.add(name)
+        checkIsDanger(path.node, warning)
+      }
     },
+
     ImportDeclaration(path) {
       const { node } = path
       const { end } = node.source
@@ -195,7 +196,6 @@ export function injectGlobalToESM(code: string, globalVar: string, globals: stri
   })
 
   const injectGlobals = [...globalSet]
-
   if (injectGlobals.length)
     s.appendRight(lastImport || 0, `\nconst {${desctructGlobal(injectGlobals)}}=${globalVar};`)
 

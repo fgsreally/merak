@@ -1,3 +1,7 @@
+import type { Merak as $Merak } from 'merak-core'
+
+export type Merak = $Merak
+
 export type MerakEvent = 'mount' | 'destroy' | 'hidden' | 'unmount' | 'retry'
 
 export function $window(): Window {
@@ -53,11 +57,18 @@ export function $onExec(cb: () => any) {
 }
 
 // work for eval
-export function $Transformer() {
+export function $sandbox(script: string) {
   if (isMerak()) {
     const fakeGlobalVar = window.$Merak.fakeGlobalVar
-    return (script: string) => `with(window.$MerakMap.get(${fakeGlobalVar}).proxy){${script}}`
+    return `with(window.$MerakMap.get(${fakeGlobalVar}).proxy){${script}}`
   }
 
-  else { return (script: string) => script }
+  else { return script }
+}
+// work for esm script
+export function $esm(script: string) {
+  if (isMerak()) {
+    const { fakeGlobalVar, globalVars } = window.$Merak
+    return `const {${globalVars.reduce((p, c) => `${p},${c}`)}}=${fakeGlobalVar};${script}`
+  }
 }

@@ -1,9 +1,7 @@
 {
   "dir": ".",
   "globals": [],
-
   "fakeGlobalVar": "vanilla",
-
   "format": "esm",
   "isinLine": true
 }

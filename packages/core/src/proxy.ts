@@ -221,7 +221,7 @@ export function createProxyLocation(id: string) {
       const { href } = window.location
       const queryMap = getUrlQuery(href)
 
-      const appUrl = new URL(queryMap[id] === '/undefined' ? '/' : queryMap[id] || '/', location.origin)
+      const appUrl = new URL((queryMap[id] === '/undefined' ? '/' : queryMap[id]) || '/', location.origin)
       if (
         p in appUrl
       )

@@ -3,10 +3,10 @@ import { createPinia } from 'pinia'
 import ElementPlus from 'element-plus'
 import 'element-plus/dist/index.css'
 import type { App as AppType } from 'vue'
+import { $onDestroy, $onExec } from 'merak-helper'
 import App from './App.vue'
 import router from './router'
 import './assets/main.css'
-import { $onDestroy, $onExec } from 'merak-helper'
 
 let app: AppType
 

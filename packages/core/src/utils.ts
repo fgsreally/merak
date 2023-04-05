@@ -95,7 +95,7 @@ export const isCallable = (fn: any) => {
   if (callableFnCacheMap.has(fn))
     return true
 
-  const callable = naughtySafari ? typeof fn === 'function' && typeof fn !== 'undefined' : typeof fn === 'function'
+  const callable = naughtySafari ? (typeof fn === 'function' && typeof fn !== 'undefined') : typeof fn === 'function'
   if (callable)
     callableFnCacheMap.set(fn, callable)
 

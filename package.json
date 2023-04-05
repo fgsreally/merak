@@ -12,7 +12,7 @@
     "docs:build": "vitepress build docs",
     "docs:preview": "vitepress preview docs",
     "lint": "eslint . --ext .ts",
-    "test":"vitest",
+    "test:unit":"vitest",
     "test:e2e": "cypress open",
     "publish": "changeset publish"
   },

@@ -12,7 +12,7 @@
     "docs:build": "vitepress build docs",
     "docs:preview": "vitepress preview docs",
     "lint": "eslint . --ext .ts",
-    "test:unit":"vitest",
+    "test:unit": "vitest",
     "test:e2e": "cypress open",
     "publish": "changeset publish"
   },
@@ -30,6 +30,7 @@
     "eslint": "^8.31.0",
     "execa": "^7.1.1",
     "http-server": "^14.1.1",
+    "jsdom": "^21.1.1",
     "kill-port": "^2.0.1",
     "playwright": "^1.31.2",
     "tsup": "^6.5.0",

@@ -164,16 +164,17 @@ export function injectGlobalToIIFE(code: string, globalVar: string, globals: str
     },
   })
   const injectGlobals = [...globalSet]
-  if (injectGlobals.length) {
-    s.appendLeft(start, `(()=>{const {${desctructGlobal(injectGlobals)}}=${globalVar};`)
+  if (force) {
+    s.appendLeft(start, `(()=>{const {${desctructGlobal(globals)}}=${globalVar};`)
     s.appendRight(end, '})()')
   }
   else {
-    if (force) {
-      s.appendLeft(start, `(()=>{const {${desctructGlobal(globals)}}=${globalVar};`)
+    if (injectGlobals.length) {
+      s.appendLeft(start, `(()=>{const {${desctructGlobal(injectGlobals)}}=${globalVar};`)
       s.appendRight(end, '})()')
     }
   }
+
   return { code: s.toString(), map: s.generateMap({ hires: true }), warning, globals: injectGlobals }
 }
 

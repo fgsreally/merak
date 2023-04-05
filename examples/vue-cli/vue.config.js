@@ -12,6 +12,7 @@ module.exports = defineConfig({
     },
   },
   configureWebpack: {
+    // devtool:'source-map',
     devServer: {
       port:4005,
       headers: {
@@ -21,6 +22,6 @@ module.exports = defineConfig({
       },
     },
  
-    plugins: [new Merak("vuecli", [])],
+    plugins: [new Merak("vuecli", [],{force:true})],
   },
 });

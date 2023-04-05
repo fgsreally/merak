@@ -11,7 +11,7 @@ import { Compilation, sources } from 'webpack'
  * it would inject all globalVars to each chunk with no treeshake
  */
 export class Merak {
-  constructor(public fakeGlobalVar: string, public globals: string[], public options?: { filter?: RegExp }) {
+  constructor(public fakeGlobalVar: string, public globals: string[], public options?: { filter?: RegExp; force?: boolean }) {
     if (!isVarName(fakeGlobalVar))
       throw new Error(`${fakeGlobalVar} is not a valid var`)
   }
@@ -34,7 +34,7 @@ export class Merak {
             chunk.files.forEach((file) => {
               if (file.endsWith('.js')) {
                 const source = compilation.getAsset(file)!.source.source() as string
-                const { code, warning } = (format === 'module' ? injectGlobalToESM : injectGlobalToIIFE)(source, fakeGlobalVar, globalVars, true)
+                const { code, warning } = (format === 'module' ? injectGlobalToESM : injectGlobalToIIFE)(source, fakeGlobalVar, globalVars, this.options?.force || false)
                 warning.forEach(warn => createWarning(warn.info, file, warn.loc.start.line, warn.loc.start.column))
 
                 compilation.updateAsset(file, new sources.RawSource(code))

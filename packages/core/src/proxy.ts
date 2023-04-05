@@ -1,5 +1,6 @@
+/* eslint-disable no-prototype-builtins */
 import { MERAK_EVENT_DESTROY, MERAK_EVENT_PREFIX } from './common'
-import { getMerakEvent, getUrlQuery } from './utils'
+import { getMerakEvent, getUrlQuery, isBoundedFunction, isCallable, isConstructable } from './utils'
 import type { Merak } from './merak'
 import { getInstance } from './composable'
 import { patchTimer } from './patch/timer'
@@ -7,18 +8,24 @@ import { patchTimer } from './patch/timer'
 const cacheBindFn = new WeakMap()
 
 export function getBindFn(target: any, p: any) {
-  const v = target[p]
+  const value = target[p]
+  if (cacheBindFn.has(value))
+    return cacheBindFn.get(value)
 
-  if (typeof v === 'function') {
-    if (cacheBindFn.has(v))
-      return cacheBindFn.get(v)
+  if (isCallable(value) && !isBoundedFunction(value) && !isConstructable(value)) {
+    const boundValue = Function.prototype.bind.call(value, target)
+    cacheBindFn.set(value, boundValue)
 
-    const fn = v.bind(target)
-    cacheBindFn.set(v, fn)
-    return fn
+    for (const key in value)
+      boundValue[key] = value[key]
+
+    if (value.hasOwnProperty('prototype') && !boundValue.hasOwnProperty('prototype'))
+      Object.defineProperty(boundValue, 'prototype', { value: value.prototype, enumerable: false, writable: true })
+
+    return boundValue
   }
 
-  return v
+  return value
 }
 
 export function createProxyWindow(id: string, url: string) {
@@ -62,8 +69,7 @@ export function createProxyWindow(id: string, url: string) {
           addEventListener(...params)
         }
       }
-
-      return getBindFn(target, p) || getBindFn(window, p)
+      return getBindFn(p in target ? target : window, p)
     },
 
     set(target: any, p: string, v: any) {
@@ -71,7 +77,6 @@ export function createProxyWindow(id: string, url: string) {
       return true
     },
     has: (target: any, p: string) => p in target || p in window,
-
   }
 }
 
@@ -159,7 +164,7 @@ export function createProxyDocument(id: string, url: string) {
       if (p === 'body' || p === 'head')
         return instance.shadowRoot.querySelector(p)
 
-      return getBindFn(target, p) || getBindFn(document, p)
+      return getBindFn(p in target ? target : document, p)
     },
 
     set(target: any, p: string, v: any) {
@@ -200,7 +205,7 @@ export function createProxyHistory(id: string) {
         return push
       }
 
-      return getBindFn(target, p) || getBindFn(history, p)
+      return getBindFn(p in target ? target : history, p)
     },
     set(target: any, p: string, v: any) {
       return target[p] = v
@@ -223,7 +228,7 @@ export function createProxyLocation(id: string) {
 
         return appUrl[p]
 
-      return getBindFn(target, p) || getBindFn(location, p)
+      return getBindFn(p in target ? target : location, p)
     },
     set(target: any, p: string, v: any) {
       return target[p] = v

@@ -34,7 +34,7 @@ export class Merak {
             chunk.files.forEach((file) => {
               if (file.endsWith('.js')) {
                 const source = compilation.getAsset(file)!.source.source() as string
-                const { code, warning } = (format === 'module' ? injectGlobalToESM : injectGlobalToIIFE)(source, fakeGlobalVar, globalVars)
+                const { code, warning } = (format === 'module' ? injectGlobalToESM : injectGlobalToIIFE)(source, fakeGlobalVar, globalVars, true)
                 warning.forEach(warn => createWarning(warn.info, file, warn.loc.start.line, warn.loc.start.column))
 
                 compilation.updateAsset(file, new sources.RawSource(code))

@@ -69,6 +69,7 @@ export function $sandbox(script: string) {
 export function $esm(script: string) {
   if (isMerak()) {
     const { fakeGlobalVar, globalVars } = window.$Merak
-    return `const {${globalVars.reduce((p, c) => `${p},${c}`)}}=${fakeGlobalVar};${script}`
+    return `const {${globalVars.reduce((p: string, c: string) => `${p},${c}`)}}=${fakeGlobalVar};${script}`
   }
+  return script
 }

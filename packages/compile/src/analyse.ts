@@ -142,7 +142,7 @@ export const analyseJS = (code: string, filePath: string, rootPath: string, glob
   return ret
 }
 
-export function injectGlobalToIIFE(code: string, globalVar: string, globals: string[]) {
+export function injectGlobalToIIFE(code: string, globalVar: string, globals: string[], force?: boolean) {
   const globalSet = new Set<string>()
   const ast = parseSync(code, { filename: 'any' })
   const s = new MagicString(code)
@@ -167,6 +167,12 @@ export function injectGlobalToIIFE(code: string, globalVar: string, globals: str
   if (injectGlobals.length) {
     s.appendLeft(start, `(()=>{const {${desctructGlobal(injectGlobals)}}=${globalVar};`)
     s.appendRight(end, '})()')
+  }
+  else {
+    if (force) {
+      s.appendLeft(start, `(()=>{const {${desctructGlobal(globals)}}=${globalVar};`)
+      s.appendRight(end, '})()')
+    }
   }
   return { code: s.toString(), map: s.generateMap({ hires: true }), warning, globals: injectGlobals }
 }

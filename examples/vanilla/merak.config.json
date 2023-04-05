@@ -2,6 +2,7 @@
   "dir": ".",
   "globals": [],
   "fakeGlobalVar": "vanilla",
+  "exclude":["node_modules/**/*","dist/**/*"],
   "format": "esm",
   "isinLine": true
 }

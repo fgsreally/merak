@@ -39,6 +39,9 @@ export class Merak {
   /** 子应用激活标志 */
   public activeFlag = false
 
+  /** 子应用挂载次数 */
+  public mountIndex = 0
+
   /** 子应用JS运行标志 */
   public execFlag = false
 
@@ -207,12 +210,14 @@ export class Merak {
         // template
         // this.sandDocument.append(ele)
       }
-      const shade = document.createElement('div')
-      shade.setAttribute('style', MERAK_SHADE_STYLE)
-      this.sandDocument.insertBefore(shade, this.sandDocument.firstChild)
-      const body = this.sandDocument.querySelector('body')!
-      body.setAttribute('style', getBodyStyle())
-      body.classList.add('merak-body')
+      if (this.mountIndex === 0) {
+        const shade = document.createElement('div')
+        shade.setAttribute('style', MERAK_SHADE_STYLE)
+        this.sandDocument.insertBefore(shade, this.sandDocument.firstChild)
+        const body = this.sandDocument.querySelector('body')!
+        body.setAttribute('style', getBodyStyle())
+        body.classList.add('merak-body')
+      }
     }
 
     this.execHook('tranformDocument', this.sandDocument!)
@@ -236,6 +241,8 @@ export class Merak {
     // document.body.appendChild(this.iframe)
 
     else { this.mountTemplateAndScript(ele) }
+
+    this.mountIndex++
   }
 
   unmount(isKeepAlive: boolean) {

@@ -1,5 +1,5 @@
 import { defineComponent, h, onMounted, onUnmounted, render } from 'vue'
-import { MERAK_DATA_FAKEGLOBALVAR, MERAK_DATA_ID, MERAK_KEEP_ALIVE, Merak, createLibProxy } from 'merak-core'
+import { MERAK_DATA_FAKEGLOBALVAR, MERAK_DATA_ID, MERAK_KEEP_ALIVE, Merak, createLibProxy, getInstance } from 'merak-core'
 import { shareEmits, shareProps } from './share'
 
 export const MerakBlock = defineComponent({
@@ -10,7 +10,7 @@ export const MerakBlock = defineComponent({
   setup(props, { slots, emit }) {
     const { name, id, url, props: MerakProps, proxy = createLibProxy(name, url), iframe, keepAlive } = props
 
-    const app = new Merak(id || name, url, { proxy, iframe })
+    const app = getInstance(id || name) || new Merak(id || name, url, { proxy, iframe })
     for (const ev of shareEmits)
       app.lifeCycle[ev] = (arg: any) => emit(ev, arg)
 

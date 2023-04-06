@@ -116,7 +116,6 @@ export function defineWebComponent() {
       app.unmount(isKeepAlive)
     }
   }
-
   customElements.define('merak-app', MerakApp)
   customElements.define('merak-ssr', MerakSSR)
   customElements.define('merak-block', MerakBlock)

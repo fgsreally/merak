@@ -7,6 +7,7 @@
   "scripts": {
     "dev": "turbo run dev --filter=./packages/*",
     "build": "turbo run build --filter=./packages/*",
+    "serve":" http-server ./packages/core/dist --cors -p 3000",
     "example:dev": "pnpm --filter=example-* --parallel run dev ",
     "example:prod": "cross-env CI=true node scripts/before-e2e.js ",
     "docs:build": "vitepress build docs",

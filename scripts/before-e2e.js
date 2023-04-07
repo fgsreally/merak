@@ -26,7 +26,7 @@ export async function runAllExample() {
   try {
     if (process.env.CI || process.env.PROD) {
       step('\n serve bundle...')
-      await $`pnpm run serve`
+      $`pnpm run serve`
 
       step('\n building sub project...')
       await $`pnpm --filter example-sub-* run build`

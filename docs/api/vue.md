@@ -32,3 +32,26 @@ interface ShareProps {
   }
 }
 ```
+
+## MerakApp 的配置
+和`core`中配置一致
+```ts
+interface MerakAppType {
+  configUrl: String
+  loader: any
+}
+```
+
+## MerakSRR
+没有其他配置
+
+## MerakBlock
+```ts
+interface MerakBlockType {
+  // 全局变量名
+  name: {
+    type: String
+    required: true
+  }
+}
+```

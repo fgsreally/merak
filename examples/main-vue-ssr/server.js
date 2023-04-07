@@ -4,15 +4,15 @@ import path from 'node:path'
 import { fileURLToPath } from 'node:url'
 import express from 'express'
 import axios from 'axios'
-import pkg from 'merak-compile'
+import compile from 'merak-compile'
 
-const { resolveHtmlConfig } = pkg
+const { resolveHtmlConfig } = compile
 
 const isTest = process.env.VITEST
 
 export async function createServer(
   root = process.cwd(),
-  isProd = process.env.NODE_ENV === 'production',
+  isProd = process.env.PROD,
   hmrPort,
 ) {
   const __dirname = path.dirname(fileURLToPath(import.meta.url))
@@ -88,12 +88,12 @@ export async function createServer(
       const [appHtml, preloadLinks] = await render(url, manifest)
 
       // work for merak ; stream should be better
-      const { data: qwikTemplate } = await axios.get('http://127.0.0.1:4004/index.html')
+      const { data: htmlTemplate } = await axios.get('http://127.0.0.1:4004/index.html')
 
       const html = template
         .replace('<!--preload-links-->', preloadLinks)
         .replace('<!--app-html-->', appHtml)
-        .replace('</body>', `${makeMerakTemplate(qwikTemplate)}</body>`)
+        .replace('</body>', `${makeMerakTemplate(htmlTemplate)}</body>`)
 
       res.status(200).set({ 'Content-Type': 'text/html' }).end(html)
     }

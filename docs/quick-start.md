@@ -10,22 +10,14 @@ collapsable: false
 ### 应用
 以`vue`为例，
 ```ts
+import { $onExec } from 'merak-helper'
+let app: AppType
 function render() {
   app = createApp(App)
   app.mount('#app')
 }
-
-render()
-
-if (window.$Merak) {
-  window.addEventListener('merak_relunch', () => {
-    render()
-  })
-
-  window.addEventListener('merak_destroy', () => {
-    app.unmount()
-  })
-}
+$onExec(render)
+$onDestroy(() => app.unmount())
 ```
 ### 打包器
 需要根据打包器，安装vite-plugin-merak/webpack-plugin-merak
@@ -42,7 +34,7 @@ export default defineConfig({
   },
 })
 ```
-> `fakeGlobalVar`必须是一个合法的,未被占用的变量名
+> `fakeGlobalVar`必须是一个合法的,未被占用的变量名,和umd中性质差不多
 
 
 

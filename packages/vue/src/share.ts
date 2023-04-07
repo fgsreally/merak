@@ -5,12 +5,10 @@ export const shareEmits = ['beforeMount', 'afterMount', 'beforeUnmount', 'afterU
 
 export const shareProps = {
   // fakeGlobalVar & project id
-  name: {
-    type: String,
-    required: true as const,
-  },
+
   id: {
     type: String,
+    required: true as const,
 
   },
   url: {

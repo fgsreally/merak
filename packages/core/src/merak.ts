@@ -76,8 +76,11 @@ export class Merak {
     iframe?: string
   } = {},
   ) {
-    if (MerakMap.has(id))
+    if (MerakMap.has(id)) {
+      if (__DEV__)
+        throw new Error(`" ${id}" already exists`)
       return MerakMap.get(id) as Merak
+    }
     MerakMap.set(id, this)
 
     const { proxy = createProxy(id, url), configUrl, loader } = options
@@ -105,12 +108,12 @@ export class Merak {
     return Merak.namespace
   }
 
-  execHook<Stage extends keyof LifeCycle>(stage: Stage, params?: Parameters<LifeCycle[Stage]>[0]) {
+  protected execHook<Stage extends keyof LifeCycle>(stage: Stage, params?: Parameters<LifeCycle[Stage]>[0]) {
     // @ts-expect-error work for lifecycle
     this.lifeCycle[stage]?.(params)
   }
 
-  setGlobalName(fakeGlobalVar: string) {
+  setGlobalVar(fakeGlobalVar: string) {
     this.fakeGlobalVar = fakeGlobalVar
   }
 
@@ -134,7 +137,7 @@ export class Merak {
       this.template = template
       this.globalVars = globals
       // this.templateScipts = scripts
-      this.setGlobalName(fakeGlobalVar)
+      this.setGlobalVar(fakeGlobalVar)
     })
   }
 

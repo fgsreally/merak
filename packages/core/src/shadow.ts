@@ -22,7 +22,7 @@ export function defineWebComponent() {
       const shadowRoot = this.attachShadow({ mode: 'open' })
       app.shadowRoot = shadowRoot
       if (!app.activeFlag)
-        app.setGlobalName(fakeGlobalVar)
+        app.setGlobalVar(fakeGlobalVar)
 
       app.mount()
     }
@@ -61,7 +61,7 @@ export function defineWebComponent() {
         const { _f: fakeGlobalVar } = JSON.parse(templateNode.getAttribute('merak-config')!) as {
           _f: string
         }
-        app.setGlobalName(fakeGlobalVar)
+        app.setGlobalVar(fakeGlobalVar)
       }
       app.mount(app.cacheFlag ? undefined : templateNode.content.cloneNode(true) as any)
     }

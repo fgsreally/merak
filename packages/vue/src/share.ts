@@ -4,7 +4,6 @@ import type { PropType } from 'vue'
 export const shareEmits = ['beforeMount', 'afterMount', 'beforeUnmount', 'afterUnmount', 'destroy', 'execScript', 'tranformDocument']
 
 export const shareProps = {
-  // fakeGlobalVar & project id
 
   id: {
     type: String,

@@ -37,7 +37,7 @@ export async function runAllExample() {
         $`pnpm --filter ${name} exec -- http-server ./dist --cors -p ${port}`
       step('\n main project running ...')
 
-      $`pnpm --filter example-main-* run dev`
+      $`pnpm --filter example-main-* --parallel run dev`
 
       await waitOn(opts)
       step('\n start e2e test...')

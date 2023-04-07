@@ -7,7 +7,7 @@ import isVarName from 'is-var-name'
 import type { TransformOptions } from './transform'
 
 import { transformAsset, transformChunk, transformHtml } from './transform'
-export function Merak(fakeGlobalVar: string, globals: string[], opts: { isinLine?: boolean; includes?: FilterPattern; excludes?: FilterPattern; debug?: boolean }): PluginOption {
+export function Merak(fakeGlobalVar: string, globals: string[], opts: { isinLine?: boolean; includes?: FilterPattern; exclude?: FilterPattern; debug?: boolean }): PluginOption {
   if (!isVarName(fakeGlobalVar))
     throw new Error(`${fakeGlobalVar} is not a valid var`)
 
@@ -17,12 +17,12 @@ export function Merak(fakeGlobalVar: string, globals: string[], opts: { isinLine
   const merakConfig = { _f: fakeGlobalVar, _g: globalVars } as any
   const resolvedOpts = {
     includes: /\.(vue|ts|js|tsx|jsx|mjs)/,
-    excludes: /\.(css|scss|sass|less)$/,
+    exclude: /\.(css|scss|sass|less)$/,
     isinLine: true,
     ...opts,
   } as Required<typeof opts>
-  const { isinLine, includes, excludes } = resolvedOpts
-  const filter = createFilter(includes, excludes)
+  const { isinLine, includes, exclude } = resolvedOpts
+  const filter = createFilter(includes, exclude)
   const PATH_PLACEHOLDER = '/dynamic_base__/'
   let config: ResolvedConfig
   const publicPath = `${fakeGlobalVar}.__merak_url__`

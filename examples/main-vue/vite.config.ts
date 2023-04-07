@@ -11,7 +11,6 @@ export default defineConfig({
     alias: {
       '@': fileURLToPath(new URL('./src', import.meta.url)),
       'merak-core/loader': 'http://localhost:3000/loaders/index.mjs',
-
       'merak-core': 'http://localhost:3000/index.mjs',
 
     },

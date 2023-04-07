@@ -39,7 +39,7 @@ export function $onMount(cb: () => any) {
   return $on('mount', cb)
 }
 
-export function $onRetry(cb: () => any) {
+export function $onRelunch(cb: () => any) {
   return $on('relunch', cb)
 }
 
@@ -52,8 +52,8 @@ export function $onDestroy(cb: () => any) {
 }
 
 export function $onExec(cb: () => any) {
-  $on('relunch', cb)
-  return cb()
+  cb()
+  return $on('relunch', cb)
 }
 
 // work for eval

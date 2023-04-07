@@ -7,7 +7,7 @@
   "scripts": {
     "dev": "turbo run dev --filter=./packages/*",
     "build": "turbo run build --filter=./packages/*",
-    "serve":" http-server ./packages/core/dist --cors -p 3000",
+    "serve": " http-server ./packages/core/dist --cors -p 3000",
     "example:dev": "pnpm --filter=example-* --parallel run dev ",
     "example:prod": "cross-env CI=true node scripts/before-e2e.js ",
     "docs:build": "vitepress build docs",
@@ -23,7 +23,6 @@
   "devDependencies": {
     "@antfu/eslint-config": "^0.34.1",
     "@changesets/cli": "^2.26.0",
-    "@playwright/test": "^1.31.2",
     "@types/node": "^18.15.11",
     "chalk": "^5.2.0",
     "cross-env": "^7.0.3",
@@ -33,7 +32,6 @@
     "http-server": "^14.1.1",
     "jsdom": "^21.1.1",
     "kill-port": "^2.0.1",
-    "playwright": "^1.31.2",
     "tsup": "^6.5.0",
     "turbo": "^1.7.0",
     "typescript": "^4.9.4",

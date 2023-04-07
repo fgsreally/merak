@@ -5,11 +5,6 @@ import HtmlWebpackPlugin from 'html-webpack-plugin'
 import isVarName from 'is-var-name'
 import { Compilation, sources } from 'webpack'
 
-/**
- * @TODO
- * replace WrapperPlugin
- * it would inject all globalVars to each chunk with no treeshake
- */
 export class Merak {
   constructor(public fakeGlobalVar: string, public globals: string[], public options?: { filter?: RegExp; force?: boolean }) {
     if (!isVarName(fakeGlobalVar))

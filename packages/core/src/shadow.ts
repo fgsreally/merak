@@ -37,13 +37,24 @@ export function defineWebComponent() {
   }
 
   class MerakSSR extends HTMLElement {
+    templateNode: HTMLTemplateElement
+    id: string
     async connectedCallback() {
       if (this.shadowRoot)
         return
+      if (!this.id)
+        this.id = this.getAttribute(MERAK_DATA_ID) as string
+      const id = this.id
 
-      const id = this.getAttribute(MERAK_DATA_ID) as string
+      if (!id)
+        throw new Error(`set ${MERAK_DATA_ID} to merak-ssr`)
 
+      if (!this.templateNode)
+        this.templateNode = document.querySelector(`[data-merak-ssr='${id}']`) as HTMLTemplateElement
+
+      const templateNode = this.templateNode
       const app = getInstance(id) as Merak
+
       if (!app)
         throw new Error(`can't find app [${id}] `)
       if (app.mountFlag) {
@@ -51,7 +62,6 @@ export function defineWebComponent() {
           throw new Error(` app [${id}] has been mounted`)
         return
       }
-      const templateNode = document.querySelector(`[data-merak-ssr='${id}']`) as HTMLTemplateElement
       if (!templateNode)
         throw new Error(` can't find [${id}] template`)
 
@@ -67,11 +77,10 @@ export function defineWebComponent() {
     }
 
     disconnectedCallback(): void {
-      const id = this.getAttribute(MERAK_DATA_ID) as string
-      const app = getInstance(id) as Merak
+      const app = getInstance(this.id) as Merak
       const isKeepAlive = this.hasAttribute(MERAK_KEEP_ALIVE) && this.getAttribute(MERAK_KEEP_ALIVE) !== 'false'
-      if (__DEV__ && !isKeepAlive)
-        document.getElementById(id)!.innerHTML = app.sandDocument!.innerHTML
+      if (!isKeepAlive)
+        this.templateNode.innerHTML = app.sandDocument!.innerHTML
 
       app.unmount(isKeepAlive)
     }

@@ -3,7 +3,7 @@ import type { LoadDone, ProxyGlobals } from './types'
 import type { PureLoader } from './loaders'
 import { createProxy } from './proxy'
 import { MERAK_DATA_ID, MERAK_EVENT_DESTROY, MERAK_EVENT_HIDDEN, MERAK_EVENT_MOUNT, MERAK_EVENT_RELUNCH, MERAK_SHADE_STYLE } from './common'
-import { eventTrigger, resolveUrl } from './utils'
+import { eventTrigger, scriptPrimise } from './utils'
 import { MerakMap, getBodyStyle } from './composable'
 import { LifeCycle } from './lifecycle'
 import { compileScript } from './compile'
@@ -172,8 +172,10 @@ export class Merak {
 
           this.execHook('execScript', { originScripts, scripts });
           (this.iframe?.contentDocument || this.sandDocument).querySelector('body')?.append(...scripts)
-
-          this.execFlag = true
+          Promise.all(scripts.map(scriptPrimise)).then(() => {
+            this.execFlag = true
+            eventTrigger(window, MERAK_EVENT_MOUNT + this.id)
+          })
         }
         else {
           eventTrigger(window, MERAK_EVENT_RELUNCH + this.id)
@@ -187,9 +189,9 @@ export class Merak {
           item.parentNode?.removeChild(item)
           if (this.execFlag)
             return false
-          const src = item.getAttribute('src')
-          if (src)
-            item.src = resolveUrl(src, this.url)
+          // const src = item.getAttribute('src')
+          // if (src)
+          //   item.src = resolveUrl(src, this.url)
 
           if (item.hasAttribute('merak-ignore'))
             return false
@@ -203,8 +205,10 @@ export class Merak {
           this.execHook('execScript', { originScripts, scripts });
 
           (this.iframe ? this.iframe.contentDocument : this.sandDocument)!.querySelector('body')!.append(...scripts)
-
-          this.execFlag = true
+          Promise.all(scripts.map(scriptPrimise)).then(() => {
+            this.execFlag = true
+            eventTrigger(window, MERAK_EVENT_MOUNT + this.id)
+          })
         }
         else {
           eventTrigger(window, MERAK_EVENT_RELUNCH + this.id)
@@ -225,9 +229,8 @@ export class Merak {
 
     this.execHook('tranformDocument', this.sandDocument!)
     this.shadowRoot.appendChild(this.sandDocument!)
-    this.mountFlag = true
 
-    eventTrigger(window, MERAK_EVENT_MOUNT + this.id)
+    this.execFlag && eventTrigger(window, MERAK_EVENT_MOUNT + this.id)
     this.execHook('afterMount')
   }
 

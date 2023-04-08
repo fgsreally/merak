@@ -15,8 +15,8 @@ export const MerakBlock = defineComponent({
     const { name, id, url, props: MerakProps, proxy = createLibProxy(name, url), iframe, keepAlive } = props
 
     const app = getInstance(id) || new Merak(id, url, { proxy, iframe })
-    for (const ev of shareEmits)
-      app.lifeCycle[ev] = (arg: any) => emit(ev, arg)
+    for (const ev in shareEmits)
+      app.lifeCycle[ev] = (arg: any) => emit(ev as any, arg)
 
     const importPromise = import(url)
     onMounted(async () => {

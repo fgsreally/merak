@@ -101,3 +101,10 @@ export const isCallable = (fn: any) => {
 
   return callable
 }
+
+export function scriptPrimise(script: HTMLScriptElement) {
+  return new Promise((resolve, reject) => {
+    script.addEventListener('load', resolve)
+    script.addEventListener('error', reject)
+  })
+}

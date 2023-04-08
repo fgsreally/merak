@@ -6,7 +6,7 @@ import config from './config.js'
 import { step } from './utils.js'
 const ports = config.map(item => item.port)
 // main app
-ports.push(5001, 5002, 5003, 5004)
+ports.push(5001, 5002, 5003, 5004, 3000)
 
 const opts = {
   resources: ports.map(port => `http-get://localhost:${port}`),

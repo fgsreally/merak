@@ -12,17 +12,21 @@ export class MerakSsrStream extends Transform {
 
   _transform(chunk: any, encoding: BufferEncoding, callback: TransformCallback) {
     const data = chunk.toString()
-    const ms = new MagicString(data)
+    let str = ''
     const length = data.length
+    let loc = 0
     for (let i = 0; i < this.replacements.length; i++) {
       const start = this.replacements[i]
-      if (start > this.index + length)
+      if (start > this.index + length) {
+        str += data.slice(loc)
         break
-      ms.appendLeft(start - this.index, this.url)
+      }
+      str += data.slice(loc, start) + this.url
+      loc = start
     }
     this.index += length
 
-    this.push(ms.toString())
+    this.push(str)
     callback()
   }
 }

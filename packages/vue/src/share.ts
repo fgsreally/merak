@@ -20,9 +20,7 @@ export const shareProps = {
   name: {
     type: String,
     required: true as const,
-
   },
-
   url: {
     type: String,
     required: true as const,

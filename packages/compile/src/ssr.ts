@@ -1,6 +1,5 @@
 import type { TransformCallback } from 'stream'
 import { Transform } from 'stream'
-import MagicString from 'magic-string'
 export class MerakSsrStream extends Transform {
   index = 0
   replacements: number[]

@@ -19,7 +19,7 @@ function scriptHandler({ scripts }: { scripts: HTMLScriptElement[] }) {
 <template>
   <div class="about">
     <h1>This is an about page</h1>
-    <MerakSSR id="vite_vue" url="http://127.0.0.1:4004/" :props="data" @before-unmount="callback" @exec-script="scriptHandler" @destroy="callback" />
+    <MerakSSR name="vite_vue" url="http://127.0.0.1:4004/" :props="data" @before-unmount="callback" @exec-script="scriptHandler" @destroy="callback" />
   </div>
 </template>
 

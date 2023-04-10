@@ -18,13 +18,13 @@ export const MerakApp = defineComponent({
   },
   emits: shareEmits,
   setup(props, { expose, emit }) {
-    const { url, proxy, loader, configUrl, keepAlive, props: MerakProps, iframe, id } = props
-    const app = getInstance(id) || new Merak(id, url, { loader, configUrl, proxy, iframe })
+    const { url, proxy, loader, configUrl, keepAlive, props: MerakProps, iframe, name } = props
+    const app = getInstance(name) || new Merak(name, url, { loader, configUrl, proxy, iframe })
     app.props = MerakProps
 
     for (const ev in shareEmits)
       app.lifeCycle[ev] = (arg: any) => emit(ev as any, arg)
     expose({ app })
-    return () => h('merak-app', { [MERAK_DATA_ID]: id, [MERAK_KEEP_ALIVE]: keepAlive })
+    return () => h('merak-app', { [MERAK_DATA_ID]: name, [MERAK_KEEP_ALIVE]: keepAlive })
   },
 })

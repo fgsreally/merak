@@ -17,11 +17,12 @@ export const shareEmits = {
 
 export const shareProps = {
 
-  id: {
+  name: {
     type: String,
     required: true as const,
 
   },
+
   url: {
     type: String,
     required: true as const,

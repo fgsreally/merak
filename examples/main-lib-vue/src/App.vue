@@ -6,5 +6,5 @@ import { MerakBlock } from 'merak-vue'
   <div class="red modal">
     div from main
   </div>
-  <MerakBlock name="vue_lib" url="/lib.js" />
+  <MerakBlock name="UUID" fake-global-var="vue_lib" url="/lib.js" />
 </template>

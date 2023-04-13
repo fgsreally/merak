@@ -4,7 +4,7 @@ import type { PureLoader } from './loaders'
 import { createProxy } from './proxy'
 import { MERAK_DATA_ID, MERAK_EVENT_DESTROY, MERAK_EVENT_HIDDEN, MERAK_EVENT_MOUNT, MERAK_EVENT_RELUNCH, MERAK_SHADE_STYLE } from './common'
 import { eventTrigger, scriptPrimise } from './utils'
-import { MerakMap, getBodyStyle } from './composable'
+import { MerakMap, getBodyStyle } from './helper'
 import { LifeCycle } from './lifecycle'
 import { cloneScript } from './compile'
 
@@ -164,7 +164,9 @@ export class Merak {
           }).map(script => cloneScript(script, this.fakeGlobalVar, this.globalVars))
 
           this.execHook('execScript', { originScripts, scripts });
+          // TODO JS queue
           (this.iframe?.contentDocument || this.sandDocument).querySelector('body')?.append(...scripts)
+          // only invoke mount event after all scripts loaded
           Promise.all(scripts.map(scriptPrimise)).then(() => {
             this.execFlag = true
             eventTrigger(window, MERAK_EVENT_MOUNT + this.id)
@@ -179,12 +181,9 @@ export class Merak {
         // mount script on body or iframe
         const originScripts = [...ele.querySelectorAll('script')]
         const scripts = originScripts.filter((item) => {
-          item.parentNode?.removeChild(item)
+          item.remove()
           if (this.execFlag)
             return false
-          // const src = item.getAttribute('src')
-          // if (src)
-          //   item.src = resolveUrl(src, this.url)
 
           if (item.hasAttribute('merak-ignore'))
             return false
@@ -193,7 +192,6 @@ export class Merak {
         })
         this.sandDocument.querySelector('body')?.appendChild(ele)
 
-        // script when use iframe
         if (!this.execFlag) {
           this.execHook('execScript', { originScripts, scripts });
 
@@ -206,9 +204,6 @@ export class Merak {
         else {
           eventTrigger(window, MERAK_EVENT_RELUNCH + this.id)
         }
-
-        // template
-        // this.sandDocument.append(ele)
       }
       if (this.mountIndex === 0) {
         const shade = document.createElement('div')
@@ -216,7 +211,6 @@ export class Merak {
         this.sandDocument.insertBefore(shade, this.sandDocument.firstChild)
         const body = this.sandDocument.querySelector('body')!
         body.setAttribute('style', getBodyStyle())
-        body.classList.add('merak-body')
       }
     }
 

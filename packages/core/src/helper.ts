@@ -18,9 +18,6 @@ export function execScript(idAndName: string, url: string, proxy: ProxyGlobals) 
 export const MerakMap: Map<string, Merak> = window.$MerakMap || new Map()
 window.$MerakMap = MerakMap
 
-// export const bus = window.$MerakBus || mitt()
-// window.$MerakBus = bus
-
 export function getInstance(id: string) {
   return MerakMap.get(id)
 }

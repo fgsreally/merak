@@ -1,6 +1,6 @@
 import { MERAK_DATA_FAKEGLOBALVAR, MERAK_DATA_ID, MERAK_KEEP_ALIVE } from './common'
 import type { Merak } from './merak'
-import { getInstance } from './composable'
+import { getInstance } from './helper'
 
 export function defineWebComponent() {
   class MerakBlock extends HTMLElement {

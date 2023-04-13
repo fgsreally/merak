@@ -13,7 +13,7 @@ export function compileHTML(code: string, baseUrl: string, loc: [number, number]
   return code
 }
 
-export function compileScript(script: HTMLScriptElement, fakeGlobalVar: string, globalVars: string[]) {
+export function cloneScript(script: HTMLScriptElement, fakeGlobalVar: string, globalVars: string[]) {
   const { src, async, defer, type, innerHTML } = script
   const newScriptEl = document.createElement('script')
 

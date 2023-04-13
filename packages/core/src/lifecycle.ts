@@ -10,5 +10,7 @@ export class LifeCycle {
   tranformDocument: (ele: HTMLElement) => void
   // 渲染结果挂载前
   prerender: (ele: HTMLElement) => void
-  errorHandler: <Err>(err: Err) => any
+  // 错误处理
+
+  errorHandler: (err: any) => any = (e: any) => console.error(e)
 }

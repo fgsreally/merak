@@ -10,16 +10,13 @@ export async function loadConfig(url: string) {
 export class PureLoader {
   public loadCache: Map<string, LoadDone> = new Map()
 
-  constructor(public plugins: LoaderPlugin<PureLoader>[] = [],
+  constructor(public plugins?: LoaderPlugin<PureLoader>,
   ) {
     this.execHook('init', this as any)
   }
 
-  async execHook(hook: keyof LoaderPlugin<PureLoader>, param?: LoaderHookParam) {
-    for (const plugin of this.plugins)
-      await plugin[hook]?.(param as any)
-
-    return param
+  execHook(hook: keyof LoaderPlugin<PureLoader>, param?: LoaderHookParam) {
+    return this.plugins?.[hook]?.(param as any)
   }
 
   async load(id: string, url: string, configUrl?: string) {

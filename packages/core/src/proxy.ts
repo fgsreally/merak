@@ -2,7 +2,7 @@
 import { HMR_VAR, MERAK_EVENT_DESTROY, MERAK_EVENT_PREFIX } from './common'
 import { getMerakEvent, getUrlQuery, isBoundedFunction, isCallable, isConstructable } from './utils'
 import type { Merak } from './merak'
-import { getInstance } from './composable'
+import { getInstance } from './helper'
 import { patchTimer } from './patch/timer'
 
 const cacheBindFn = new WeakMap()

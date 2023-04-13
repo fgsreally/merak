@@ -101,7 +101,6 @@ export class Merak {
   }
 
   protected execHook<Stage extends keyof LifeCycle>(stage: Stage, params?: Parameters<LifeCycle[Stage]>[0]) {
-    // @ts-expect-error work for lifecycle
     return this.lifeCycle[stage]?.(params)
   }
 
@@ -130,10 +129,17 @@ export class Merak {
       return this.loadPromise
     const { id, url, configUrl } = this
     return this.loadPromise = (this.loader!.load(id, url, configUrl) as Promise<LoadDone>).then((loadRes) => {
-      const { template, fakeGlobalVar, globals } = loadRes
-      this.template = template
-      this.globalVars = globals
-      this.setGlobalVar(fakeGlobalVar)
+      const { template, fakeGlobalVar, globals, cmd } = loadRes
+      // @ts-expect-error load error
+      if (cmd === 'error') {
+        this.execHook('errorHandler', (loadRes as any).e)
+      }
+
+      else {
+        this.template = template
+        this.globalVars = globals
+        this.setGlobalVar(fakeGlobalVar)
+      }
     })
   }
 
@@ -192,10 +198,7 @@ export class Merak {
           if (this.execFlag)
             return false
 
-          if (item.hasAttribute('merak-ignore'))
-            return false
-
-          return true
+          return !item.hasAttribute('merak-ignore') && item.type !== 'importmap'
         })
         this.sandDocument.querySelector('body')?.appendChild(ele)
 

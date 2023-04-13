@@ -6,19 +6,21 @@ import { MERAK_DATA_ID, MERAK_EVENT_DESTROY, MERAK_EVENT_HIDDEN, MERAK_EVENT_MOU
 import { eventTrigger, scriptPrimise } from './utils'
 import { MerakMap, getBodyStyle } from './composable'
 import { LifeCycle } from './lifecycle'
-import { compileScript } from './compile'
+import { cloneScript } from './compile'
 
 export class Merak {
   /** 所有子应用共享 */
   static namespace: Record<string, any> = {}
+
   /** css隔离容器 */
+
   public shadowRoot: ShadowRoot
   /** shadowroot 下的 document */
+
   public sandDocument: HTMLElement | null
-
   /** iframe 容器 */
-  public iframe: HTMLIFrameElement | null
 
+  public iframe: HTMLIFrameElement | null
   /** window代理 */
   public proxy: Window
 
@@ -36,6 +38,7 @@ export class Merak {
 
   /** 生命周期 */
   public lifeCycle = new LifeCycle()
+
   /** 子应用激活标志 */
   public activeFlag = false
 
@@ -78,7 +81,7 @@ export class Merak {
   ) {
     if (MerakMap.has(id)) {
       if (__DEV__)
-        throw new Error(`" ${id}" already exists`)
+        throw new Error(`"${id}" already exists`)
       return MerakMap.get(id) as Merak
     }
     MerakMap.set(id, this)
@@ -92,17 +95,6 @@ export class Merak {
 
     this.proxy = this.proxyMap.window as any
   }
-  // try to remove mitt
-  // on(type: Parameters<Emitter<MerakEvents>['on']>[0], param: Parameters<Emitter<MerakEvents>['on']>[1]) {
-  //   bus.on(type, param)
-  //   this.cacheEvent.push(() => {
-  //     bus.off(type, param)
-  //   })
-  // }
-
-  // emit(type: EventType, event: unknown) {
-  //   this.bus.emit(type, event)
-  // }
 
   get namespace() {
     return Merak.namespace
@@ -120,7 +112,7 @@ export class Merak {
   active() {
     if (!this.activeFlag) {
       if (__DEV__ && !this.fakeGlobalVar)
-        throw new Error('miss fakeGlobalVar')
+        throw new Error(`miss fakeGlobalVar in "${this.id}"`)
       if (this.iframe?.contentWindow)
         (this.iframe.contentWindow as Window)[this.fakeGlobalVar] = this.proxy
       else window[this.fakeGlobalVar] = this.proxy
@@ -136,11 +128,13 @@ export class Merak {
       const { template, fakeGlobalVar, globals } = loadRes
       this.template = template
       this.globalVars = globals
-      // this.templateScipts = scripts
       this.setGlobalVar(fakeGlobalVar)
     })
   }
 
+  /**
+ * @experiment
+ */
   preRender() {
     const proxyEle = document.createElement('merak-app')
     proxyEle.setAttribute(MERAK_DATA_ID, this.id)
@@ -157,7 +151,6 @@ export class Merak {
 
     if (!this.cacheFlag) {
       this.sandDocument = document.importNode(window.document.implementation.createHTMLDocument('').documentElement, true)
-
       // work for spa
       if (this.loader) {
         // template
@@ -167,8 +160,8 @@ export class Merak {
           const originScripts = Array.from(this.sandDocument.querySelectorAll('script'))
           const scripts = originScripts.filter((script) => {
             script.remove()
-            return !script.hasAttribute('merak-ignore')
-          }).map(script => compileScript(script, this.fakeGlobalVar, this.globalVars))
+            return !script.hasAttribute('merak-ignore') && script.type !== 'importmap'
+          }).map(script => cloneScript(script, this.fakeGlobalVar, this.globalVars))
 
           this.execHook('execScript', { originScripts, scripts });
           (this.iframe?.contentDocument || this.sandDocument).querySelector('body')?.append(...scripts)

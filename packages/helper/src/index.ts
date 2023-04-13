@@ -74,10 +74,14 @@ export function $esm(script: string) {
   return script
 }
 
-export function getMerakInstance() {
+export function $instance() {
   return window.$Merak as undefined | $Merak
 }
 
-export function $Props<T = Record<string, any>>(): undefined | T {
-  return getMerakInstance()?.props
+export function $props<T = Record<string, any>>(): undefined | T {
+  return $instance()?.props
+}
+
+export function $namespace() {
+  return $instance()?.namespace
 }

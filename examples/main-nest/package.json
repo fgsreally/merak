@@ -9,7 +9,7 @@
     "preview": "vite preview"
   },
   "dependencies": {
-    "merak-vue": "workspace:1.0.0-rc.0",
+    "merak-vue": "workspace:*",
     "vue": "^3.2.47"
   },
   "devDependencies": {

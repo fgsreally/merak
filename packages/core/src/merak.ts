@@ -102,7 +102,12 @@ export class Merak {
 
   protected execHook<Stage extends keyof LifeCycle>(stage: Stage, params?: Parameters<LifeCycle[Stage]>[0]) {
     // @ts-expect-error work for lifecycle
-    this.lifeCycle[stage]?.(params)
+    return this.lifeCycle[stage]?.(params)
+  }
+
+  protected cleanEvents() {
+    while (this.cacheEvent.length > 0)
+      this.cacheEvent.pop()!()
   }
 
   setGlobalVar(fakeGlobalVar: string) {
@@ -166,8 +171,10 @@ export class Merak {
           this.execHook('execScript', { originScripts, scripts });
           // TODO JS queue
           (this.iframe?.contentDocument || this.sandDocument).querySelector('body')?.append(...scripts)
-          // only invoke mount event after all scripts loaded
-          Promise.all(scripts.map(scriptPrimise)).then(() => {
+          // only invoke mount event after all scripts load/fail
+          Promise.all(scripts.map(scriptPrimise)).catch((e) => {
+            return this.execHook('errorHandler', e as any)
+          }).finally(() => {
             this.execFlag = true
             eventTrigger(window, MERAK_EVENT_MOUNT + this.id)
           })
@@ -196,7 +203,9 @@ export class Merak {
           this.execHook('execScript', { originScripts, scripts });
 
           (this.iframe ? this.iframe.contentDocument : this.sandDocument)!.querySelector('body')!.append(...scripts)
-          Promise.all(scripts.map(scriptPrimise)).then(() => {
+          Promise.all(scripts.map(scriptPrimise)).catch((e) => {
+            return this.execHook('errorHandler', e as any)
+          }).finally(() => {
             this.execFlag = true
             eventTrigger(window, MERAK_EVENT_MOUNT + this.id)
           })
@@ -260,17 +269,15 @@ export class Merak {
       this.template = this.sandDocument!.innerHTML
     this.activeFlag = false
     if (this.iframe) {
-      const isIframeDestry = iframeInstance.remove(this.options.iframe as string)
+      const isIframeDestroy = iframeInstance.remove(this.options.iframe as string)
       this.iframe = null
-      if (isIframeDestry)
+      if (isIframeDestroy)
         this.execFlag = false
     }
     else {
       delete window[this.fakeGlobalVar]
     }
     this.sandDocument = null
-
-    while (this.cacheEvent.length > 0)
-      this.cacheEvent.pop()!()
+    this.cleanEvents()
   }
 }

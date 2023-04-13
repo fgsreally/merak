@@ -4,11 +4,6 @@ export interface MerakConfig {
   _f: string
 }
 
-export interface PreloadError {
-  cmd: 'error'
-  id: string
-  filePath: string
-}
 export interface LoadDone {
   cmd: 'load'
   id: string
@@ -17,21 +12,7 @@ export interface LoadDone {
   template: string
 
   globals: string[]
-  // lazyFiles: string[]
-  // scripts: Record<string, any>[]
-}
 
-export interface PreLoadDone {
-  cmd: 'preload'
-  id: string
-  filePath: string
-  url: string
-}
-
-export interface ResolveDone {
-  cmd: 'resolve'
-  url: string
-  id: string
 }
 
 export interface TransformDone {
@@ -40,16 +21,18 @@ export interface TransformDone {
   id: string
 }
 
-export type LoaderHookParam = LoadDone | PreloadError | ResolveDone | PreLoadDone | TransformDone
+export interface ErrorHandleDone {
+  cmd: 'error'
+  e: any
+}
 
-export interface MerakPlugin<LoaderInstance> {
-  init?(loader: LoaderInstance): void
-  resolve?(param: ResolveDone): void
+export type LoaderHookParam = LoadDone | TransformDone | ErrorHandleDone
+
+export interface LoaderPlugin<Loader> {
+  init?(loader: Loader): void
+  errorHandler?(err: Error): any
   load?(param: LoadDone): void
-  preload?(param: PreLoadDone): void
-  error?(param: PreloadError): void
   transform?(param: TransformDone): string
-  destroy?(loader: LoaderInstance): void
 }
 
 export interface ProxyGlobals {

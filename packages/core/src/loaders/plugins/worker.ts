@@ -1,5 +1,8 @@
-import type { MerakPlugin } from '../../types'
+import type { LoaderPlugin } from '../../types'
 
+/**
+ * @deprecated
+ */
 export function workerPlugin(): any {
   return {
     preload: param => postMessage(param),
@@ -22,5 +25,5 @@ export function workerPlugin(): any {
         }
       })
     },
-  } as MerakPlugin<any>
+  } as LoaderPlugin<any>
 }

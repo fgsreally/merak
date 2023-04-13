@@ -177,7 +177,7 @@ export class Merak {
         if (!this.execFlag) {
           const originScripts = Array.from(this.sandDocument.querySelectorAll('script'))
           const scripts = originScripts.filter((script) => {
-            script.remove()
+            !this.iframe && script.remove()
             return !script.hasAttribute('merak-ignore') && script.type !== 'importmap'
           }).map(script => cloneScript(script, this.fakeGlobalVar, this.globalVars))
 
@@ -200,12 +200,12 @@ export class Merak {
       if (ele) {
         // mount script on body or iframe
         const originScripts = [...ele.querySelectorAll('script')]
-        const scripts = originScripts.filter((item) => {
-          item.remove()
+        const scripts = originScripts.filter((script) => {
+          !this.iframe && script.remove()
           if (this.execFlag)
             return false
 
-          return !item.hasAttribute('merak-ignore') && item.type !== 'importmap'
+          return !script.hasAttribute('merak-ignore') && script.type !== 'importmap'
         })
         this.sandDocument.querySelector('body')?.appendChild(ele)
 
@@ -283,6 +283,8 @@ export class Merak {
       this.iframe = null
       if (isIframeDestroy)
         this.execFlag = false
+
+      console.log(this.execFlag)
     }
     else {
       delete window[this.fakeGlobalVar]

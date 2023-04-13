@@ -3,7 +3,7 @@ import { createPinia } from 'pinia'
 import ElementPlus from 'element-plus'
 import 'element-plus/dist/index.css'
 import type { App as AppType } from 'vue'
-import { $onDestroy, $onExec } from 'merak-helper'
+import { $onDestroy, $onMount } from 'merak-helper'
 import App from './App.vue'
 import router from './router'
 import './assets/main.css'
@@ -19,7 +19,7 @@ function render() {
   app.mount('#app')
 }
 
-$onExec(render)
+render()
 
 $onDestroy(() => {
   app.unmount()

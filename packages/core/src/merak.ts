@@ -101,6 +101,7 @@ export class Merak {
   }
 
   protected execHook<Stage extends keyof LifeCycle>(stage: Stage, params?: Parameters<LifeCycle[Stage]>[0]) {
+    // @ts-expect-error lifecycle work
     return this.lifeCycle[stage]?.(params)
   }
 
@@ -115,8 +116,9 @@ export class Merak {
 
   active() {
     if (!this.activeFlag) {
-      if (__DEV__ && !this.fakeGlobalVar)
-        throw new Error(`miss fakeGlobalVar in "${this.id}"`)
+      if (!this.fakeGlobalVar)
+        return
+
       if (this.iframe?.contentWindow)
         (this.iframe.contentWindow as Window)[this.fakeGlobalVar] = this.proxy
       else window[this.fakeGlobalVar] = this.proxy
@@ -132,7 +134,7 @@ export class Merak {
       const { template, fakeGlobalVar, globals, cmd } = loadRes
       // @ts-expect-error load error
       if (cmd === 'error') {
-        this.execHook('errorHandler', (loadRes as any).e)
+        this.execHook('errorHandler', { type: 'loadError', error: (loadRes as any).e })
       }
 
       else {
@@ -164,6 +166,11 @@ export class Merak {
       this.sandDocument = document.importNode(window.document.implementation.createHTMLDocument('').documentElement, true)
       // work for spa
       if (this.loader) {
+        if (!this.template) {
+          // if (__DEV__)
+          //   throw new Error(`"${this.id}" should load before mount`)
+          return
+        }
         // template
         this.sandDocument.innerHTML = this.template
         // mount script on body or iframe
@@ -179,7 +186,7 @@ export class Merak {
           (this.iframe?.contentDocument || this.sandDocument).querySelector('body')?.append(...scripts)
           // only invoke mount event after all scripts load/fail
           Promise.all(scripts.map(scriptPrimise)).catch((e) => {
-            return this.execHook('errorHandler', e as any)
+            return this.execHook('errorHandler', { type: 'scriptError', error: e })
           }).finally(() => {
             this.execFlag = true
             eventTrigger(window, MERAK_EVENT_MOUNT + this.id)
@@ -207,7 +214,7 @@ export class Merak {
 
           (this.iframe ? this.iframe.contentDocument : this.sandDocument)!.querySelector('body')!.append(...scripts)
           Promise.all(scripts.map(scriptPrimise)).catch((e) => {
-            return this.execHook('errorHandler', e as any)
+            return this.execHook('errorHandler', { type: 'scriptError', error: e })
           }).finally(() => {
             this.execFlag = true
             eventTrigger(window, MERAK_EVENT_MOUNT + this.id)

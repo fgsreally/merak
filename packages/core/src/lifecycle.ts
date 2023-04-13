@@ -11,6 +11,8 @@ export class LifeCycle {
   // 渲染结果挂载前
   prerender: (ele: HTMLElement) => void
   // 错误处理
-
-  errorHandler: (err: any) => any = (e: any) => console.error(e)
+  errorHandler: (params: { type: 'scriptError' | 'loadError'; error: any }) => any = (e: any) => {
+    e.error.message = `[merak] ${e.type}\n${e.error.message}`
+    console.error(e.error)
+  }
 }

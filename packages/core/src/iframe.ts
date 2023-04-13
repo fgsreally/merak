@@ -28,6 +28,7 @@ export class IframePool {
   remove(id: string) {
     const obj = this.pool.get(id)!
     obj.count--
+    console.log(obj.count)
     if (obj.count === 0) {
       obj.el.remove()
       this.pool.delete(id)

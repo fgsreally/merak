@@ -16,7 +16,7 @@ export class PureLoader {
   }
 
   execHook(hook: keyof LoaderPlugin<PureLoader>, param?: LoaderHookParam) {
-    return this.plugins?.[hook]?.(param as any)
+    return this.plugins?.[hook]?.(param as any) || param
   }
 
   async load(id: string, url: string, configUrl?: string) {
@@ -48,7 +48,7 @@ export class PureLoader {
       return loadRes
     }
     catch (e) {
-      return this.execHook('errorHandler', { cmd: 'error', e })
+      return this.execHook('errorHandler', { cmd: 'error', e } as any)
     }
   }
 }

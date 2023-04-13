@@ -216,28 +216,29 @@ export class Merak {
 
     this.execHook('tranformDocument', this.sandDocument!)
     this.shadowRoot.appendChild(this.sandDocument!)
-
+    // ExecFlag will be false if it is the first time to mount
     this.execFlag && eventTrigger(window, MERAK_EVENT_MOUNT + this.id)
     this.execHook('afterMount')
   }
 
   mount(ele?: HTMLElement) {
+    if (this.mountFlag)
+      return
+
     if (this.options.iframe && !this.iframe) {
       iframeInstance.add(this.options.iframe).then((el) => {
         this.iframe = el
         this.mountTemplateAndScript(ele)
       })
     }
-    // this.iframe = document.createElement('iframe') as HTMLIFrameElement
-    // this.iframe.style.display = 'none'
-    // this.iframe.onload = () => this.mountTemplateAndScript(ele)
-    // document.body.appendChild(this.iframe)
 
     else { this.mountTemplateAndScript(ele) }
 
     this.mountIndex++
+    this.mountFlag = true
   }
 
+  // called directly by shadow
   unmount(isKeepAlive: boolean) {
     this.cacheFlag = isKeepAlive
 
@@ -248,6 +249,7 @@ export class Merak {
       this.destroy()
     else
       eventTrigger(window, MERAK_EVENT_HIDDEN + this.id)
+
     this.execHook('afterUnmount')
   }
 

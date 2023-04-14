@@ -96,12 +96,6 @@ export function defineWebComponent() {
       const app = getInstance(id) as Merak
       if (!app)
         throw new Error(`can't find app [${id}] `)
-      if (app.isRender) {
-        const shadowRoot = this.attachShadow({ mode: 'open' })
-        app.shadowRoot = shadowRoot
-        shadowRoot.appendChild(app.sandDocument!)
-        return
-      }
 
       if (app.mountFlag) {
         if (__DEV__)

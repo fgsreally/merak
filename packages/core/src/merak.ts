@@ -2,7 +2,7 @@ import { iframeInstance } from './iframe'
 import type { LoadDone, ProxyGlobals } from './types'
 import type { PureLoader } from './loaders'
 import { createProxy } from './proxy'
-import { MERAK_DATA_ID, MERAK_EVENT_DESTROY, MERAK_EVENT_HIDDEN, MERAK_EVENT_MOUNT, MERAK_EVENT_RELUNCH, MERAK_SHADE_STYLE } from './common'
+import { MERAK_EVENT_DESTROY, MERAK_EVENT_HIDDEN, MERAK_EVENT_MOUNT, MERAK_EVENT_RELUNCH, MERAK_SHADE_STYLE } from './common'
 import { eventTrigger, scriptPrimise } from './utils'
 import { MerakMap, getBodyStyle } from './helper'
 import { LifeCycle } from './lifecycle'
@@ -63,8 +63,8 @@ export class Merak {
   /** 隔离的全局变量 */
   public globalVars: string[]
 
-  /** 是否被预渲染 */
-  public isRender = false
+  // /** 是否被预渲染 */
+  // public isRender = false
 
   /** 防止重复加载 */
   private loadPromise: Promise<any>
@@ -145,18 +145,17 @@ export class Merak {
     })
   }
 
-  /**
- * @experiment
- */
-  preRender() {
-    const proxyEle = document.createElement('merak-app')
-    proxyEle.setAttribute(MERAK_DATA_ID, this.id)
-    proxyEle.setAttribute('style', 'display:none')
-    this.execHook('prerender', proxyEle)
-    document.body.appendChild(proxyEle)
-
-    this.isRender = true
-  }
+  //   /**
+  //  * @experiment
+  //  */
+  //   preRender() {
+  //     const proxyEle = document.createElement('merak-app')
+  //     proxyEle.setAttribute(MERAK_DATA_ID, this.id)
+  //     proxyEle.setAttribute('style', 'display:none')
+  //     this.execHook('prerender', proxyEle)
+  //     document.body.appendChild(proxyEle)
+  //     this.isRender = true
+  //   }
 
   private mountTemplateAndScript(ele?: ParentNode) {
     this.execHook('beforeMount')
@@ -283,8 +282,6 @@ export class Merak {
       this.iframe = null
       if (isIframeDestroy)
         this.execFlag = false
-
-      console.log(this.execFlag)
     }
     else {
       delete window[this.fakeGlobalVar]

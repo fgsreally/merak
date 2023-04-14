@@ -1,6 +1,6 @@
 <script setup lang="ts">
 import { RouterLink, RouterView } from 'vue-router'
-const data = window.$Merak ? window.$Merak.props.data : 'no data from merak'
+const data = 'no data from merak'
 </script>
 
 <template>

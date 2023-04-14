@@ -21,7 +21,6 @@ export const MerakApp = defineComponent({
     const { url, proxy, loader, configUrl, keepAlive, props: MerakProps, iframe, name } = props
     const app = getInstance(name) || new Merak(name, url, { loader, configUrl, proxy, iframe })
     app.props = MerakProps
-
     for (const ev in shareEmits)
       app.lifeCycle[ev] = (arg: any) => emit(ev as any, arg)
     expose({ app })

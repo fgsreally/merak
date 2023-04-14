@@ -1,7 +1,6 @@
 export const MERAK_DATA_ID = 'data-merak-id'
 export const MERAK_DATA_FAKEGLOBALVAR = 'data-merak-var'
 export const MERAK_KEEP_ALIVE = 'keep-alive'
-
 export const MERAK_EVENT_PREFIX = 'merak_'
 export const MERAK_EVENT_EXEC_SCRIPT = `${MERAK_EVENT_PREFIX}exec_script`
 export const MERAK_EVENT_RELUNCH = `${MERAK_EVENT_PREFIX}relunch`

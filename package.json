@@ -10,6 +10,7 @@
     "serve": " http-server ./packages/core/dist --cors -p 3000",
     "example:dev": "pnpm --filter=example-* --parallel run dev ",
     "example:prod": "cross-env CI=true node scripts/before-e2e.js ",
+    "docs:dev": "vitepress dev docs",
     "docs:build": "vitepress build docs",
     "docs:preview": "vitepress preview docs",
     "lint": "eslint . --ext .ts",

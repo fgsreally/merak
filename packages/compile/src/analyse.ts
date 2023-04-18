@@ -54,7 +54,7 @@ export const analyseHTML = (code: string) => {
 
 export const analyseJSGlobals = (code: string, globals: string[]) => {
   const unUsedGlobalSet = new Set<string>()
-  const ast = parseSync(code)
+  const ast = parseSync(code, { filename: 'any' })
   traverse(ast, {
     // record all global variable
     Identifier(path) {

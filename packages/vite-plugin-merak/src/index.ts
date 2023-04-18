@@ -19,7 +19,6 @@ export function Merak(fakeGlobalVar: string, globals: string[], opts: { isinLine
     includes: /\.(vue|ts|js|tsx|jsx|mjs)/,
     exclude: /\.(css|scss|sass|less)$/,
     isinLine: true,
-    logPath: './test.md',
     ...opts,
   } as Required<typeof opts>
   const isDebug = !!resolvedOpts.logPath
@@ -32,16 +31,6 @@ export function Merak(fakeGlobalVar: string, globals: string[], opts: { isinLine
 
   const baseOptions: TransformOptions = { assetsDir: 'assets', base: PATH_PLACEHOLDER, publicPath: ` ${publicPath}` }
   return [{
-    name: 'vite-plugin-merak:log',
-    enforce: 'post',
-    transform(code, id) {
-      if (isDebug && filter(id)) {
-        const globals = analyseJSGlobals(code, globalVars)
-        globals.length > 0 && logger.collectUnusedGlobals(id, globals)
-      }
-    },
-
-  }, {
     name: 'vite-plugin-merak:dev',
     apply: 'serve',
     enforce: 'post',
@@ -78,9 +67,13 @@ export function Merak(fakeGlobalVar: string, globals: string[], opts: { isinLine
       if (!filter(chunk.fileName))
         return
 
+      const unUsedGlobals = analyseJSGlobals(raw, globalVars)
+      unUsedGlobals.length > 0 && logger.collectUnusedGlobals(chunk.fileName, unUsedGlobals)
       const { map, code, warning } = (opts.format === 'es' ? injectGlobalToESM : injectGlobalToIIFE)(raw, fakeGlobalVar, globalVars)
-      warning.forEach(warn => logger.collectDangerUsed(chunk.fileName, warn.info, [warn.loc.start.line, warn.loc.start.column]),
-      )
+      if (isDebug) {
+        warning.forEach(warn => logger.collectDangerUsed(chunk.fileName, warn.info, [warn.loc.start.line, warn.loc.start.column]),
+        )
+      }
       if (config.build.sourcemap)
         return { map, code }
 
@@ -94,8 +87,6 @@ export function Merak(fakeGlobalVar: string, globals: string[], opts: { isinLine
     },
 
     async generateBundle({ format }, bundle) {
-      logger.output(resolve(process.cwd(), resolvedOpts.logPath))
-
       if (config.build.ssr)
         return
 
@@ -126,6 +117,7 @@ export function Merak(fakeGlobalVar: string, globals: string[], opts: { isinLine
           }
         }),
       )
+      isDebug && logger.output(resolve(process.cwd(), resolvedOpts.logPath))
     },
 
   },

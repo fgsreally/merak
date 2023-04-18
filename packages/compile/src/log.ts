@@ -39,7 +39,8 @@ export class Logger {
       ret.push({ blockquote: `file:\`${file}\`` })
       ret.push({ ol: this.unusedGlobalRecord[file] })
     }
-
+    // eslint-disable-next-line no-console
+    console.log(`[MERAK] generate analyse file at ${outputPath}`)
     fse.outputFileSync(outputPath, json2md(ret))
   }
 }

@@ -1,5 +1,5 @@
 import type { Compiler } from 'webpack'
-import { DEFAULT_INJECT_GLOBALS, analyseHTML, createWarning, desctructGlobal, injectGlobalToESM, injectGlobalToIIFE } from 'merak-compile'
+import { DEFAULT_INJECT_GLOBALS, analyseHTML, desctructGlobal, injectGlobalToESM, injectGlobalToIIFE, logger } from 'merak-compile'
 import HtmlWebpackPlugin from 'html-webpack-plugin'
 // @ts-expect-error miss types
 import isVarName from 'is-var-name'
@@ -29,41 +29,17 @@ export class Merak {
             chunk.files.forEach((file) => {
               if (file.endsWith('.js')) {
                 const source = compilation.getAsset(file)!.source.source() as string
-                const { code, warning } = (format === 'module' ? injectGlobalToESM : injectGlobalToIIFE)(source, fakeGlobalVar, globalVars, this.options?.force || false)
-                warning.forEach(warn => createWarning(warn.info, file, warn.loc.start.line, warn.loc.start.column))
+                const { code } = (format === 'module' ? injectGlobalToESM : injectGlobalToIIFE)(source, fakeGlobalVar, globalVars, this.options?.force || false)
+                // warning.forEach(warn => logger.record(file, warn.info, [warn.loc.start.line, warn.loc.start.column]))
 
                 compilation.updateAsset(file, new sources.RawSource(code))
               }
             })
           })
+          // this.logger.output()
         },
       )
     })
-    // compiler.hooks.thisCompilation.tapAsync('MerakPlugin', (compilation, callback) => {
-    //   const chunks = compilation.chunks
-    //   chunks.forEach((chunk) => {
-    //     chunk.files.forEach((file) => {
-    //       if (file.endsWith('.js')) { // 只对 JavaScript 文件进行处理
-
-    //       }
-    //     })
-    //   })
-    //   callback()
-    // })
-    // if (format === 'module') {
-    //   new WrapperPlugin({
-    //     test: this.options?.filter || /\.js$/, // only wrap output of bundle files with '.js' extension
-    //     header: `const {${desctructGlobal(globalVars)}}=${fakeGlobalVar};`,
-    //     footer: '',
-    //   }).apply(compiler)
-    // }
-    // else {
-    //   new WrapperPlugin({
-    //     test: /\.js$/, // only wrap output of bundle files with '.js' extension
-    //     header: `(()=>{const {${desctructGlobal(globalVars)}}=${fakeGlobalVar};`,
-    //     footer: '})()',
-    //   }).apply(compiler)
-    // }
 
     compiler.hooks.compilation.tap('webpack-merak', (compilation) => {
       HtmlWebpackPlugin.getHooks(compilation).alterAssetTags.tap(

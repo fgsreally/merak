@@ -5,12 +5,29 @@ import cac from 'cac'
 import fg from 'fast-glob'
 // @ts-expect-error misstypes
 import isVarName from 'is-var-name'
-import { analyseHTML, injectGlobalToESM, injectGlobalToIIFE } from './analyse'
+import { analyseHTML, analyseJSGlobals, injectGlobalToESM, injectGlobalToIIFE } from './analyse'
 import { DEFAULT_INJECT_GLOBALS } from './common'
+import { logger } from './log'
 const cli = cac()
 const root = process.cwd()
 const require = createRequire(root)
 
+cli.command('detect', 'detect files global variable')
+  .action(async () => {
+    const {
+      dir = '', globals, includes = ['index.html', '**/*.js', '*.js', '**/*.css'], exclude = ['node_modules/**/*'],
+    } = getConfig()
+    const cwd = resolve(root, dir)
+
+    const entries = await fg(includes, { cwd, ignore: exclude })
+    entries.forEach(async (entry) => {
+      const raw = await fse.readFile(resolve(cwd, entry), 'utf-8')
+      if (entry.endsWith('.js')) {
+        const unUsedGlobals = analyseJSGlobals(raw, globals)
+        logger.collectUnusedGlobals(entry, unUsedGlobals)
+      }
+    })
+  })
 cli
   .command('', 'parse all file to merak-format')
   .action(async () => {

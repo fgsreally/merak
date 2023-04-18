@@ -37,7 +37,7 @@ sidebarDepth: 2
 
 1. merak 没有`custom fetch`，如果需要截取 js 等文件进一步操作，这会很麻烦
 2. merak 基于 `webcomponent`和`proxy`，请考虑兼容性,部分样式可能和预想的表现不同，[详见]()
-3. 非严格隔离，如子应用中 eval 内部/动态生成的`script`/this，隔离无效。
+3. 非严格隔离，如子应用中 eval 内部/动态生成的`script`/this，需要额外处理。
 4. 需要编译流程配合：子应用需要手动指定被隔离变量
   
 :::

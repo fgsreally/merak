@@ -1,5 +1,5 @@
-/* eslint-disable no-console */
-import { DEFAULT_INJECT_GLOBALS, analyseHTML, analyseJSGlobals, createWarning, desctructGlobal, injectGlobalToESM, injectGlobalToIIFE } from 'merak-compile'
+import { resolve } from 'path'
+import { DEFAULT_INJECT_GLOBALS, analyseHTML, analyseJSGlobals, desctructGlobal, injectGlobalToESM, injectGlobalToIIFE, logger } from 'merak-compile'
 import { createFilter } from 'vite'
 import type { FilterPattern, PluginOption, ResolvedConfig } from 'vite'
 // @ts-expect-error miss types
@@ -7,7 +7,7 @@ import isVarName from 'is-var-name'
 import type { TransformOptions } from './transform'
 
 import { transformAsset, transformChunk, transformHtml } from './transform'
-export function Merak(fakeGlobalVar: string, globals: string[], opts: { isinLine?: boolean; includes?: FilterPattern; exclude?: FilterPattern; debug?: boolean }): PluginOption {
+export function Merak(fakeGlobalVar: string, globals: string[], opts: { isinLine?: boolean; includes?: FilterPattern; exclude?: FilterPattern; logPath?: string }): PluginOption {
   if (!isVarName(fakeGlobalVar))
     throw new Error(`${fakeGlobalVar} is not a valid var`)
 
@@ -19,8 +19,10 @@ export function Merak(fakeGlobalVar: string, globals: string[], opts: { isinLine
     includes: /\.(vue|ts|js|tsx|jsx|mjs)/,
     exclude: /\.(css|scss|sass|less)$/,
     isinLine: true,
+    logPath: './test.md',
     ...opts,
   } as Required<typeof opts>
+  const isDebug = !!resolvedOpts.logPath
   const { isinLine, includes, exclude } = resolvedOpts
   const filter = createFilter(includes, exclude)
   const PATH_PLACEHOLDER = '/dynamic_base__/'
@@ -30,15 +32,15 @@ export function Merak(fakeGlobalVar: string, globals: string[], opts: { isinLine
 
   const baseOptions: TransformOptions = { assetsDir: 'assets', base: PATH_PLACEHOLDER, publicPath: ` ${publicPath}` }
   return [{
-    name: 'vite-plugin-merak:debug',
+    name: 'vite-plugin-merak:log',
+    enforce: 'post',
     transform(code, id) {
-      if (!filter(id))
-        return
-      if (process.env.DEBUG || opts.debug) {
-        console.log(`\n${id}`)
-        console.table(analyseJSGlobals(code, globalVars))
+      if (isDebug && filter(id)) {
+        const globals = analyseJSGlobals(code, globalVars)
+        globals.length > 0 && logger.collectUnusedGlobals(id, globals)
       }
     },
+
   }, {
     name: 'vite-plugin-merak:dev',
     apply: 'serve',
@@ -77,7 +79,7 @@ export function Merak(fakeGlobalVar: string, globals: string[], opts: { isinLine
         return
 
       const { map, code, warning } = (opts.format === 'es' ? injectGlobalToESM : injectGlobalToIIFE)(raw, fakeGlobalVar, globalVars)
-      warning.forEach(warn => createWarning(warn.info, chunk.fileName, warn.loc.start.line, warn.loc.start.column),
+      warning.forEach(warn => logger.collectDangerUsed(chunk.fileName, warn.info, [warn.loc.start.line, warn.loc.start.column]),
       )
       if (config.build.sourcemap)
         return { map, code }
@@ -92,10 +94,9 @@ export function Merak(fakeGlobalVar: string, globals: string[], opts: { isinLine
     },
 
     async generateBundle({ format }, bundle) {
-      if (config.build.ssr)
-        return
+      logger.output(resolve(process.cwd(), resolvedOpts.logPath))
 
-      if (format !== 'es' && format !== 'system')
+      if (config.build.ssr)
         return
 
       await Promise.all(

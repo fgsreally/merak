@@ -53,26 +53,21 @@ export const analyseHTML = (code: string) => {
 }
 
 export const analyseJSGlobals = (code: string, globals: string[]) => {
-  const globalSet = new Set<string>()
-  const globalUsed = new Set<string>()
+  const unUsedGlobalSet = new Set<string>()
   const ast = parseSync(code)
   traverse(ast, {
     // record all global variable
     Identifier(path) {
       const { scope } = path
       Object.keys((scope as any).globals).forEach((item) => {
-        globalSet.add(item)
-        globals.includes(item) && globalUsed.add(item)
+        (!globals.includes(item)) && unUsedGlobalSet.add(item)
       })
     },
     // static import
     //  relative path
   })
 
-  return {
-    globals: [...globalSet],
-    globalUsed: [...globalUsed],
-  }
+  return [...unUsedGlobalSet]
 }
 
 export function analyseInlineESM(code: string) {

@@ -1,4 +1,4 @@
-import { createWarning } from './utils'
+import { logger } from './log'
 
 export function merakPostCss() {
   return {
@@ -6,7 +6,7 @@ export function merakPostCss() {
 
     Root(root: any) {
       root.walkAtRules('font-face', ({ source: { start, input: { file } } }: any) => {
-        createWarning('"@font-face" need manual process', file, start.line, start.column)
+        logger.collectDangerUsed(file, '"@font-face" need manual process', [start.line, start.column])
       })
       root.walk((node: any) => {
         if (node.selector) {
@@ -20,6 +20,7 @@ export function merakPostCss() {
             .join(', ')
         }
       })
+      logger.output()
     },
   }
 }

@@ -6,7 +6,7 @@ export interface TransformOptions {
   assetsDir: string
 }
 
-export function transformChunk(format: 'system' | 'es', code: string, options: TransformOptions) {
+export function transformChunk(format: 'system' | 'es' | string, code: string, options: TransformOptions) {
   const { base, publicPath } = options
   let content = replaceQuotes(base, publicPath, code)
   if (format === 'system') {

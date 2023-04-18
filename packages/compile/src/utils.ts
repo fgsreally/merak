@@ -1,5 +1,4 @@
 import { relative } from 'path'
-import pc from 'picocolors'
 import { DANGER_IDENTIFIERS } from './common'
 export function isCdn(str: string) {
   return !['.', '/'].includes(str.slice(0, 1))
@@ -25,12 +24,4 @@ export function resolveHtmlConfig(html: string) {
 export function checkIsDanger(node: any, warning: any[]) {
   if (DANGER_IDENTIFIERS.includes(node.name))
     warning.push({ info: `"${node.name}" is danger,need to be wrapped in $sandbox`, loc: node.loc ! })
-}
-
-export function createWarning(info: string, file: string, line: number, column: number) {
-  if (process.env.DEBUG) {
-    file = file.split('?')[0].replace(/\//g, '\\')
-    // eslint-disable-next-line no-console
-    console.log(pc.cyan('\n[merak-compile]') + pc.yellow(`${info} (${file}:${line}:${column})`))
-  }
 }

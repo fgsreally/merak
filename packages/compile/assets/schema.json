@@ -5,6 +5,9 @@
       "dir": {
         "type": "string"
       },
+      "logPath": {
+        "type": "string"
+      },
       "outDir": {
         "type": "string"
       },

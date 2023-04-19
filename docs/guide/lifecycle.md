@@ -1,4 +1,4 @@
-## 生命周期
+# 生命周期
 
 ```ts
 interface LifeCycle {
@@ -17,6 +17,7 @@ interface LifeCycle {
 ```
 
 ```ts
+// example
 const app = new Merak(/** */)
 app.lifeCycle.beforeMount = () => {}
 ```

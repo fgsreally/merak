@@ -7,7 +7,8 @@ collapsable: false
 
 
 ## 设置子应用
-### 应用
+### 应用  
+
 以`vue`为例，
 ```ts
 import { $onExec } from 'merak-helper'
@@ -18,9 +19,11 @@ function render() {
 }
 $onExec(render)
 $onDestroy(() => app.unmount())
-```
+```  
+
 ### 打包器
-需要根据打包器，安装vite-plugin-merak/webpack-plugin-merak
+需要根据打包器，安装`vite-plugin-merak`/`webpack-plugin-merak `  
+
 以`vite`为例
 ```ts
 import { Merak, merakPostCss } from 'vite-plugin-merak'
@@ -34,7 +37,7 @@ export default defineConfig({
   },
 })
 ```
-> `fakeGlobalVar`必须是一个合法的,未被占用的变量名,和umd中性质差不多
+> `fakeGlobalVar`必须是一个合法的,未被占用的变量名,和`umd`中`library name`性质差不多
 
 
 
@@ -55,8 +58,6 @@ createApp(app, loader)
 
 /** 可以提前加载它，也可以挂载时自动加载 */
 await app.load()
-/** 可以提前渲染 */
-await app.prerender()
 ```
 ::: tip 提示
 挂载位置通过web-component确定,不限制框架，此处以vue为例

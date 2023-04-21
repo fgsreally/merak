@@ -11,7 +11,7 @@ export const MerakApp = defineComponent({
     configUrl: String,
 
     loader: {
-      type: Object as PropType<PureLoader>,
+      type: Object as PropType<typeof PureLoader>,
       default: vueLoader,
     },
 

@@ -7,7 +7,7 @@ export const shareEmits = {
   beforeUnmount: () => true,
   afterUnmount: () => true,
   destroy: () => true,
-  execScript: (_: { originScripts: HTMLScriptElement[]; scripts: HTMLScriptElement[] }) => true,
+  transformScript: (_: { originScripts: HTMLScriptElement[]; scripts: HTMLScriptElement[] }) => true,
   // 挂载document前
   tranformDocument: (_: HTMLElement) => true,
   // 渲染结果挂载前

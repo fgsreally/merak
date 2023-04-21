@@ -12,6 +12,7 @@ export class Merak {
   /** 所有子应用共享 */
   static namespace: Record<string, any> = {}
 
+  static lifeCycle = new LifeCycle()
   /** css隔离容器 */
 
   public shadowRoot: ShadowRoot
@@ -100,9 +101,12 @@ export class Merak {
     return Merak.namespace
   }
 
-  protected execHook<Stage extends keyof LifeCycle>(stage: Stage, params?: Parameters<LifeCycle[Stage]>[0]) {
+  protected execHook<Stage extends keyof LifeCycle>(stage: Stage, params?: Omit<Parameters<LifeCycle[Stage]>[0], 'instance'>) {
+    const args = { ...params, instance: this }
     // @ts-expect-error lifecycle work
-    return this.lifeCycle[stage]?.(params)
+    Merak.lifeCycle[stage]?.(args)
+    // @ts-expect-error lifecycle work
+    return this.lifeCycle[stage]?.({ ...params, instance: this })
   }
 
   protected cleanEvents() {
@@ -180,7 +184,7 @@ export class Merak {
             return !script.hasAttribute('merak-ignore') && script.type !== 'importmap'
           }).map(script => cloneScript(script, this.fakeGlobalVar, this.globalVars))
 
-          this.execHook('execScript', { originScripts, scripts });
+          this.execHook('transformScript', { originScripts, scripts });
           // TODO JS queue
           (this.iframe?.contentDocument || this.sandDocument).querySelector('body')?.append(...scripts)
           // only invoke mount event after all scripts load/fail
@@ -209,7 +213,7 @@ export class Merak {
         this.sandDocument.querySelector('body')?.appendChild(ele)
 
         if (!this.execFlag) {
-          this.execHook('execScript', { originScripts, scripts });
+          this.execHook('transformScript', { originScripts, scripts });
 
           (this.iframe ? this.iframe.contentDocument : this.sandDocument)!.querySelector('body')!.append(...scripts)
           Promise.all(scripts.map(scriptPrimise)).catch((e) => {
@@ -232,7 +236,7 @@ export class Merak {
       }
     }
 
-    this.execHook('tranformDocument', this.sandDocument!)
+    this.execHook('tranformDocument', { ele: this.sandDocument! })
     this.shadowRoot.appendChild(this.sandDocument!)
     // ExecFlag will be false if it is the first time to mount
     this.execFlag && eventTrigger(window, MERAK_EVENT_MOUNT + this.id)
@@ -290,3 +294,34 @@ export class Merak {
     this.cleanEvents()
   }
 }
+
+export function beforeMount(cb: LifeCycle['beforeMount']) {
+  Merak.lifeCycle.beforeMount = cb
+}
+export function beforeUnmount(cb: LifeCycle['beforeUnmount']) {
+  Merak.lifeCycle.beforeUnmount = cb
+}
+
+export function afterUnmount(cb: LifeCycle['afterUnmount']) {
+  Merak.lifeCycle.afterUnmount = cb
+}
+
+export function destroy(cb: LifeCycle['destroy']) {
+  Merak.lifeCycle.destroy = cb
+}
+
+export function transformScript(cb: LifeCycle['transformScript']) {
+  Merak.lifeCycle.transformScript = cb
+}
+
+export function tranformDocument(cb: LifeCycle['tranformDocument']) {
+  Merak.lifeCycle.tranformDocument = cb
+}
+export function errorHandler(cb: LifeCycle['errorHandler']) {
+  Merak.lifeCycle.errorHandler = cb
+}
+
+errorHandler(({ error, instance, type }) => {
+  error.message = `[merak:${instance.id}] ${type}\n${error.message}`
+  console.error(error)
+})

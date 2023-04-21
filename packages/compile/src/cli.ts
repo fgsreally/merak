@@ -14,10 +14,14 @@ const require = createRequire(root)
 
 cli
   .command('', 'parse all file to merak-format')
-  .action(async () => {
+  .option('-c, --config', 'config file', {
+    default: 'merak.config.json',
+  })
+
+  .action(async (options) => {
     const {
       dir = '', globals, fakeGlobalVar, format = 'esm', isinLine = true, outDir = 'dist', includes = ['index.html', '**/*.js', '*.js', '**/*.css'], exclude = ['node_modules/**/*'], logPath,
-    } = getConfig()
+    } = getConfig(options.config)
     if (!isVarName(fakeGlobalVar))
       throw new Error(`${fakeGlobalVar} is not a valid var`)
 
@@ -70,7 +74,7 @@ cli
     logPath && logger.output(resolve(root, logPath))
   })
 
-function getConfig() {
+function getConfig(configPath: string) {
   /**
    * {
    *  "globals":[...],
@@ -80,7 +84,7 @@ function getConfig() {
    *  "format":esm/iife
    * }
    */
-  return require(resolve(root, 'merak.config.json'))
+  return require(resolve(root, configPath))
 }
 
 cli.help()

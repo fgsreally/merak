@@ -93,3 +93,13 @@ export function $time() {
     time = Date.now() - $instance()!.timestamp
   return time
 }
+
+export function $stopProp() {
+  if (isMerak()) {
+    ['click', 'mousemove', 'mousedown', 'mouseup', 'keydown', 'keyup'].forEach((eventName) => {
+      document.body.addEventListener(eventName, (event) => {
+        event.stopPropagation()
+      })
+    })
+  }
+}

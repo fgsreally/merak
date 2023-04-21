@@ -242,7 +242,6 @@ export class Merak {
 
     this.execHook('tranformDocument', { ele: this.sandDocument! })
     this.shadowRoot.appendChild(this.sandDocument!)
-    console.log(this.sandDocument)
     // ExecFlag will be false if it is the first time to mount
     this.execFlag && eventTrigger(window, MERAK_EVENT_MOUNT + this.id)
     this.execHook('afterMount')

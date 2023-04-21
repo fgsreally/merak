@@ -2,7 +2,7 @@ import { MERAK_DATA_FAKEGLOBALVAR, MERAK_DATA_ID } from './common'
 import { Merak } from './merak'
 import type { ProxyGlobals } from './types'
 
-export function transformScript(idAndName: string, url: string, proxy: ProxyGlobals) {
+export function execScript(idAndName: string, url: string, proxy: ProxyGlobals) {
   if (!getInstance(idAndName)) {
   // eslint-disable-next-line @typescript-eslint/indent, no-new
   new Merak(idAndName, url, { proxy })

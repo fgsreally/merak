@@ -11,3 +11,8 @@ app.use(createPinia())
 app.use(router)
 
 app.mount('#app')
+
+document.addEventListener('click', (e) => {
+  console.log(e.currentTarget, e.target)
+  console.log('click')
+})

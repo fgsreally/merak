@@ -85,3 +85,11 @@ export function $props<T = Record<string, any>>(): undefined | T {
 export function $namespace() {
   return $instance()?.namespace
 }
+
+let time: number
+// only work once
+export function $time() {
+  if (!time)
+    time = Date.now() - $instance()!.timestamp
+  return time
+}

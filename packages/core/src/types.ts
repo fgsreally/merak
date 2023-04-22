@@ -5,33 +5,12 @@ export interface MerakConfig {
 }
 
 export interface LoadDone {
-  id: string
   url: string
+  id: string
   fakeGlobalVar: string
   template: string
-
   globals: string[]
 
-}
-
-export interface TransformDone {
-  cmd: 'transform'
-  code: string
-  id: string
-}
-
-export interface ErrorHandleDone {
-  cmd: 'error'
-  e: any
-}
-
-export type LoaderHookParam = LoadDone | TransformDone | ErrorHandleDone
-
-export interface LoaderPlugin<Loader> {
-  init?(loader: Loader): void
-  errorHandler?(err: Error): any
-  load?(param: LoadDone): void
-  transform?(param: TransformDone): string
 }
 
 export interface ProxyGlobals {

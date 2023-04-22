@@ -143,7 +143,7 @@ export class Merak {
 
       else {
         this.perf.record('load')
-        const { template, fakeGlobalVar, globals } = loadRes
+        const { template, fakeGlobalVar, globals } = this.execHook('load', loadRes) || loadRes
 
         this.template = template
         this.globalVars = globals

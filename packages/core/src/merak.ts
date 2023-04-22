@@ -7,24 +7,26 @@ import { eventTrigger, scriptPrimise } from './utils'
 import { MerakMap, getBodyStyle } from './helper'
 import { LifeCycle } from './lifecycle'
 import { cloneScript } from './compile'
+import type { Perf } from './perf'
 
 export class Merak {
   /** 所有子应用共享 */
   static namespace: Record<string, any> = {}
-
+  /** 共用生命周期 */
   static lifeCycle = new LifeCycle()
   /** css隔离容器 */
-
   public shadowRoot: ShadowRoot
   /** shadowroot 下的 document */
 
   public sandDocument: HTMLElement | null
-  /** iframe 容器 */
 
+  /** iframe 容器 */
   public iframe: HTMLIFrameElement | null
+
   /** window代理 */
   public proxy: Window
 
+  public perf: Perf
   /** 所有全局的代理 */
   public proxyMap = {} as unknown as ProxyGlobals
 
@@ -36,9 +38,6 @@ export class Merak {
 
   /** 挂载数据 */
   public props: any
-
-  /** 生命周期 */
-  public lifeCycle = new LifeCycle()
 
   /** 子应用激活标志 */
   public activeFlag = false
@@ -106,10 +105,9 @@ export class Merak {
 
   protected execHook<Stage extends keyof LifeCycle>(stage: Stage, params?: Omit<Parameters<LifeCycle[Stage]>[0], 'instance'>) {
     const args = { ...params, instance: this }
+
     // @ts-expect-error lifecycle work
-    Merak.lifeCycle[stage]?.(args)
-    // @ts-expect-error lifecycle work
-    return this.lifeCycle[stage]?.({ ...params, instance: this })
+    return Merak.lifeCycle[stage]?.(args)
   }
 
   protected cleanEvents() {
@@ -137,14 +135,16 @@ export class Merak {
     if (this.loadPromise)
       return this.loadPromise
     const { id, url, configUrl } = this
+    this.perf.record('load')
     return this.loadPromise = (this.loader!.load(id, url, configUrl) as Promise<LoadDone>).then((loadRes) => {
-      const { template, fakeGlobalVar, globals, cmd } = loadRes
-      // @ts-expect-error load error
-      if (cmd === 'error') {
-        this.execHook('errorHandler', { type: 'loadError', error: (loadRes as any).e })
+      if (loadRes instanceof Error) {
+        this.execHook('errorHandler', { type: 'loadError', error: loadRes as any })
       }
 
       else {
+        this.perf.record('load')
+        const { template, fakeGlobalVar, globals } = loadRes
+
         this.template = template
         this.globalVars = globals
         this.setGlobalVar(fakeGlobalVar)
@@ -152,24 +152,22 @@ export class Merak {
     })
   }
 
-  //   /**
-  //  * @experiment
-  //  */
-  //   preRender() {
-  //     const proxyEle = document.createElement('merak-app')
-  //     proxyEle.setAttribute(MERAK_DATA_ID, this.id)
-  //     proxyEle.setAttribute('style', 'display:none')
-  //     this.execHook('prerender', proxyEle)
-  //     document.body.appendChild(proxyEle)
-  //     this.isRender = true
-  //   }
-
   private mountTemplateAndScript(ele?: ParentNode) {
     this.execHook('beforeMount')
     this.active()
 
     if (!this.cacheFlag) {
       this.sandDocument = document.importNode(window.document.implementation.createHTMLDocument('').documentElement, true)
+      if (this.mountIndex === 0) {
+        this.perf.record('bootstrap')
+
+        this.timestamp = Date.now()
+        const shade = document.createElement('div')
+        shade.setAttribute('style', MERAK_SHADE_STYLE)
+        this.sandDocument.insertBefore(shade, this.sandDocument.firstChild)
+        const body = this.sandDocument.querySelector('body')!
+        body.setAttribute('style', getBodyStyle())
+      }
       // work for spa
       if (this.loader) {
         if (!this.template) {
@@ -194,6 +192,8 @@ export class Merak {
           Promise.all(scripts.map(scriptPrimise)).catch((e) => {
             return this.execHook('errorHandler', { type: 'scriptError', error: e })
           }).finally(() => {
+            this.perf.record('bootstrap')
+
             this.execFlag = true
             eventTrigger(window, MERAK_EVENT_MOUNT + this.id)
           })
@@ -222,6 +222,8 @@ export class Merak {
           Promise.all(scripts.map(scriptPrimise)).catch((e) => {
             return this.execHook('errorHandler', { type: 'scriptError', error: e })
           }).finally(() => {
+            this.perf.record('bootstrap')
+
             this.execFlag = true
             eventTrigger(window, MERAK_EVENT_MOUNT + this.id)
           })
@@ -229,14 +231,6 @@ export class Merak {
         else {
           eventTrigger(window, MERAK_EVENT_RELUNCH + this.id)
         }
-      }
-      if (this.mountIndex === 0) {
-        this.timestamp = Date.now()
-        const shade = document.createElement('div')
-        shade.setAttribute('style', MERAK_SHADE_STYLE)
-        this.sandDocument.insertBefore(shade, this.sandDocument.firstChild)
-        const body = this.sandDocument.querySelector('body')!
-        body.setAttribute('style', getBodyStyle())
       }
     }
 
@@ -324,8 +318,3 @@ export function tranformDocument(cb: LifeCycle['tranformDocument']) {
 export function errorHandler(cb: LifeCycle['errorHandler']) {
   Merak.lifeCycle.errorHandler = cb
 }
-
-errorHandler(({ error, instance, type }) => {
-  error.message = `[merak:${instance.id}] ${type}\n${error.message}`
-  console.error(error)
-})

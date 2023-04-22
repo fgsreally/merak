@@ -1,5 +1,5 @@
 import { compileHTML } from '../compile'
-import type { LoadDone, LoaderHookParam, LoaderPlugin, MerakConfig } from '../types'
+import type { LoadDone, MerakConfig } from '../types'
 
 import { loadJSONFile, loadTextFile, resolveHtmlConfig, resolveUrl } from '../utils'
 
@@ -9,15 +9,6 @@ export async function loadConfig(url: string) {
 
 export class PureLoader {
   public loadCache: Map<string, LoadDone> = new Map()
-
-  constructor(public plugins?: LoaderPlugin<PureLoader>,
-  ) {
-    this.execHook('init', this as any)
-  }
-
-  execHook(hook: keyof LoaderPlugin<PureLoader>, param?: LoaderHookParam) {
-    return this.plugins?.[hook]?.(param as any) || param
-  }
 
   async load(id: string, url: string, configUrl?: string) {
     if (this.loadCache.has(id))
@@ -36,19 +27,16 @@ export class PureLoader {
         htmlStr = ret.html
         config = ret.config as unknown as MerakConfig
       }
-      const { code } = await this.execHook('transform', { cmd: 'transform', code: htmlStr, id }) as any
 
-      const template = compileHTML(code, url, config._l)
+      const template = compileHTML(htmlStr, url, config._l)
 
-      const loadRes = { cmd: 'load' as const, id, url, fakeGlobalVar: config._f, template, globals: config._g } as LoadDone
-
-      await this.execHook('load', loadRes)
+      const loadRes = { id, url, fakeGlobalVar: config._f, template, globals: config._g } as LoadDone
 
       this.loadCache.set(id, loadRes)
       return loadRes
     }
     catch (e) {
-      return this.execHook('errorHandler', { cmd: 'error', e } as any)
+      return e
     }
   }
 }

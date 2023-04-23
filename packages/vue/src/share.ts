@@ -3,14 +3,10 @@ import type { PropType } from 'vue'
 
 export const shareEmits = {
 
-  beforeMount: () => true,
-  afterMount: () => true,
-  beforeUnmount: () => true,
-  afterUnmount: () => true,
-  destroy: () => true,
-  transformScript: (_: { originScripts: HTMLScriptElement[]; scripts: HTMLScriptElement[] }) => true,
-  // 挂载document前
-  tranformDocument: (_: HTMLElement) => true,
+  mount: (_id?: string) => true,
+  relunch: (_id?: string) => true,
+  hidden: (_id?: string) => true,
+  destroy: (_id?: string) => true,
 
 }
 

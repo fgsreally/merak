@@ -17,6 +17,7 @@
   "license": "MIT",
   "dependencies": {
     "merak-core": "workspace:*",
+    "merak-helper": "workspace:*",
     "vue": "^3.2.47"
   },
   "devDependencies": {

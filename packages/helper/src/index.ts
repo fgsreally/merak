@@ -86,7 +86,7 @@ export function $namespace() {
   return $instance()?.namespace
 }
 
-export function $perf(){
+export function $perf() {
   return $instance()?.perf
 }
 

@@ -19,7 +19,7 @@ function render() {
   app.mount('#app')
 }
 
-render()
+$onMount(render)
 $stopProp()
 $onDestroy(() => {
   app.unmount()

@@ -245,7 +245,7 @@ export function createProxyLocation(id: string) {
 
 export function createProxy(id: string, url: string) {
   const { globals: { setTimeout, setInterval }, free } = patchTimer()
-  window.addEventListener(getMerakEvent('destory', id), free)
+  window.addEventListener(`${MERAK_EVENT_DESTROY}${id}`,free)
   return { document: createProxyDocument(id, url), window: createProxyWindow(id, url), history: createProxyHistory(id), location: createProxyLocation(id), setTimeout, setInterval }
 }
 

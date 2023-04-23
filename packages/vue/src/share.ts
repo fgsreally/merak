@@ -1,12 +1,13 @@
+/* eslint-disable @typescript-eslint/no-unused-vars */
 import type { ProxyGlobals } from 'merak-core'
 import type { PropType } from 'vue'
 
 export const shareEmits = {
 
-  mount: (_id?: string) => true,
-  relunch: (_id?: string) => true,
-  hidden: (_id?: string) => true,
-  destroy: (_id?: string) => true,
+  mount: (id: string) => true,
+  relunch: (id: string) => true,
+  hidden: (id: string) => true,
+  destroy: (id: string) => true,
 
 }
 

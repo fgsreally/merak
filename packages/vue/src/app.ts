@@ -11,7 +11,7 @@ export const MerakApp = defineComponent({
     configUrl: String,
 
     loader: {
-      type: Object as PropType<typeof PureLoader>,
+      type: Object as PropType< PureLoader>,
       default: vueLoader,
     },
 
@@ -22,7 +22,8 @@ export const MerakApp = defineComponent({
     const app = getInstance(name) || new Merak(name, url, { loader, configUrl, proxy, iframe })
     app.props = MerakProps
     for (const ev in shareEmits)
-      app.lifeCycle[ev] = (arg: any) => emit(ev as any, arg)
+      {
+        Merak.lifeCycle[ev] = (arg: any) => emit(ev as any, arg)}
     expose({ app })
     return () => h('merak-app', { [MERAK_DATA_ID]: name, [MERAK_KEEP_ALIVE]: keepAlive })
   },

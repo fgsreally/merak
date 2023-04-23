@@ -13,8 +13,8 @@ export class LifeCycle {
   tranformDocument: (params: { instance: Merak; ele: HTMLElement }) => void
 
   // 错误处理
-  errorHandler: (params: { type: 'scriptError' | 'loadError'; error: any; instance: Merak }) => any = ({ error, instance, type }) => {
-    error.message = `[merak:${instance.id}] ${type}\n${error.message}`
+  errorHandler: (params: { type: 'scriptError' | 'loadError'; error: Error; instance: Merak }) => any = ({ error, instance, type }) => {
+    console.error(`[merak:${instance.id}] ${type}:${error.message}`)
     console.error(error)
   }
 }

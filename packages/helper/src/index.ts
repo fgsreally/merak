@@ -86,12 +86,8 @@ export function $namespace() {
   return $instance()?.namespace
 }
 
-let time: number
-// only work once
-export function $time() {
-  if (!time)
-    time = Date.now() - $instance()!.timestamp
-  return time
+export function $perf(){
+  return $instance()?.perf
 }
 
 export function $stopProp() {

@@ -2,6 +2,7 @@ import type { ProxyGlobals } from 'merak-core'
 import type { PropType } from 'vue'
 
 export const shareEmits = {
+
   beforeMount: () => true,
   afterMount: () => true,
   beforeUnmount: () => true,
@@ -10,9 +11,7 @@ export const shareEmits = {
   transformScript: (_: { originScripts: HTMLScriptElement[]; scripts: HTMLScriptElement[] }) => true,
   // 挂载document前
   tranformDocument: (_: HTMLElement) => true,
-  // 渲染结果挂载前
-  prerender: (_: HTMLElement) => true
-  ,
+
 }
 
 export const shareProps = {

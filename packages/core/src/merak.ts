@@ -7,7 +7,7 @@ import { eventTrigger, scriptPrimise } from './utils'
 import { MerakMap, getBodyStyle } from './helper'
 import { LifeCycle } from './lifecycle'
 import { cloneScript } from './compile'
-import type { Perf } from './perf'
+import { Perf } from './perf'
 
 export class Merak {
   /** 所有子应用共享 */
@@ -26,7 +26,7 @@ export class Merak {
   /** window代理 */
   public proxy: Window
 
-  public perf: Perf
+  public perf = new Perf()
   /** 所有全局的代理 */
   public proxyMap = {} as unknown as ProxyGlobals
 
@@ -44,9 +44,6 @@ export class Merak {
 
   /** 子应用挂载次数 */
   public mountIndex = 0
-
-  /** 初次挂载时间 */
-  public timestamp: number
 
   /** 子应用JS运行标志 */
   public execFlag = false
@@ -161,7 +158,6 @@ export class Merak {
       if (this.mountIndex === 0) {
         this.perf.record('bootstrap')
 
-        this.timestamp = Date.now()
         const shade = document.createElement('div')
         shade.setAttribute('style', MERAK_SHADE_STYLE)
         this.sandDocument.insertBefore(shade, this.sandDocument.firstChild)

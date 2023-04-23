@@ -3,10 +3,11 @@ export class Perf {
   protected _timeRecord: Record<string, number> = {}
   protected eventRecord: Record<string, ((arg: number) => void)[]> = {}
   record(eventName: string) {
+    if (this.timeRecord[eventName])
+      return
     if (!this._timeRecord[eventName]) {
       this._timeRecord[eventName] = Date.now()
     }
-
     else {
       const time = Date.now() - this._timeRecord[eventName]
       this.timeRecord[eventName] = time

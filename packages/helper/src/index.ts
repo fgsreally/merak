@@ -12,7 +12,7 @@ export function $document(): Document {
   return isMerak() ? (document as any).rawDocument : document
 }
 
-export function getMerakEvent(event: string) {
+export function $event(event: string) {
   return `merak_${event}`
 }
 
@@ -29,7 +29,7 @@ export function $head(): HTMLHeadElement {
 }
 
 export function $on(eventName: MerakEvent, cb: () => any) {
-  const event = getMerakEvent(eventName)
+  const event = $event(eventName)
   if (isMerak())
     window.addEventListener(event, cb)
   return () => isMerak() && window.removeEventListener(event, cb)

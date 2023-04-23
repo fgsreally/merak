@@ -1,11 +1,27 @@
 export class Perf {
   public timeRecord: Record<string, number> = {}
   protected _timeRecord: Record<string, number> = {}
-  record(type: string) {
-    if (!this._timeRecord[type])
-      this._timeRecord[type] = Date.now()
+  protected eventRecord: Record<string, ((arg: number) => void)[]> = {}
+  record(eventName: string) {
+    if (!this._timeRecord[eventName]) {
+      this._timeRecord[eventName] = Date.now()
+    }
 
-    else
-      this.timeRecord[type] = Date.now() - this._timeRecord[type]
+    else {
+      const time = Date.now() - this._timeRecord[eventName]
+      this.timeRecord[eventName] = time
+      this.emit(eventName, time)
+    }
+  }
+
+  on(eventName: string, cb: (arg: number) => void) {
+    if (this.eventRecord[eventName])
+      this.eventRecord[eventName] = []
+    this.eventRecord[eventName].push(cb)
+  }
+
+  emit(eventName: string, arg: number) {
+    if (this.eventRecord[eventName])
+      this.eventRecord[eventName].forEach(cb => cb(arg))
   }
 }

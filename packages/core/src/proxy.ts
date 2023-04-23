@@ -1,6 +1,6 @@
 /* eslint-disable no-prototype-builtins */
 import { HMR_VAR, MERAK_EVENT_DESTROY, MERAK_EVENT_PREFIX } from './common'
-import { getMerakEvent, getUrlQuery, isBoundedFunction, isCallable, isConstructable } from './utils'
+import { getUrlQuery, isBoundedFunction, isCallable, isConstructable } from './utils'
 import type { Merak } from './merak'
 import { getInstance } from './helper'
 import { patchTimer } from './patch/timer'
@@ -245,7 +245,7 @@ export function createProxyLocation(id: string) {
 
 export function createProxy(id: string, url: string) {
   const { globals: { setTimeout, setInterval }, free } = patchTimer()
-  window.addEventListener(`${MERAK_EVENT_DESTROY}${id}`,free)
+  window.addEventListener(`${MERAK_EVENT_DESTROY}${id}`, free)
   return { document: createProxyDocument(id, url), window: createProxyWindow(id, url), history: createProxyHistory(id), location: createProxyLocation(id), setTimeout, setInterval }
 }
 

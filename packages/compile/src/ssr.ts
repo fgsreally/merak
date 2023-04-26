@@ -9,7 +9,7 @@ export class SsrTransformer extends Transform {
   private parser: htmlparser.Parser
   constructor(public readonly url: string, public templateAttrs: Record<string, string>) {
     super()
-    this.push(`<template${mergeAttrs(templateAttrs)}>`)
+    this.push(`<template data-merak-url='${url}' ${mergeAttrs(templateAttrs)}>`)
     this.parser = new htmlparser.Parser({
       onopentag: (tag, attrs) => {
         if ('merak-ignore' in attrs)

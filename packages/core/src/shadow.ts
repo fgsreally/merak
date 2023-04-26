@@ -1,7 +1,6 @@
 import { MERAK_DATA_FAKEGLOBALVAR, MERAK_DATA_ID, MERAK_KEEP_ALIVE } from './common'
 import type { Merak } from './merak'
 import { getInstance } from './helper'
-import { patchLink, patchScript } from './patch/element'
 
 export function defineWebComponent() {
   class MerakBlock extends HTMLElement {
@@ -59,13 +58,6 @@ export function defineWebComponent() {
 
       const templateNode = this.templateNode
 
-      if (!templateNode.hasAttribute('m-c')) {
-        const links = [...templateNode.content.querySelectorAll('link')]
-        patchLink(links, app.url)
-        const scripts = [...templateNode.content.querySelectorAll('script')]
-        patchScript(scripts, app.url)
-        templateNode.setAttribute('m-c', '')
-      }
       if (app.mountFlag) {
         if (__DEV__)
           throw new Error(` app [${id}] has been mounted`)

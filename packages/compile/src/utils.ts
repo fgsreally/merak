@@ -25,3 +25,6 @@ export function checkIsDanger(node: any, warning: any[]) {
   if (DANGER_IDENTIFIERS.includes(node.name))
     warning.push({ info: `"${node.name}" is danger,need to be wrapped in $sandbox`, loc: node.loc ! })
 }
+export function resolveUrl(filePath: string, baseURL: string) {
+  return new URL(filePath, baseURL).href
+}

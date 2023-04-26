@@ -7,7 +7,7 @@ import isVarName from 'is-var-name'
 import type { TransformOptions } from './transform'
 
 import { transformAsset, transformChunk, transformHtml } from './transform'
-export function Merak(fakeGlobalVar: string, globals: string[], opts: { isinLine?: boolean; includes?: FilterPattern; exclude?: FilterPattern; logPath?: string }): PluginOption {
+export function Merak(fakeGlobalVar: string, globals: string[], opts: { isinLine?: boolean; includes?: FilterPattern; exclude?: FilterPattern; logPath?: string } = {}): PluginOption {
   if (!isVarName(fakeGlobalVar))
     throw new Error(`${fakeGlobalVar} is not a valid var`)
 
@@ -26,7 +26,7 @@ export function Merak(fakeGlobalVar: string, globals: string[], opts: { isinLine
   const filter = createFilter(includes, exclude)
   const PATH_PLACEHOLDER = '/dynamic_base__/'
   let config: ResolvedConfig
-  const publicPath = `${fakeGlobalVar}.__merak_url__`
+  const publicPath = `${fakeGlobalVar}.__merak_url__||''`
   // const preloadHelperId = 'vite/preload-helper'
 
   const baseOptions: TransformOptions = { assetsDir: 'assets', base: PATH_PLACEHOLDER, publicPath: ` ${publicPath}` }
@@ -34,7 +34,13 @@ export function Merak(fakeGlobalVar: string, globals: string[], opts: { isinLine
     name: 'vite-plugin-merak:dev',
     apply: 'serve',
     enforce: 'post',
-
+    // config(config, env) {
+    //   return {
+    //     define: {
+    //       [fakeGlobalVar]: {},
+    //     },
+    //   }
+    // },
     async transformIndexHtml(html) {
       html = html.replace('</head>', `</head><script merak-ignore>const ${fakeGlobalVar}=window.${fakeGlobalVar}||window</script>`)
       merakConfig._l = analyseHTML(html)
@@ -53,14 +59,17 @@ export function Merak(fakeGlobalVar: string, globals: string[], opts: { isinLine
     name: 'vite-plugin-merak:build',
     apply: 'build',
     enforce: 'post',
-    config() {
-      return {
-        base: PATH_PLACEHOLDER,
+    config(_conf) {
+      if (!_conf) {
+        return {
+          base: PATH_PLACEHOLDER,
+        }
       }
     },
     configResolved(_conf) {
       config = _conf
       baseOptions.assetsDir = _conf.build.assetsDir
+      baseOptions.base = _conf.base
     },
 
     async renderChunk(raw, chunk, opts) {

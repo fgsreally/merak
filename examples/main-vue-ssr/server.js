@@ -1,56 +1,35 @@
-// @ts-check
+/* eslint-disable @typescript-eslint/ban-ts-comment */
 import fs from 'node:fs'
 import path from 'node:path'
 import { fileURLToPath } from 'node:url'
 import express from 'express'
 import axios from 'axios'
-import compile from 'merak-compile'
+// import adapter from 'axios/lib/adapters/http.js'
 
-const { resolveHtmlConfig } = compile
-
-const isTest = process.env.VITEST
-
-export async function createServer(
-  root = process.cwd(),
-  isProd = process.env.PROD,
-  hmrPort,
-) {
+// axios.defaults.adapter = adapter
+const isTest = process.env.NODE_ENV === 'test' || !!process.env.VITE_TEST_BUILD
+const isProduction = true || process.env.NODE_ENV === 'production'
+export async function createServer(root = process.cwd(), isProd = isProduction) {
   const __dirname = path.dirname(fileURLToPath(import.meta.url))
   const resolve = p => path.resolve(__dirname, p)
-
-  const indexProd = isProd
-    ? fs.readFileSync(resolve('dist/client/index.html'), 'utf-8')
-    : ''
-
-  const manifest = isProd
-    ? JSON.parse(
-      fs.readFileSync(resolve('dist/client/ssr-manifest.json'), 'utf-8'),
-    )
-    : {}
+  const indexProd = isProd ? fs.readFileSync(resolve('dist/client/index.html'), 'utf-8') : ''
+  const manifest = isProd ? JSON.parse(fs.readFileSync(resolve('dist/client/ssr-manifest.json'), 'utf-8')) : {}
+  // @ts-expect-error
 
   const app = express()
 
-  /**
-   * @type {import('vite').ViteDevServer}
-   */
   let vite
   if (!isProd) {
     vite = await (
       await import('vite')
     ).createServer({
-      base: '/test/',
       root,
       logLevel: isTest ? 'error' : 'info',
       server: {
         middlewareMode: true,
         watch: {
-          // During tests we edit the files too fast and sometimes chokidar
-          // misses change events, so enforce polling for consistency
           usePolling: true,
           interval: 100,
-        },
-        hmr: {
-          port: hmrPort,
         },
       },
       appType: 'custom',
@@ -59,41 +38,52 @@ export async function createServer(
     app.use(vite.middlewares)
   }
   else {
-    app.use((await import('compression')).default())
+    // app.use((await import('compression')).default())
     app.use(
-      '/test/',
       (await import('serve-static')).default(resolve('dist/client'), {
         index: false,
       }),
     )
   }
 
+  app.use('/justTest/getFruitList', async (req, res) => {
+    const names = ['Orange', 'Apricot', 'Apple', 'Plum', 'Pear', 'Pome', 'Banana', 'Cherry', 'Grapes', 'Peach']
+    const list = names.map((name, id) => {
+      return {
+        id: ++id,
+        name,
+        price: Math.ceil(Math.random() * 100),
+      }
+    })
+    const data = {
+      data: list,
+      code: 0,
+      msg: '',
+    }
+    res.end(JSON.stringify(data))
+  })
+
   app.use('*', async (req, res) => {
     try {
-      const url = req.originalUrl.replace('/test/', '/')
+      const url = req.originalUrl
 
       let template, render
       if (!isProd) {
         // always read fresh template in dev
         template = fs.readFileSync(resolve('index.html'), 'utf-8')
         template = await vite.transformIndexHtml(url, template)
-        render = (await vite.ssrLoadModule('/src/entry-server.ts')).render
+        render = (await vite.ssrLoadModule('/src/entry-server')).render
       }
       else {
         template = indexProd
-        // @ts-expect-error
-        render = (await import('./dist/server/entry-server.ts')).render
+        render = (await import('./dist/server/entry-server.js')).render
       }
 
-      const [appHtml, preloadLinks] = await render(url, manifest)
-
-      // work for merak ; stream should be better
-      const { data: htmlTemplate } = await axios.get('http://127.0.0.1:4004/index.html')
+      const [appHtml, links] = await render(url, manifest)
 
       const html = template
-        .replace('<!--preload-links-->', preloadLinks)
+        .replace('<!--preload-links-->', links)
         .replace('<!--app-html-->', appHtml)
-        .replace('</body>', `${makeMerakTemplate(htmlTemplate)}</body>`)
 
       res.status(200).set({ 'Content-Type': 'text/html' }).end(html)
     }
@@ -109,13 +99,8 @@ export async function createServer(
 
 if (!isTest) {
   createServer().then(({ app }) =>
-    app.listen(5004, () => {
-      console.log('http://localhost:5004')
+    app.listen(80, () => {
+      console.log('http://localhost:80')
     }),
   )
-}
-
-function makeMerakTemplate(t) {
-  const { html, config } = resolveHtmlConfig(t)
-  return `<template data-merak-ssr="${config._f}" merak-config=${JSON.stringify({ _f: config._f })}>${html}</template>`
 }

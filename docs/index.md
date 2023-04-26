@@ -9,7 +9,7 @@ hero:
   text: 基于编译、剑走偏锋的微前端方案
   tagline: 基于编译 + 运行的思路
   image:
-    src: /wujie.png
+    src: /merak.png
     alt: Merak
   Introduction: 天璇方案
   actions:

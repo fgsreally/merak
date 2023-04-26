@@ -2,13 +2,17 @@ import { URL, fileURLToPath } from 'node:url'
 
 import { defineConfig } from 'vite'
 import vue from '@vitejs/plugin-vue'
+import { Merak, merakPostCss } from 'vite-plugin-merak'
+import Inspect from 'vite-plugin-inspect'
 
 // https://vitejs.dev/config/
 export default defineConfig({
-  plugins: [vue()],
+  plugins: [vue(), Inspect(), Merak('vite_vue_ssr', ['__VUE_OPTIONS_API__'], { exclude: /(entry.server|main).ts/ })],
   resolve: {
     alias: {
       '@': fileURLToPath(new URL('./src', import.meta.url)),
+      'merak-core/loader': 'http://localhost:3000/loaders/index.mjs',
+      'merak-core': 'http://localhost:3000/index.mjs',
     },
   },
   define: {
@@ -19,5 +23,10 @@ export default defineConfig({
   },
   server: {
     port: 5004,
+  },
+  css: {
+    postcss: {
+      plugins: [merakPostCss()],
+    },
   },
 })

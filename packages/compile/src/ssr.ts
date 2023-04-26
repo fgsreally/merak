@@ -5,6 +5,10 @@ import { resolveUrl } from './utils'
 function mergeAttrs(attrs: Record<string, string>) {
   return Object.entries(attrs).reduce((p, c) => `${p} ${c[0]}='${c[1]}'`, '')
 }
+
+export function createTemplate(urlHtmlMap: Record<string, string>) {
+  return Object.entries(urlHtmlMap).reduce((p, c) => `${p}<template data-merak-url='${c[0]}'>${c[1]}</template>`, '')
+}
 export class SsrTransformer extends Transform {
   private parser: htmlparser.Parser
   constructor(public readonly url: string, public templateAttrs: Record<string, string>) {

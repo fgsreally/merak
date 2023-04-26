@@ -14,7 +14,7 @@ export function desctructGlobal(globals: string[]) {
 export function resolveHtmlConfig(html: string) {
   let config
 
-  html = html.replace(/<merak-base[^>]+config=['"](.*)['"][\s>]<\/merak-base>/, (js, conf) => {
+  html = html.replace(/<m-b[^>]+config=['"](.*)['"][\s>]<\/m-b>/, (js, conf) => {
     config = JSON.parse(conf)
     return ''
   })

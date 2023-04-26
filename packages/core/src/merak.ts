@@ -112,8 +112,9 @@ export class Merak {
       this.cacheEvent.pop()!()
   }
 
-  setGlobalVar(fakeGlobalVar: string) {
+  setGlobalVar(fakeGlobalVar: string, globalVars: string[]) {
     this.fakeGlobalVar = fakeGlobalVar
+    this.globalVars = globalVars
   }
 
   active() {
@@ -143,8 +144,7 @@ export class Merak {
         const { template, fakeGlobalVar, globals } = this.execHook('load', loadRes) || loadRes
 
         this.template = template
-        this.globalVars = globals
-        this.setGlobalVar(fakeGlobalVar)
+        this.setGlobalVar(fakeGlobalVar, globals)
       }
     })
   }

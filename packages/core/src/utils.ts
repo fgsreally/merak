@@ -16,8 +16,6 @@ export function resolveUrl(filePath: string, baseURL: string) {
   return new URL(filePath, baseURL).href
 }
 
-
-
 export function getUrlQuery(url: string) {
   const query = url.split('?')[1]
   return query ? JSON.parse(decodeURIComponent(query)) : {}
@@ -41,7 +39,7 @@ export function eventTrigger(el: HTMLElement | Window | Document, eventName: str
 export function resolveHtmlConfig(html: string) {
   let config
 
-  html = html.replace(/<merak-base[^>]+config=['"](.*)['"][\s>]<\/merak-base>/, (js, conf) => {
+  html = html.replace(/<m-b[^>]+config=['"](.*)['"][\s>]<\/m-b>/, (js, conf) => {
     config = JSON.parse(conf)
     return ''
   })

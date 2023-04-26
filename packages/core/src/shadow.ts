@@ -22,7 +22,7 @@ export function defineWebComponent() {
       const shadowRoot = this.attachShadow({ mode: 'open' })
       app.shadowRoot = shadowRoot
       if (!app.activeFlag)
-        app.setGlobalVar(fakeGlobalVar)
+        app.setGlobalVar(fakeGlobalVar, [])
 
       app.mount()
     }
@@ -69,10 +69,10 @@ export function defineWebComponent() {
       const shadowRoot = this.attachShadow({ mode: 'open' })
       app.shadowRoot = shadowRoot
       if (!app.activeFlag) {
-        const { _f: fakeGlobalVar } = JSON.parse(templateNode.getAttribute('merak-config')!) as {
-          _f: string
+        const { _f: fakeGlobalVar, _g: globalVars } = JSON.parse(templateNode.content.querySelector('m-b')!.getAttribute('config')!) as {
+          _f: string, _g: string[]
         }
-        app.setGlobalVar(fakeGlobalVar)
+        app.setGlobalVar(fakeGlobalVar, globalVars)
       }
       app.mount(app.cacheFlag ? undefined : templateNode.content.cloneNode(true) as any)
     }

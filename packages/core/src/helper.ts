@@ -1,18 +1,19 @@
-import { MERAK_DATA_ID } from './common'
-import { Merak } from './merak'
-import type { ProxyGlobals } from './types'
+// import { MERAK_DATA_ID } from './common'
+// import { Merak } from './merak'
+// import type { ProxyGlobals } from './types'
 
-export function execScript(idAndName: string, url: string, proxy: ProxyGlobals) {
-  if (!getInstance(idAndName)) {
-  // eslint-disable-next-line @typescript-eslint/indent, no-new
-  new Merak(idAndName, url, { proxy })
-    const el = document.createElement('merak-block')
-    el.setAttribute(MERAK_DATA_ID, idAndName)
-    document.body.appendChild(el)
-  }
+// I think it is meaningless
+// export function execScript(idAndName: string, url: string, proxy: ProxyGlobals) {
+//   if (!getInstance(idAndName)) {
+//   // eslint-disable-next-line @typescript-eslint/indent, no-new
+//   new Merak(idAndName, url, { proxy })
+//     const el = document.createElement('merak-app')
+//     el.setAttribute(MERAK_DATA_ID, idAndName)
+//     document.body.appendChild(el)
+//   }
 
-  return import(url)
-}
+//   return import(url)
+// }
 
 export const MerakMap: Map<string, Merak> = window.$MerakMap || new Map()
 window.$MerakMap = MerakMap

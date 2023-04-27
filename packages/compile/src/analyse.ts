@@ -173,7 +173,7 @@ export function injectGlobalToIIFE(code: string, globalVar: string, globals: str
   return { code: s.toString(), map: s.generateMap({ hires: true }), warning, globals: injectGlobals }
 }
 
-export function injectGlobalToESM(code: string, globalVar: string, globals: string[]) {
+export function injectGlobalToESM(code: string, globalVar: string, globals: string[], force?: boolean) {
   const globalSet = new Set<string>()
   const ast = parseSync(code)
   const s = new MagicString(code)
@@ -198,8 +198,13 @@ export function injectGlobalToESM(code: string, globalVar: string, globals: stri
   })
 
   const injectGlobals = [...globalSet]
-  if (injectGlobals.length)
-    s.appendRight(lastImport || 0, `\nconst {${desctructGlobal(injectGlobals)}}=${globalVar};`)
+  if (force) {
+    s.appendRight(lastImport || 0, `\nconst {${desctructGlobal(globals)}}=${globalVar};`)
+  }
+  else {
+    if (injectGlobals.length)
+      s.appendRight(lastImport || 0, `\nconst {${desctructGlobal(injectGlobals)}}=${globalVar};`)
+  }
 
   return { code: s.toString(), map: s.generateMap({ hires: true }), warning, globals: injectGlobals }
 }

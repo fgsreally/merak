@@ -7,7 +7,7 @@ import isVarName from 'is-var-name'
 import type { TransformOptions } from './transform'
 
 import { transformAsset, transformChunk, transformHtml } from './transform'
-export function Merak(fakeGlobalVar: string, globals: string[], opts: { isinLine?: boolean; includes?: FilterPattern; exclude?: FilterPattern; logPath?: string } = {}): PluginOption {
+export function Merak(fakeGlobalVar: string, globals: string[], opts: { isinLine?: boolean; includes?: FilterPattern; exclude?: FilterPattern; logPath?: string; force?: boolean } = {}): PluginOption {
   if (!isVarName(fakeGlobalVar))
     throw new Error(`${fakeGlobalVar} is not a valid var`)
 
@@ -34,13 +34,7 @@ export function Merak(fakeGlobalVar: string, globals: string[], opts: { isinLine
     name: 'vite-plugin-merak:dev',
     apply: 'serve',
     enforce: 'post',
-    // config(config, env) {
-    //   return {
-    //     define: {
-    //       [fakeGlobalVar]: {},
-    //     },
-    //   }
-    // },
+
     async transformIndexHtml(html) {
       html = html.replace('</head>', `</head><script merak-ignore>const ${fakeGlobalVar}=window.${fakeGlobalVar}||window</script>`)
       merakConfig._l = analyseHTML(html)
@@ -78,7 +72,7 @@ export function Merak(fakeGlobalVar: string, globals: string[], opts: { isinLine
 
       const unUsedGlobals = analyseJSGlobals(raw, globalVars)
       unUsedGlobals.length > 0 && logger.collectUnusedGlobals(chunk.fileName, unUsedGlobals)
-      const { map, code, warning } = (opts.format === 'es' ? injectGlobalToESM : injectGlobalToIIFE)(raw, fakeGlobalVar, globalVars)
+      const { map, code, warning } = (opts.format === 'es' ? injectGlobalToESM : injectGlobalToIIFE)(raw, fakeGlobalVar, globalVars, resolvedOpts.force)
       if (isDebug) {
         warning.forEach(warn => logger.collectDangerUsed(chunk.fileName, warn.info, [warn.loc.start.line, warn.loc.start.column]),
         )

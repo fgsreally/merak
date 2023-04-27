@@ -7,7 +7,7 @@ import isVarName from 'is-var-name'
 import { Compilation, sources } from 'webpack'
 
 export class Merak {
-  constructor(public fakeGlobalVar: string, public globals: string[], public options: { filter?: RegExp; force?: boolean; logPath?: string } = {}) {
+  constructor(public fakeGlobalVar: string, public globals: string[], public options: { filter?: (file: string) => boolean; force?: boolean; logPath?: string; isInLine?: boolean } = {}) {
     if (!isVarName(fakeGlobalVar))
       throw new Error(`${fakeGlobalVar} is not a valid var`)
   }
@@ -29,6 +29,8 @@ export class Merak {
           chunks.forEach((chunk) => {
             chunk.files.forEach((file) => {
               if (file.endsWith('.js')) {
+                if (this.options.filter && !this.options.filter(file))
+                  return
                 const source = compilation.getAsset(file)!.source.source() as string
                 if (isDebug) {
                   const unUsedGlobals = analyseJSGlobals(source, this.globals)
@@ -69,8 +71,14 @@ export class Merak {
       )
       HtmlWebpackPlugin.getHooks(compilation).beforeEmit.tap('MerakPlugin', (data) => {
         const merakConfig = { _f: fakeGlobalVar, _g: globalVars, _l: analyseHTML(data.html) }
-
-        data.html = data.html.replace('</body>', `<m-b config='${encodeURIComponent(JSON.stringify(merakConfig))}'></m-b></body`)
+        if (this.options.isInLine === false) {
+          compilation.emitAsset('merak.json', new sources.RawSource(
+            JSON.stringify(merakConfig),
+          ))
+        }
+        else {
+          data.html = data.html.replace('</body>', `<m-b config='${encodeURIComponent(JSON.stringify(merakConfig))}'></m-b></body>`)
+        }
 
         return data
       })

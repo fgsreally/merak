@@ -26,3 +26,5 @@ dist-ssr
 .vscode
 .turbo
 
+cypress/screenshots
+cypress/videos

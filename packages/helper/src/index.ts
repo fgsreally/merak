@@ -36,7 +36,7 @@ export function $on(eventName: MerakEvent, cb: () => any) {
 }
 
 export function $onMount(cb: () => any) {
-  return $on('mount', cb)
+  return isMerak() ? $on('mount', cb) : cb()
 }
 
 export function $onRelunch(cb: () => any) {
@@ -52,7 +52,7 @@ export function $onDestroy(cb: () => any) {
 }
 
 export function $onExec(cb: () => any) {
-  cb()
+  $on('mount', cb)
   return $on('relunch', cb)
 }
 

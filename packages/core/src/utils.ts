@@ -40,7 +40,7 @@ export function resolveHtmlConfig(html: string) {
   let config
 
   html = html.replace(/<m-b[^>]+config=['"](.*)['"][\s>]<\/m-b>/, (js, conf) => {
-    config = JSON.parse(conf)
+    config = JSON.parse(decodeURIComponent(conf))
     return ''
   })
   return { html, config }

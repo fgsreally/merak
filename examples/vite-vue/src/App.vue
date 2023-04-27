@@ -6,6 +6,8 @@ const data = 'no data from merak'
 <template>
   <header>
     <div class="wrapper">
+      <img alt="Vue logo" class="logo" src="@/assets/logo.svg" width="125" height="125">
+
       <div class="merak-symbol">
         vite-vue app from merak
       </div>

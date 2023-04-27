@@ -4,11 +4,12 @@ import path from 'node:path'
 import { fileURLToPath } from 'node:url'
 import express from 'express'
 import axios from 'axios'
+import { compileHTML, resolveHtmlConfig, wrap } from 'merak-compile'
 // import adapter from 'axios/lib/adapters/http.js'
 
 // axios.defaults.adapter = adapter
 const isTest = process.env.NODE_ENV === 'test' || !!process.env.VITE_TEST_BUILD
-const isProduction = true || process.env.NODE_ENV === 'production'
+const isProduction = process.env.NODE_ENV === 'production'
 export async function createServer(root = process.cwd(), isProd = isProduction) {
   const __dirname = path.dirname(fileURLToPath(import.meta.url))
   const resolve = p => path.resolve(__dirname, p)
@@ -46,23 +47,6 @@ export async function createServer(root = process.cwd(), isProd = isProduction) 
     )
   }
 
-  app.use('/justTest/getFruitList', async (req, res) => {
-    const names = ['Orange', 'Apricot', 'Apple', 'Plum', 'Pear', 'Pome', 'Banana', 'Cherry', 'Grapes', 'Peach']
-    const list = names.map((name, id) => {
-      return {
-        id: ++id,
-        name,
-        price: Math.ceil(Math.random() * 100),
-      }
-    })
-    const data = {
-      data: list,
-      code: 0,
-      msg: '',
-    }
-    res.end(JSON.stringify(data))
-  })
-
   app.use('*', async (req, res) => {
     try {
       const url = req.originalUrl
@@ -80,10 +64,14 @@ export async function createServer(root = process.cwd(), isProd = isProduction) 
       }
 
       const [appHtml, links] = await render(url, manifest)
-
+      const appurl = 'http://127.0.0.1:4004/index.html'
+      const { data } = await axios.get(appurl)
+      const { config } = resolveHtmlConfig(data)
+      console.log(config, data)
       const html = template
         .replace('<!--preload-links-->', links)
         .replace('<!--app-html-->', appHtml)
+        .replace('</body>', `${wrap(compileHTML(data, appurl, config._l), appurl)}</body>`)
 
       res.status(200).set({ 'Content-Type': 'text/html' }).end(html)
     }
@@ -99,8 +87,8 @@ export async function createServer(root = process.cwd(), isProd = isProduction) 
 
 if (!isTest) {
   createServer().then(({ app }) =>
-    app.listen(80, () => {
-      console.log('http://localhost:80')
+    app.listen(3111, () => {
+      console.log('http://localhost:5004')
     }),
   )
 }

@@ -63,7 +63,7 @@ cli
         let html = raw.replace('</head>', `</head><script merak-ignore>const ${fakeGlobalVar}=window.${fakeGlobalVar}||window</script>`)
         merakConfig._l = analyseHTML(html)
         if (isinLine)
-          html = html.replace('</body>', `<merak-base config="${JSON.stringify(merakConfig)}"></merak-base></body>`)
+          html = html.replace('</body>', `<m-b config="${JSON.stringify(merakConfig)}"></m-b></body>`)
         else await fse.outputFile(resolve(filePath, '../merak.json'), JSON.stringify(merakConfig), 'utf-8')
 
         await fse.outputFile(filePath, html, 'utf-8')

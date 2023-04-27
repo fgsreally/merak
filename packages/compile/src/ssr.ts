@@ -6,8 +6,8 @@ function mergeAttrs(attrs: Record<string, string>) {
   return Object.entries(attrs).reduce((p, c) => `${p} ${c[0]}='${c[1]}'`, '')
 }
 
-export function createTemplate(urlHtmlMap: Record<string, string>) {
-  return Object.entries(urlHtmlMap).reduce((p, c) => `${p}<template data-merak-url='${c[0]}'>${c[1]}</template>`, '')
+export function wrap(html: string, url: string) {
+  return `<template data-merak-url='${url}'>${html}</template>`
 }
 export class SsrTransformer extends Transform {
   private parser: htmlparser.Parser
@@ -45,3 +45,16 @@ export class SsrTransformer extends Transform {
     callback()
   }
 }
+
+// example
+// pipeline(
+//   stream1,
+//   res,
+//   (err) => {
+//     if (err) {
+//       console.error('Pipeline failed', err);
+//     } else {
+//       pipeline(stream2, res);
+//     }
+//   }
+// );

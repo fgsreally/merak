@@ -11,6 +11,7 @@ import './assets/main.css'
 let app: AppType
 
 function render() {
+  console.log('render')
   app = createApp(App)
 
   app.use(createPinia()).use(ElementPlus)
@@ -18,7 +19,6 @@ function render() {
 
   app.mount('#app')
 }
-
 $onMount(render)
 $stopProp()
 $onDestroy(() => {

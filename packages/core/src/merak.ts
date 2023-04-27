@@ -1,5 +1,5 @@
 import { iframeInstance } from './iframe'
-import type { LoadDone, ProxyGlobals } from './types'
+import type { LoadDone, MerakConfig, ProxyGlobals } from './types'
 import type { PureLoader } from './loaders'
 import { createProxy } from './proxy'
 import { MERAK_EVENT_DESTROY, MERAK_EVENT_HIDDEN, MERAK_EVENT_MOUNT, MERAK_EVENT_RELUNCH, MERAK_SHADE_STYLE } from './common'
@@ -58,7 +58,7 @@ export class Merak {
   public fakeGlobalVar: string
 
   /** 配置文件地址，配置内联时为空 */
-  public configUrl?: string
+  public configOrUrl?: string | MerakConfig
 
   /** 隔离的全局变量 */
   public globalVars: string[]
@@ -75,7 +75,7 @@ export class Merak {
   constructor(public id: string, public url: string, public options: {
     loader?: PureLoader
     proxy?: ProxyGlobals
-    configUrl?: string
+    configOrUrl?: string | MerakConfig
     iframe?: string
   } = {},
   ) {
@@ -86,8 +86,8 @@ export class Merak {
     }
     MerakMap.set(id, this)
 
-    const { proxy = createProxy(id, url), configUrl, loader } = options
-    this.configUrl = configUrl
+    const { proxy = createProxy(id, url), configOrUrl, loader } = options
+    this.configOrUrl = configOrUrl
     this.loader = loader
 
     for (const i in proxy)
@@ -112,7 +112,7 @@ export class Merak {
       this.cacheEvent.pop()!()
   }
 
-  setGlobalVar(fakeGlobalVar: string, globalVars: string[]) {
+  setGlobalVars(fakeGlobalVar: string, globalVars: string[]) {
     this.fakeGlobalVar = fakeGlobalVar
     this.globalVars = globalVars
   }
@@ -132,24 +132,23 @@ export class Merak {
   async load() {
     if (this.loadPromise)
       return this.loadPromise
-    const { id, url, configUrl } = this
+    const { url, configOrUrl } = this
     this.perf.record('load')
-    return this.loadPromise = (this.loader!.load(id, url, configUrl) as Promise<LoadDone>).then((loadRes) => {
+    return this.loadPromise = (this.loader!.load(url, configOrUrl) as Promise<LoadDone>).then((loadRes) => {
       if (loadRes instanceof Error) {
         this.execHook('errorHandler', { type: 'loadError', error: loadRes as any })
       }
-
       else {
         this.perf.record('load')
         const { template, fakeGlobalVar, globals } = this.execHook('load', loadRes) || loadRes
 
         this.template = template
-        this.setGlobalVar(fakeGlobalVar, globals)
+        this.setGlobalVars(fakeGlobalVar, globals)
       }
     })
   }
 
-  private mountTemplateAndScript(ele?: ParentNode) {
+  private mountTemplateAndScript() {
     this.execHook('beforeMount')
     this.active()
 
@@ -164,15 +163,11 @@ export class Merak {
         const body = this.sandDocument.querySelector('body')!
         body.setAttribute('style', getBodyStyle())
       }
+
+      if (this.template) // template
+        this.sandDocument.innerHTML = this.template
       // work for spa
       if (this.loader) {
-        if (!this.template) {
-          // if (__DEV__)
-          //   throw new Error(`"${this.id}" should load before mount`)
-          return
-        }
-        // template
-        this.sandDocument.innerHTML = this.template
         // mount script on body or iframe
         if (!this.execFlag) {
           const originScripts = Array.from(this.sandDocument.querySelectorAll('script'))
@@ -198,36 +193,36 @@ export class Merak {
           eventTrigger(window, MERAK_EVENT_RELUNCH + this.id)
         }
       }
-      // work for ssr
-      if (ele) {
-        // mount script on body or iframe
-        const originScripts = [...ele.querySelectorAll('script')]
-        const scripts = originScripts.filter((script) => {
-          !this.iframe && script.remove()
-          if (this.execFlag)
-            return false
+      // // work for ssr
+      // if (ele) {
+      //   // mount script on body or iframe
+      //   const originScripts = [...ele.querySelectorAll('script')]
+      //   const scripts = originScripts.filter((script) => {
+      //     !this.iframe && script.remove()
+      //     if (this.execFlag)
+      //       return false
 
-          return !script.hasAttribute('merak-ignore') && script.type !== 'importmap'
-        })
-        this.sandDocument.querySelector('body')?.appendChild(ele)
+      //     return !script.hasAttribute('merak-ignore') && script.type !== 'importmap'
+      //   })
+      //   this.sandDocument.querySelector('body')?.appendChild(ele)
 
-        if (!this.execFlag) {
-          this.execHook('transformScript', { originScripts, scripts });
+      //   if (!this.execFlag) {
+      //     this.execHook('transformScript', { originScripts, scripts });
 
-          (this.iframe ? this.iframe.contentDocument : this.sandDocument)!.querySelector('body')!.append(...scripts)
-          Promise.all(scripts.map(scriptPrimise)).catch((e) => {
-            return this.execHook('errorHandler', { type: 'scriptError', error: e })
-          }).finally(() => {
-            this.perf.record('bootstrap')
+      //     (this.iframe ? this.iframe.contentDocument : this.sandDocument)!.querySelector('body')!.append(...scripts)
+      //     Promise.all(scripts.map(scriptPrimise)).catch((e) => {
+      //       return this.execHook('errorHandler', { type: 'scriptError', error: e })
+      //     }).finally(() => {
+      //       this.perf.record('bootstrap')
 
-            this.execFlag = true
-            eventTrigger(window, MERAK_EVENT_MOUNT + this.id)
-          })
-        }
-        else {
-          eventTrigger(window, MERAK_EVENT_RELUNCH + this.id)
-        }
-      }
+      //       this.execFlag = true
+      //       eventTrigger(window, MERAK_EVENT_MOUNT + this.id)
+      //     })
+      //   }
+      //   else {
+      //     eventTrigger(window, MERAK_EVENT_RELUNCH + this.id)
+      //   }
+      // }
     }
 
     this.execHook('tranformDocument', { ele: this.sandDocument! })
@@ -237,18 +232,18 @@ export class Merak {
     this.execHook('afterMount')
   }
 
-  mount(ele?: HTMLElement) {
+  mount() {
     if (this.mountFlag)
       return
 
     if (this.options.iframe && !this.iframe) {
       iframeInstance.add(this.options.iframe).then((el) => {
         this.iframe = el
-        this.mountTemplateAndScript(ele)
+        this.mountTemplateAndScript()
       })
     }
 
-    else { this.mountTemplateAndScript(ele) }
+    else { this.mountTemplateAndScript() }
 
     this.mountIndex++
     this.mountFlag = true

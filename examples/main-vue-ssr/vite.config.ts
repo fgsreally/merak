@@ -7,7 +7,7 @@ import Inspect from 'vite-plugin-inspect'
 
 // https://vitejs.dev/config/
 export default defineConfig({
-  plugins: [vue(), Inspect(), Merak('vite_vue_ssr', ['__VUE_OPTIONS_API__'], { exclude: /(entry.server|main).ts/ })],
+  plugins: [vue(), Inspect()],
   resolve: {
     alias: {
       '@': fileURLToPath(new URL('./src', import.meta.url)),

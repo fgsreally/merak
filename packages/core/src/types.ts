@@ -6,7 +6,6 @@ export interface MerakConfig {
 
 export interface LoadDone {
   url: string
-  id: string
   fakeGlobalVar: string
   template: string
   globals: string[]

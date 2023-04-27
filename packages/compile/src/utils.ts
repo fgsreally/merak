@@ -15,10 +15,22 @@ export function resolveHtmlConfig(html: string) {
   let config
 
   html = html.replace(/<m-b[^>]+config=['"](.*)['"][\s>]<\/m-b>/, (js, conf) => {
-    config = JSON.parse(conf)
+    config = JSON.parse(decodeURIComponent(conf))
     return ''
   })
   return { html, config }
+}
+export function compileHTML(code: string, baseUrl: string, loc: [number, number][]) {
+  const originStr = code
+  let index = 0
+  code = ''
+  loc.forEach(([start, end]) => {
+    code += originStr.slice(index, start)
+    code += resolveUrl(originStr.slice(start, end), baseUrl)
+    index = end
+  })
+  code += originStr.slice(index)
+  return code
 }
 
 export function checkIsDanger(node: any, warning: any[]) {

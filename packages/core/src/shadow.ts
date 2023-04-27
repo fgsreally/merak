@@ -22,7 +22,7 @@ export function defineWebComponent() {
       const shadowRoot = this.attachShadow({ mode: 'open' })
       app.shadowRoot = shadowRoot
       if (!app.activeFlag)
-        app.setGlobalVar(fakeGlobalVar, [])
+        app.setGlobalVars(fakeGlobalVar, [])
 
       app.mount()
     }
@@ -53,35 +53,19 @@ export function defineWebComponent() {
       if (!app)
         throw new Error(`can't find app [${id}] `)
 
-      if (!this.templateNode)
-        this.templateNode = document.querySelector(`[data-merak-url='${app.url}']`) as HTMLTemplateElement
-
-      const templateNode = this.templateNode
-
-      if (app.mountFlag) {
-        if (__DEV__)
-          throw new Error(` app [${id}] has been mounted`)
-        return
-      }
-      if (!templateNode)
-        throw new Error(` can't find [${id}] template`)
+      if (app.mountFlag)
+        throw new Error(` app [${id}] has been mounted`)
 
       const shadowRoot = this.attachShadow({ mode: 'open' })
       app.shadowRoot = shadowRoot
-      if (!app.activeFlag) {
-        const { _f: fakeGlobalVar, _g: globalVars } = JSON.parse(templateNode.content.querySelector('m-b')!.getAttribute('config')!) as {
-          _f: string, _g: string[]
-        }
-        app.setGlobalVar(fakeGlobalVar, globalVars)
-      }
-      app.mount(app.cacheFlag ? undefined : templateNode.content.cloneNode(true) as any)
+      await app.load()
+
+      app.mount()
     }
 
     disconnectedCallback(): void {
       const app = getInstance(this.id) as Merak
       const isKeepAlive = this.hasAttribute(MERAK_KEEP_ALIVE) && this.getAttribute(MERAK_KEEP_ALIVE) !== 'false'
-      if (!isKeepAlive)
-        this.templateNode.innerHTML = app.sandDocument!.innerHTML
 
       app.unmount(isKeepAlive)
     }

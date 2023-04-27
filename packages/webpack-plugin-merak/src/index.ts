@@ -70,7 +70,7 @@ export class Merak {
       HtmlWebpackPlugin.getHooks(compilation).beforeEmit.tap('MerakPlugin', (data) => {
         const merakConfig = { _f: fakeGlobalVar, _g: globalVars, _l: analyseHTML(data.html) }
 
-        data.html = data.html.replace('</body>', `<merak-base config='${JSON.stringify(merakConfig)}'></merak-base></body`)
+        data.html = data.html.replace('</body>', `<m-b config='${JSON.stringify(merakConfig)}'></m-b></body`)
 
         return data
       })

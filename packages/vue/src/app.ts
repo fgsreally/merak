@@ -1,4 +1,6 @@
+import type { MerakConfig } from 'merak-core'
 import { MERAK_DATA_ID, MERAK_EVENT_PREFIX, MERAK_KEEP_ALIVE, Merak, getInstance } from 'merak-core'
+import type { Loader } from 'merak-core/loader'
 import { PureLoader } from 'merak-core/loader'
 import type { PropType } from 'vue'
 import { defineComponent, h, onUnmounted } from 'vue'
@@ -8,18 +10,20 @@ export const vueLoader = new PureLoader()
 export const MerakApp = defineComponent({
   props: {
     ...shareProps,
-    configUrl: String,
+    configOrUrl: {
+      type: Object as PropType<string | MerakConfig>,
+    },
 
     loader: {
-      type: Object as PropType< PureLoader>,
+      type: Object as PropType<Loader>,
       default: vueLoader,
     },
 
   },
   emits: shareEmits,
   setup(props, { expose, emit }) {
-    const { url, proxy, loader, configUrl, keepAlive, props: MerakProps, iframe, name } = props
-    const app = getInstance(name) || new Merak(name, url, { loader, configUrl, proxy, iframe })
+    const { url, proxy, loader, configOrUrl, keepAlive, props: MerakProps, iframe, name } = props
+    const app = getInstance(name) || new Merak(name, url, { loader, configOrUrl, proxy, iframe })
     app.props = MerakProps
     for (const ev in shareEmits) {
       const eventName = MERAK_EVENT_PREFIX + ev + name

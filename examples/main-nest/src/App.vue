@@ -7,6 +7,10 @@ import { MerakApp } from 'merak-vue'
 </template>
 
 <style scoped>
+.micro{
+  border: 5px solid green;
+  display:block;
+}
 .logo {
   height: 6em;
   padding: 1.5em;

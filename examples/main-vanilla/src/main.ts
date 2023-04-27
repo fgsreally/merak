@@ -7,7 +7,6 @@ const data = {
   data: 'data from main',
 }
 const app1 = new Merak('vite_react', 'http://127.0.0.1:4003/', { loader })
-app1.preRender()
 
 const app2 = new Merak('vite_vue', 'http://127.0.0.1:4004/', { loader })
 app2.load()

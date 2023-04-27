@@ -15,4 +15,7 @@ export default defineConfig({
   define: {
     __DEV__: true,
   },
+  server: {
+    port: 5001,
+  },
 })

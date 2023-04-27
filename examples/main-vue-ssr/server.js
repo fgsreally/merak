@@ -67,7 +67,6 @@ export async function createServer(root = process.cwd(), isProd = isProduction) 
       const appurl = 'http://127.0.0.1:4004/index.html'
       const { data } = await axios.get(appurl)
       const { config } = resolveHtmlConfig(data)
-      console.log(config, data)
       const html = template
         .replace('<!--preload-links-->', links)
         .replace('<!--app-html-->', appHtml)
@@ -87,7 +86,7 @@ export async function createServer(root = process.cwd(), isProd = isProduction) 
 
 if (!isTest) {
   createServer().then(({ app }) =>
-    app.listen(3111, () => {
+    app.listen(5004, () => {
       console.log('http://localhost:5004')
     }),
   )

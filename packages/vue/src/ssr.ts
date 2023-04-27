@@ -27,6 +27,6 @@ export const MerakSSR = defineComponent({
       onUnmounted(() => window.removeEventListener(eventName, handler))
     }
     expose({ app })
-    return () => h('merak-ssr', { [MERAK_DATA_ID]: name, [MERAK_KEEP_ALIVE]: keepAlive })
+    return () => h('merak-app', { [MERAK_DATA_ID]: name, [MERAK_KEEP_ALIVE]: keepAlive })
   },
 })

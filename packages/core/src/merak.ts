@@ -130,6 +130,8 @@ export class Merak {
   }
 
   async load() {
+    if (!this.loader)
+      return
     if (this.loadPromise)
       return this.loadPromise
     const { url, configOrUrl } = this

@@ -27,14 +27,14 @@ export enum SUBAPP_ID {
 }
 
 export enum SUBAPP_URL {
-  vite_react = 'http://localhost:4003/',
-  vite_vue = 'http://localhost:4004/',
-  vue_cli = 'http://localhost:4005/',
+  vite_react = 'http://127.0.0.1:4003/',
+  vite_vue = 'http://127.0.0.1:4004/',
+  vue_cli = 'http://127.0.0.1:4005/',
 }
 
 export enum MAINAPP_URL {
-  VUE_LIB = 'http://localhost:5001/',
-  VANILLA = 'http://localhost:5002/',
-  VUE = 'http://localhost:5003/',
-  VUE_SSR = 'http://localhost:5004/',
+  VUE_LIB = 'http://127.0.0.1:5000/',
+  VANILLA = 'http://127.0.0.1:5002/',
+  VUE = 'http://127.0.0.1:5003/',
+  VUE_SSR = 'http://127.0.0.1:5004/',
 }

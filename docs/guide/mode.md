@@ -1,9 +1,12 @@
 # 模式
 
-默认定义了`merak-app`,`merak-block`,`merak-ssr`三个`webcomponent`，分别对应了`spa`，`库模式`,`ssr`,每一个模式又存在`keep-alive`和`iframe`模式(彼此并不冲突)
+默认定义了`merak-app`这个`webcomponent`，存在`keep-alive`和`iframe`模式(彼此并不冲突)。
+提供了更多的模式并不是希望使用者使用更多的模式。说句大实话，微前端的隐患是无穷无尽的，不同的设计思路只不过是遇上不同的问题，但也许当下你遇到的问题在另一种思路下可以轻松解决，这才是多模式的意义所在：当遇上问题的时候，也许可以换个模式试试
+
+
 
 ## keep-alive
-就是`display:none`
+所有dom均被存在内存中。没有释放
 
 
 ## iframe模式
@@ -49,6 +52,7 @@ const app = new Merak(name, url, { proxy: createLibProxy(name, url) })
 
 ## ssr
 > 实验性功能
+
 当主子应用均为`ssr`时，子应用的`ssr`效果能在主应用中起效
 
 ## 服务端
@@ -64,6 +68,10 @@ const app = new Merak(name, url, { proxy: createLibProxy(name, url) })
 </html>
 ```
 > `template` 只是模板，里面的东西既不会渲染也不会执行
+
+:::tip 注意
+思路来自于[cloudflare](cloudflare),请注意：它并不能“跑”在`ssr`中，毕竟，操作dom是不可回避的事情。它只是通过注入一段`template`到`html`中，在客户端渲染时，直接拿到`template`进行渲染。简而言之，对`seo`和`首屏渲染`均有助益，对`ssr`使用者应该足够有吸引力
+:::
 
 ## 客户端
 

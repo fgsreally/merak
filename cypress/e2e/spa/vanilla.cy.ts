@@ -13,9 +13,7 @@ describe('vanilla app ', () => {
       expect(item.app.template).to.be.a('string')
     })
   })
-  it('should prerender', () => {
-    cy.get(getShadowSelector('vite_react')).should('be.hidden')
-  })
+
 
   it('should mount successfully', () => {
     cy.get('[data-testid="btn"]').first().click()

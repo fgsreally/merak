@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { MerakSSR, resolveUrl } from 'merak-vue'
+import { MerakSSR } from 'merak-vue'
 const data = {
   data: 'data from main-vue-ssr',
 }

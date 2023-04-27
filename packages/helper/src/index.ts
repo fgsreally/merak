@@ -28,10 +28,17 @@ export function $head(): HTMLHeadElement {
   return $document().head
 }
 
-export function $on(eventName: MerakEvent, cb: () => any) {
+export function $on(eventName: MerakEvent, cb: () => any): () => void {
   const event = $eventName(eventName)
   if (isMerak())
     window.addEventListener(event, cb)
+  return () => isMerak() && window.removeEventListener(event, cb)
+}
+
+export function $once(eventName: MerakEvent, cb: () => any): () => void {
+  const event = $eventName(eventName)
+  if (isMerak())
+    window.addEventListener(event, cb, { once: true })
   return () => isMerak() && window.removeEventListener(event, cb)
 }
 
@@ -39,6 +46,10 @@ export function $onMount(cb: () => any) {
   return isMerak() ? $on('mount', cb) : cb()
 }
 
+// I don't sure if it is important
+// export function $onShow(cb: () => any) {
+//   return isMerak() ? $on('show', cb) : cb()
+// }
 export function $onRelunch(cb: () => any) {
   return $on('relunch', cb)
 }
@@ -51,9 +62,22 @@ export function $onDestroy(cb: () => any) {
   return $on('destroy', cb)
 }
 
+export function $onUnmount(cb: () => any) {
+  const fn1 = $once('hidden', cb)
+  const fn2 = $on('destroy', cb)
+  return () => {
+    fn1()
+    fn2()
+  }
+}
+
 export function $onExec(cb: () => any) {
-  $on('mount', cb)
-  return $on('relunch', cb)
+  const fn1 = $once('mount', cb)
+  const fn2 = $on('relunch', cb)
+  return () => {
+    fn1()
+    fn2()
+  }
 }
 
 // work for eval

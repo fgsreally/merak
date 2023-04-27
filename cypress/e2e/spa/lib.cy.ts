@@ -2,7 +2,7 @@ import { MAINAPP_URL } from '../common'
 
 import { getShadowSelector } from '../utils'
 
-const selector = getShadowSelector('vue_lib')
+const selector = getShadowSelector('UUID')
 
 describe('lib app [dev mode]', () => {
   beforeEach(() => {

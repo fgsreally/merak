@@ -19,6 +19,7 @@ export const MerakSSR = defineComponent({
     const { url, proxy, keepAlive, iframe, props: MerakProps, name, loader } = props
     const app = getInstance(name) || new Merak(name, url, { proxy, iframe, loader })
     app.props = MerakProps
+
     for (const ev in shareEmits) {
       const eventName = MERAK_EVENT_PREFIX + ev + name
       const handler = () => emit(ev as any, name)

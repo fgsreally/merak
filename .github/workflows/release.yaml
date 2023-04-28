@@ -23,9 +23,6 @@ jobs:
       - name: Build
         run: pnpm run build
 
-      - name: Add User
-        run: npm adduser
-
       - name: Publish
         run: pnpm run publish
         env:

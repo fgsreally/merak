@@ -1,4 +1,3 @@
-import path from 'path'
 import { defineConfig } from 'vitepress'
 const ogDescription = '基于编译，剑走偏锋的微前端方案'
 // const ogImage = 'https://wujie-micro.github.io/doc/wujie.png'

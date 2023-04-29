@@ -1,4 +1,4 @@
-import { MAINAPP_URL, SUBAPP_CONTENT, SUBAPP_URL } from '../common'
+import { MAINAPP_URL, SUBAPP_CONTENT } from '../common'
 import { getShadowSelector } from '../utils'
 
 describe('vue ssr [dev mode]', () => {

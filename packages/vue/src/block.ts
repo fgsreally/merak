@@ -33,9 +33,10 @@ export const MerakBlock = defineComponent({
       else
         app.lifeCycle[ev] = (arg: any) => emit(ev as any, arg)
     }
-    const importPromise = import(url)
+    // const importPromise = import(url)
     onMounted(async () => {
-      const { default: Comp } = await importPromise
+      // const { default: Comp } = await importPromise
+      const { default: Comp } = await import(url)
       render(h(Comp, { ...MerakProps }, slots), app.sandDocument!.querySelector('body')!)
     })
     onUnmounted(() => {

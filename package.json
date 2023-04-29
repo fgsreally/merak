@@ -1,8 +1,9 @@
 {
   "name": "merak",
   "version": "1.0.0",
-  "description": "",
+  "description": "Compile-based micro frontend library",
   "type": "module",
+  "packageManager": "pnpm@7.21.0",
   "scripts": {
     "dev": "turbo run dev --filter=./packages/*",
     "build": "turbo run build --filter=./packages/*",

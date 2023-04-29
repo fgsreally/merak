@@ -26,7 +26,7 @@ export function Merak(fakeGlobalVar: string, globals: string[], opts: { isinLine
   const filter = createFilter(includes, exclude)
   const PATH_PLACEHOLDER = '/dynamic_base__/'
   let config: ResolvedConfig
-  const publicPath = `${fakeGlobalVar}.__merak_url__||''`
+  const publicPath = `(${fakeGlobalVar}.__merak_url__||'')`
   // const preloadHelperId = 'vite/preload-helper'
 
   const baseOptions: TransformOptions = { assetsDir: 'assets', base: PATH_PLACEHOLDER, publicPath: ` ${publicPath}` }

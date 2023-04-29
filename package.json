@@ -2,7 +2,6 @@
   "name": "merak",
   "version": "1.0.0",
   "description": "",
-  "packageManager": "pnpm@7.21.0",
   "type": "module",
   "scripts": {
     "dev": "turbo run dev --filter=./packages/*",

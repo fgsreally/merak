@@ -6,7 +6,7 @@ import config from './config.js'
 import { step } from './utils.js'
 const ports = config.map(item => item.port)
 // main app
-ports.push(5001, 5002, 5003, 5004, 3000)
+ports.push(5000, 5002, 5003, 5004, 3000)
 
 const opts = {
   resources: ports.map(port => `http-get://localhost:${port}`),
@@ -22,6 +22,7 @@ const opts = {
 
 export async function runAllExample() {
   console.time('runAllExample')
+await $`pnpm -v`
 
   try {
     if (process.env.CI || process.env.PROD) {

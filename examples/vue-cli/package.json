@@ -5,6 +5,8 @@
   "scripts": {
     "dev": "vue-cli-service serve",
     "build": "vue-cli-service build",
+    "serve":"http-server ./dist --cors -p 4005",
+
     "lint": "vue-cli-service lint"
   },
   "dependencies": {
@@ -13,6 +15,7 @@
     "merak-helper": "workspace:*",
     "vue": "^3.2.13",
     "vue-router": "^4.0.3",
+
     "webpack-plugin-merak": "workspace:*"
   },
   "devDependencies": {

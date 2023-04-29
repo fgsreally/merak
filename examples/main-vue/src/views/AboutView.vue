@@ -16,7 +16,7 @@ function relunch() {
 <template>
   <div class="about">
     <p>from vue_cli</p>
-    <MerakApp name="vue_cli" url="http://127.0.0.1:4005/" keep-alive  class="micro" :props="data" @mount="mount" @relunch="relunch" />
+    <MerakApp name="vue_cli" url="http://127.0.0.1:4005/" keep-alive class="micro" :props="data" @mount="mount" @relunch="relunch" />
     <p>from vite-vue</p>
     <MerakApp name="vite_vue" url="http://127.0.0.1:4004/" class="micro" :props="data" @mount="mount" @relunch="relunch" />
     <p>from vite-react</p>

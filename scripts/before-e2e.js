@@ -22,22 +22,16 @@ const opts = {
 
 export async function runAllExample() {
   console.time('runAllExample')
-await $`pnpm -v`
 
   try {
     if (process.env.CI || process.env.PROD) {
-      step('\n serve bundle...')
-      $`pnpm run serve`
-
       step('\n building sub project...')
       await $`pnpm --filter example-sub-* run build`
 
-      step('\n http-server  dist...')
+      step('\n serve bundle...')
+      $`pnpm run example:serve`
 
-      for (const { port, name } of config)
-        $`pnpm --filter ${name} exec -- http-server ./dist --cors -p ${port}`
       step('\n main project running ...')
-
       $`pnpm --filter example-main-* --parallel run dev`
 
       await waitOn(opts)

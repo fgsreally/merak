@@ -18,6 +18,7 @@ export function resolveUrl(filePath: string, baseURL: string) {
 
 export function getUrlQuery(url: string) {
   const query = url.split('?')[1]
+
   return query ? JSON.parse(decodeURIComponent(query)) : {}
 }
 

@@ -5,7 +5,7 @@ import { isSymbolExist } from '../utils'
 describe('main vue app [dev mode]', () => {
   beforeEach(() => {
     cy.visit(`${MAINAPP_URL.VUE}about`)
-    cy.wait(1000)
+    cy.wait(3000)
   })
   it('should work', () => {
     isSymbolExist()

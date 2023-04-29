@@ -4,9 +4,7 @@ import { createFilter } from 'vite'
 import type { FilterPattern, PluginOption, ResolvedConfig } from 'vite'
 // @ts-expect-error miss types
 import isVarName from 'is-var-name'
-import type { TransformOptions } from './transform'
 
-import { transformAsset, transformChunk, transformHtml } from './transform'
 export function Merak(fakeGlobalVar: string, globals: string[], opts: { isinLine?: boolean; includes?: FilterPattern; exclude?: FilterPattern; logPath?: string; force?: boolean } = {}): PluginOption {
   if (!isVarName(fakeGlobalVar))
     throw new Error(`${fakeGlobalVar} is not a valid var`)
@@ -24,12 +22,10 @@ export function Merak(fakeGlobalVar: string, globals: string[], opts: { isinLine
   const isDebug = !!resolvedOpts.logPath
   const { isinLine, includes, exclude } = resolvedOpts
   const filter = createFilter(includes, exclude)
-  const PATH_PLACEHOLDER = '/dynamic_base__/'
   let config: ResolvedConfig
   const publicPath = `(${fakeGlobalVar}.__merak_url__||'')`
   // const preloadHelperId = 'vite/preload-helper'
 
-  const baseOptions: TransformOptions = { assetsDir: 'assets', base: PATH_PLACEHOLDER, publicPath: ` ${publicPath}` }
   return [{
     name: 'vite-plugin-merak:dev',
     apply: 'serve',
@@ -56,14 +52,12 @@ export function Merak(fakeGlobalVar: string, globals: string[], opts: { isinLine
     config(_conf) {
       if (!_conf) {
         return {
-          base: PATH_PLACEHOLDER,
+          base: publicPath,
         }
       }
     },
     configResolved(_conf) {
       config = _conf
-      baseOptions.assetsDir = _conf.build.assetsDir
-      baseOptions.base = _conf.base
     },
 
     async renderChunk(raw, chunk, opts) {
@@ -89,21 +83,14 @@ export function Merak(fakeGlobalVar: string, globals: string[], opts: { isinLine
       return html
     },
 
-    async generateBundle({ format }, bundle) {
+    async generateBundle(_, bundle) {
       if (config.build.ssr)
         return
 
       await Promise.all(
         Object.entries(bundle).map(async ([, chunk]) => {
-          if (chunk.type === 'chunk' && chunk.code.includes(baseOptions.base)) {
-            chunk.code = await transformChunk(format, chunk.code, baseOptions)
-          }
-          else if (chunk.type === 'asset' && typeof chunk.source === 'string') {
-            if (!chunk.fileName.endsWith('.html')) {
-              chunk.source = await transformAsset(chunk.source, baseOptions)
-            }
-            else {
-              chunk.source = transformHtml(chunk.source, baseOptions)
+          if (chunk.type === 'asset' && typeof chunk.source === 'string') {
+            if (chunk.fileName.endsWith('.html')) {
               merakConfig._l = analyseHTML(chunk.source)
 
               if (!isinLine) {

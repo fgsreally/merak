@@ -14,3 +14,9 @@ monitorClickEvent()
     <TheWelcome />
   </main>
 </template>
+
+<style>
+body{
+  background-image: url('/logo.svg');
+}
+</style>

@@ -4,15 +4,19 @@
   "private": true,
   "scripts": {
     "dev": "vite --cors",
+    "serve":"http-server ./dist --cors -p 4004",
+
     "build": "run-p type-check build-only",
     "preview": "vite preview",
     "build-only": "vite build",
+    
     "type-check": "vue-tsc --noEmit"
   },
   "dependencies": {
     "element-plus": "^2.2.30",
     "merak-helper": "workspace:*",
     "pinia": "^2.0.28",
+
     "vite-plugin-merak": "workspace:*",
     "vue": "^3.2.45",
     "vue-router": "^4.1.6"

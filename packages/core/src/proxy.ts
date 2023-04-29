@@ -38,7 +38,6 @@ export function createProxyWindow(id: string, url: string) {
 
       if (p === '__merak_url__')
         return url
-
       if (p === '$Merak')
         return getInstance(id)
 
@@ -225,7 +224,6 @@ export function createProxyLocation(id: string) {
     get(target: any, p: string) {
       const { href } = window.location
       const queryMap = getUrlQuery(href)
-
       const appUrl = new URL((queryMap[id] === '/undefined' ? '/' : queryMap[id]) || '/', location.origin)
       if (
         p in appUrl

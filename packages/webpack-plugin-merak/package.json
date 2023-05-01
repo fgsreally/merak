@@ -16,10 +16,10 @@
   "author": "",
   "license": "MIT",
   "dependencies": {
-    "html-webpack-plugin": "^5.5.0",
+    "html-webpack-plugin": "^5.0.0",
     "is-var-name": "^2.0.0",
     "merak-compile": "workspace:*",
-    "webpack": "^5.75.0"
+    "webpack": "^5.0.0"
   },
   "devDependencies": {
     "tsup": "^6.5.0"

@@ -22,6 +22,6 @@
     "is-var-name": "^2.0.0",
     "magic-string": "^0.27.0",
     "merak-compile": "workspace:*",
-    "vite": "^4.0.4"
+    "vite": "^3.0.0"
   }
 }

@@ -3,10 +3,9 @@ import type { LoadDone, MerakConfig } from '../types'
 import { loadTextFile, resolveUrl } from '../utils'
 import { Loader } from './base'
 import { loadConfig } from './pureLoader'
-const scriptRE = /<script\b.*?(?:\bsrc\s?=\s?([^>]*))?>(.*?)<\/script>/ig
-const linkRE = /(?<=<link.*href=")([^"]*)(?=")/g
 
 export class DynamicLoader extends Loader {
+  re: RegExp[] = [/<script\b.*?(?:\bsrc\s?=\s?([^>]*))?>(.*?)<\/script>/ig, /(?<=<link.*href=")([^"]*)(?=")/g]
   async load(sourceUrl: string, configOrUrl?: string | MerakConfig) {
     if (this.loadCache.has(sourceUrl))
       return this.loadCache.get(sourceUrl)
@@ -18,14 +17,14 @@ export class DynamicLoader extends Loader {
         config = typeof configOrUrl === 'string' ? (await loadConfig(configOrUrl)) : configOrUrl
       }
       else { // inline config
-        config = resolveHtmlConfig(htmlStr).config
+        config = resolveHtmlConfig(htmlStr).config as any
       }
       function replaceSrc(str: string, re: RegExp) {
         return str.replace(re, (_, url) => resolveUrl(url, sourceUrl))
       }
 
-      htmlStr = replaceSrc(htmlStr, scriptRE)
-      htmlStr = replaceSrc(htmlStr, linkRE)
+      for (const re of this.re)
+        htmlStr = replaceSrc(htmlStr, re)
 
       const loadRes = { url: sourceUrl, fakeGlobalVar: config._f, template: htmlStr, globals: config._g } as LoadDone
       this.loadCache.set(sourceUrl, loadRes)

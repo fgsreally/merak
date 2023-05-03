@@ -1,11 +1,12 @@
 import { resolve } from 'path'
 import type { Compiler } from 'webpack'
 import { DEFAULT_INJECT_GLOBALS, analyseHTML, analyseJSGlobals, desctructGlobal, injectGlobalToESM, injectGlobalToIIFE, logger } from 'merak-compile'
-import HtmlWebpackPlugin from 'html-webpack-plugin'
 // @ts-expect-error miss types
 import isVarName from 'is-var-name'
+import type HtmlWebpackPlugin from 'html-webpack-plugin'
 import { Compilation, sources } from 'webpack'
 
+let htmlPlugin: typeof HtmlWebpackPlugin
 export class Merak {
   constructor(public fakeGlobalVar: string, public globals: string[], public options: { filter?: (file: string) => boolean; force?: boolean; logPath?: string; isInLine?: boolean } = {}) {
     if (!isVarName(fakeGlobalVar))
@@ -50,8 +51,13 @@ export class Merak {
       )
     })
 
-    compiler.hooks.compilation.tap('MerakPlugin', (compilation) => {
-      HtmlWebpackPlugin.getHooks(compilation).alterAssetTags.tap(
+    for (const plugin of compiler.options.plugins) {
+      if (plugin.constructor.name === 'HtmlWebpackPlugin')
+        htmlPlugin = plugin.constructor as any
+    }
+
+    htmlPlugin && compiler.hooks.compilation.tap('MerakPlugin', async (compilation) => {
+      htmlPlugin.getHooks(compilation).alterAssetTags.tap(
         'MerakPlugin',
         (data) => {
           // 额外添加scripts
@@ -69,7 +75,7 @@ export class Merak {
           return data
         },
       )
-      HtmlWebpackPlugin.getHooks(compilation).beforeEmit.tap('MerakPlugin', (data) => {
+      htmlPlugin.getHooks(compilation).beforeEmit.tap('MerakPlugin', (data) => {
         const merakConfig = { _f: fakeGlobalVar, _g: globalVars, _l: analyseHTML(data.html) }
         if (this.options.isInLine === false) {
           compilation.emitAsset('merak.json', new sources.RawSource(

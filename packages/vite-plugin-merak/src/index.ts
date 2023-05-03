@@ -32,9 +32,9 @@ export function Merak(fakeGlobalVar: string, globals: string[], opts: { isinLine
   const { isinLine, includes, exclude } = resolvedOpts
   const filter = createFilter(includes, exclude)
   let config: ResolvedConfig
-  const publicPath = `${fakeGlobalVar}.__merak_url__||''`
+  const publicPath = `(${fakeGlobalVar}.__merak_url__||'')`
   // work in sourcemap(maybe..)
-  const base = `/__dy_base_${createFillStr(publicPath.length + 10)}/`
+  const base = `/__dy_base_${createFillStr(publicPath.length + 12)}/`
 
   return [
     dynamicBase({
@@ -103,8 +103,9 @@ export function Merak(fakeGlobalVar: string, globals: string[], opts: { isinLine
           Object.entries(bundle).map(async ([, chunk]) => {
             if (chunk.type === 'asset' && typeof chunk.source === 'string') {
               if (chunk.fileName.endsWith('.html')) {
+                chunk.source = chunk.source.replaceAll(base, './')
                 merakConfig._l = analyseHTML(chunk.source)
-                chunk.source = chunk.source.replaceAll(base, '')
+
                 if (!isinLine) {
                   this.emitFile({
                     fileName: 'merak.json',
@@ -113,7 +114,7 @@ export function Merak(fakeGlobalVar: string, globals: string[], opts: { isinLine
                   })
                 }
                 else {
-                  chunk.source = chunk.source.replace('</body>', `<m-b config='${encodeURIComponent(JSON.stringify(merakConfig))}'></m-b></body`)
+                  chunk.source = chunk.source.replace('</body>', `<m-b config='${encodeURIComponent(JSON.stringify(merakConfig))}'></m-b></body>`)
                 }
               }
             }

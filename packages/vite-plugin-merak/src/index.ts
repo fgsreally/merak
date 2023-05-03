@@ -33,7 +33,7 @@ export function Merak(fakeGlobalVar: string, globals: string[], opts: { isinLine
   const filter = createFilter(includes, exclude)
   let config: ResolvedConfig
   const publicPath = `${fakeGlobalVar}.__merak_url__||''`
-  // work in sourcemap
+  // work in sourcemap(maybe..)
   const base = `/__dy_base_${createFillStr(publicPath.length + 10)}/`
 
   return [

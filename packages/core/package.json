@@ -25,7 +25,9 @@
   "scripts": {
     "serve": "http-server ./dist --cors -p 3000",
     "dev": "tsup --watch",
-    "build": "tsup"
+    "build": "tsup && npm run build:prod",
+    "build:prod": "cross-env PROD=true tsup"
+
   },
   "keywords": [],
   "files": [

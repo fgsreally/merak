@@ -23,7 +23,7 @@
     }
   },
   "scripts": {
-    "serve":"http-server ./dist --cors -p 3000",
+    "serve": "http-server ./dist --cors -p 3000",
     "dev": "tsup --watch",
     "build": "tsup"
   },
@@ -34,8 +34,6 @@
   "author": "",
   "license": "MIT",
   "devDependencies": {
-    "merak-compile": "workspace:*",
     "tsup": "^6.5.0"
   }
-
 }

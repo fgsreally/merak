@@ -1,5 +1,5 @@
 import { Transform } from 'stream'
-import htmlparser from 'htmlparser2'
+import { Parser } from 'htmlparser2'
 import { resolveUrl } from './utils'
 
 function mergeAttrs(attrs: Record<string, string>) {
@@ -10,11 +10,11 @@ export function wrap(html: string, url: string) {
   return `<template data-merak-url='${url}'>${html}</template>`
 }
 export class SsrTransformer extends Transform {
-  private parser: htmlparser.Parser
+  private parser: Parser
   constructor(public readonly url: string, public templateAttrs: Record<string, string>) {
     super()
     this.push(`<template data-merak-url='${url}' ${mergeAttrs(templateAttrs)}>`)
-    this.parser = new htmlparser.Parser({
+    this.parser = new Parser({
       onopentag: (tag, attrs) => {
         if ('merak-ignore' in attrs)
           return

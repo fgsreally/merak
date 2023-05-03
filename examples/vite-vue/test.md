@@ -17,8 +17,8 @@
  2. MutationObserver
  3. fetch
  4. Object
- 5. String
- 6. JSON
+ 5. JSON
+ 6. String
  7. Array
  8. parseInt
  9. parseFloat
@@ -39,41 +39,10 @@
  24. Function
  25. Boolean
  26. Math
- 27. SVGElement
- 28. Date
- 29. requestAnimationFrame
- 30. Event
- 31. Element
- 32. RegExp
- 33. exports
- 34. module
- 35. TypeError
- 36. ArrayBuffer
- 37. clearTimeout
- 38. getComputedStyle
- 39. ResizeObserver
- 40. Error
- 41. HTMLElement
- 42. ShadowRoot
- 43. navigator
- 44. Window
- 45. MouseEvent
- 46. FocusEvent
- 47. CompositionEvent
- 48. NodeFilter
- 49. HTMLInputElement
- 50. CustomEvent
- 51. NaN
- 52. clearInterval
- 53. Worker
- 54. process
- 55. ASYNC_VALIDATOR_NO_WARNING
- 56. HTMLImageElement
- 57. XMLHttpRequest
- 58. FormData
- 59. Headers
- 60. Blob
- 61. File
- 62. URL
- 63. encodeURI
- 64. decodeURIComponent
+ 27. Date
+ 28. SVGElement
+ 29. Element
+ 30. Error
+ 31. RegExp
+ 32. encodeURI
+ 33. decodeURIComponent

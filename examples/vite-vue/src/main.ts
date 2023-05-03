@@ -15,7 +15,6 @@ function render() {
 
   app.use(createPinia()).use(ElementPlus)
   app.use(router)
-
   app.mount('#app')
 }
 render()

@@ -8,10 +8,7 @@ export async function loadTextFile(url: string) {
   return res.text()
 }
 
-// export function createUrl(code: string, type = 'text/javascript') {
-//   const blob = new Blob([code], { type })
-//   return URL.createObjectURL(blob)
-// }
+
 export function resolveUrl(filePath: string, baseURL: string) {
   return new URL(filePath, baseURL).href
 }

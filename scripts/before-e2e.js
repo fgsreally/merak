@@ -25,14 +25,11 @@ export async function runAllExample() {
 
   try {
     if (process.env.CI || process.env.PROD) {
-      step('\n building sub project...')
-      await $`pnpm --filter example-sub-* run build`
+      step('\n building  project...')
+      await $`pnpm --filter example-* run build`
 
       step('\n serve bundle...')
       $`pnpm run example:serve`
-
-      step('\n main project running ...')
-      $`pnpm --filter example-main-* --parallel run dev`
 
       await waitOn(opts)
       step('\n start e2e test...')

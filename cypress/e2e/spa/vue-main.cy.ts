@@ -4,8 +4,9 @@ import { isSymbolExist } from '../utils'
 
 describe('main vue app [dev mode]', () => {
   beforeEach(() => {
-    cy.visit(`${MAINAPP_URL.VUE}about`)
+    cy.visit(`${MAINAPP_URL.VUE}`)
     cy.wait(3000)
+    cy.get('a[href=\'/about\']').click()
   })
   it('should work', () => {
     isSymbolExist()

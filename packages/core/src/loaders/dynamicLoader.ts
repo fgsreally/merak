@@ -1,6 +1,5 @@
-import { resolveHtmlConfig } from 'merak-compile'
+import { loadTextFile, resolveHtmlConfig, resolveUrl } from '../utils'
 import type { LoadDone, MerakConfig } from '../types'
-import { loadTextFile, resolveUrl } from '../utils'
 import { Loader } from './base'
 import { loadConfig } from './pureLoader'
 

@@ -9,7 +9,7 @@ import { compileHTML, resolveHtmlConfig, wrap } from 'merak-compile'
 
 // axios.defaults.adapter = adapter
 const isTest = process.env.NODE_ENV === 'test' || !!process.env.VITE_TEST_BUILD
-const isProduction = process.env.NODE_ENV === 'production'
+const isProduction = process.env.PROD ||process.env.CI
 export async function createServer(root = process.cwd(), isProd = isProduction) {
   const __dirname = path.dirname(fileURLToPath(import.meta.url))
   const resolve = p => path.resolve(__dirname, p)

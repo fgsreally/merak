@@ -5,7 +5,7 @@ import vue from '@vitejs/plugin-vue'
 import { Merak, merakPostCss } from 'vite-plugin-merak'
 
 export default defineConfig({
-  plugins: [vue(), Merak('vite_vue', ['__VUE_OPTIONS_API__'], { logPath: './test.md' })],
+  plugins: [vue(), Merak('vite_vue', [], {})],
   resolve: {
     alias: {
       '@': fileURLToPath(new URL('./src', import.meta.url)),

@@ -72,6 +72,8 @@ export function $onUnmount(cb: () => any) {
 }
 
 export function $onExec(cb: () => any) {
+  if (!isMerak())
+    cb()
   const fn1 = $once('mount', cb)
   const fn2 = $on('relunch', cb)
   return () => {

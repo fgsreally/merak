@@ -8,7 +8,7 @@ import isVarName from 'is-var-name'
 import { analyseHTML, analyseJSGlobals, injectGlobalToESM, injectGlobalToIIFE } from './analyse'
 import { DEFAULT_INJECT_GLOBALS } from './common'
 import { logger } from './log'
-const cli = cac()
+const cli = cac('merak')
 const root = process.cwd()
 const require = createRequire(root)
 

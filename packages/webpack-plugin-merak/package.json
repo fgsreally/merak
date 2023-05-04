@@ -1,6 +1,6 @@
 {
   "name": "webpack-plugin-merak",
-  "version": "1.0.0-rc.3",
+  "version": "1.0.0-rc.4",
   "description": "",
   "main": "dist/index.js",
   "types": "dist/index.d.ts",
@@ -16,15 +16,16 @@
   "author": "",
   "license": "MIT",
   "dependencies": {
-    "html-webpack-plugin": "^5.5.0",
     "is-var-name": "^2.0.0",
     "merak-compile": "workspace:*",
     "webpack": "^5.0.0"
   },
   "peerDependencies": {
-    "webpack": "^5.0.0"
+    "webpack": "^5.0.0",
+    "html-webpack-plugin": "^5.5.0"
   },
   "devDependencies": {
-    "tsup": "^6.5.0"
+    "tsup": "^6.5.0",
+    "html-webpack-plugin": "^5.5.0"
   }
 }

@@ -2,7 +2,7 @@ import { URL, fileURLToPath } from 'node:url'
 
 import { defineConfig } from 'vite'
 import vue from '@vitejs/plugin-vue'
-import {  merakPostCss } from 'vite-plugin-merak'
+import { merakPostCss } from 'vite-plugin-merak'
 import Inspect from 'vite-plugin-inspect'
 
 // https://vitejs.dev/config/

@@ -8,7 +8,6 @@ export async function loadTextFile(url: string) {
   return res.text()
 }
 
-
 export function resolveUrl(filePath: string, baseURL: string) {
   return new URL(filePath, baseURL).href
 }

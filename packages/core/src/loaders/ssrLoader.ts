@@ -20,7 +20,6 @@ export class SSRLoader extends Loader {
         htmlStr = ret.html
         config = ret.config as unknown as MerakConfig
       }
-
       const loadRes = { url, fakeGlobalVar: config._f, template: htmlStr, globals: config._g } as LoadDone
       this.loadCache.set(url, loadRes)
       return loadRes

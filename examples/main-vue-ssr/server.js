@@ -24,7 +24,7 @@ export async function createServer(root = process.cwd(), isProd = isProduction) 
       await import('vite')
     ).createServer({
       root,
-      logLevel: isTest ? 'error' : 'info',
+      logLevel: 'info',
       server: {
         middlewareMode: true,
         watch: {

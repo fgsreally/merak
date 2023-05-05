@@ -161,6 +161,8 @@ export class Merak {
 
     if (!this.cacheFlag) {
       this.sandDocument = document.importNode(window.document.implementation.createHTMLDocument('').documentElement, true)
+      if (this.template) // template
+        this.sandDocument.innerHTML = this.template
       if (this.mountIndex === 0) {
         this.perf.record('bootstrap')
 
@@ -171,8 +173,6 @@ export class Merak {
         body.setAttribute('style', getBodyStyle())
       }
 
-      if (this.template) // template
-        this.sandDocument.innerHTML = this.template
       // work for spa
       if (this.loader) {
         // mount script on body or iframe

@@ -5,7 +5,7 @@ const value = ref('')
 const options = [
   {
     value: '选项1',
-    label: '黄金糕',
+    label: '黄金糕1',
   },
   {
     value: '选项2',

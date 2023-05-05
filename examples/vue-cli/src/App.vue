@@ -9,6 +9,7 @@
 </template>
 
 <script setup lang="ts">
+
 const data=window.$Merak?window.$Merak.props.data: 'no data from merak'
 </script>
 

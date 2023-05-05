@@ -9,8 +9,33 @@ export function $window(): Window {
 }
 
 export function $document(): Document {
-  return isMerak() ? (document as any).rawDocument : document
+  return $window().document
 }
+
+export function $history() {
+  return $window().history
+}
+export function $location() {
+  return $window().location
+}
+
+export function getInstance(id: string) {
+  return $window().$MerakMap.get(id)
+}
+
+export function $jump(project: string, to: string) {
+  const instance = getInstance(project)
+  if (instance) {
+    instance.proxyMap.history.pushState(null, '', to)
+    const event = new PopStateEvent('popstate')
+    instance.proxy.dispatchEvent(event)
+  }
+}
+
+// function getQueryMap() {
+//   return JSON.parse(decodeURIComponent($location().search.slice(1)),
+//   )
+// }
 
 export function $eventName(event: string) {
   return `merak_${event}`

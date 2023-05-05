@@ -1,5 +1,6 @@
 <script setup lang="ts">
 import { ref } from 'vue'
+import { $jump } from 'merak-helper'
 const dialogVisible = ref(false)
 const value = ref('')
 const modalVisible = ref(false)
@@ -26,11 +27,19 @@ const options = [
     label: '北京烤鸭',
   },
 ]
+function routePush() {
+  $jump(
+    'vue_cli', '/about',
+  )
+}
 </script>
 
 <template>
   <div>
     <div class="content">
+      <el-button @click="routePush">
+        路由跳转
+      </el-button>
       <p>弹窗无需子应用做任何处理就可使用</p>
       <h3>1、打开弹窗</h3>
       <p>

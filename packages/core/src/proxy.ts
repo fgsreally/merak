@@ -31,7 +31,6 @@ export function getBindFn(target: any, p: any) {
 export function createProxyWindow(id: string, url: string) {
   return {
     get(target: any, p: string) {
-      console.log(p)
       // if you want to rewrite proxy logic,don't remove this part
       /** start  */
       if (p === 'isMerak')

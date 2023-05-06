@@ -8,5 +8,3 @@ export const MERAK_EVENT_HIDDEN = `${MERAK_EVENT_PREFIX}hidden`
 export const MERAK_EVENT_DESTROY = `${MERAK_EVENT_PREFIX}destroy`
 
 export const MERAK_SHADE_STYLE = 'position: fixed; z-index: 111111111; visibility: hidden; inset: 0px; backface-visibility: hidden;'
-
-export const HMR_VAR = ['__VUE_HMR_RUNTIME__']

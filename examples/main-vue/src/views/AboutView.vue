@@ -17,10 +17,10 @@ function relunch() {
   <div class="about">
     <p>from vue_cli</p>
     <MerakApp name="vue_cli" url="http://localhost:4005/" keep-alive class="micro" :props="data" @mount="mount" @relunch="relunch" />
-    <!-- <p>from vite-vue</p>
+    <p>from vite-vue</p>
     <MerakApp name="vite_vue" url="http://localhost:4004/" class="micro" :props="data" @mount="mount" @relunch="relunch" />
     <p>from vite-react</p>
-    <MerakApp name="vite_react" url="http://localhost:4003/" keep-alive class="micro" :props="data" /> -->
+    <MerakApp name="vite_react" url="http://localhost:4003/" keep-alive class="micro" :props="data" />
   </div>
 </template>
 

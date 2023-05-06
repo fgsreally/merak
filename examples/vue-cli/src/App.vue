@@ -4,7 +4,7 @@
     <router-link to="/about" id="toabout">About</router-link>
   </nav>
   <div class="merak-symbol">vue-cli app from merak</div>
-  <p style="color:green">{{data}}</p>
+  <p style="color:green">{{data}}44</p>
   <router-view />
 </template>
 

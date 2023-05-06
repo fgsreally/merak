@@ -98,33 +98,3 @@
  85. exports
  86. module
  87. encodeURI
-
-> file:`app.46479eb0f552d54f.hot-update.js`
-
-
- 1. Object
-
-> file:`app.d926a1bdf06ca165.hot-update.js`
-
-
- 1. Object
-
-> file:`about.1daf093add9164cc.hot-update.js`
-
-
- 1. Object
-
-> file:`about.35791d8180a41ade.hot-update.js`
-
-
- 1. Object
-
-> file:`about.b8969beb554a3393.hot-update.js`
-
-
- 1. Object
-
-> file:`about.190fe17e0c1ab481.hot-update.js`
-
-
- 1. Object

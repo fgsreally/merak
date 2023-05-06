@@ -22,6 +22,6 @@ module.exports = defineConfig({
       },
     },
  
-    plugins: [new Merak("vuecli", [],{logPath:'./test.md'})],
+    plugins: [new Merak("vue_cli", [],{logPath:'./test.md',force:false})],
   },
 });

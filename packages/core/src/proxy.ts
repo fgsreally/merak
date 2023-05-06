@@ -72,6 +72,7 @@ export function createProxyWindow(id: string, url: string) {
     },
 
     set(target: any, p: string, v: any) {
+      console.log(p)
       if (__DEV__) {
         if (HMR_VAR.includes(p))
           window[p] = v

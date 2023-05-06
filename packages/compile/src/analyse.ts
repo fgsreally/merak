@@ -139,72 +139,76 @@ export const analyseJS = (code: string, filePath: string, rootPath: string, glob
 
 export function injectGlobalToIIFE(code: string, globalVar: string, globals: string[], force?: boolean) {
   const globalSet = new Set<string>()
-  const ast = parseSync(code, { filename: 'any' })
   const s = new MagicString(code)
-  const warning: { info: string; loc: SourceLocation }[] = []
   let start = 0
   let end = 0
-  traverse(ast, {
-    // @ts-expect-error miss type
-    ReferencedIdentifier: (path) => {
-      const name = path.node.name
-      if (!path.scope.hasBinding(name, true)) {
-        globals.includes(name) && globalSet.add(name)
-        checkIsDanger(path.node, warning)
-      }
-    },
-    Program(path) {
-      start = path.node.start as number
-      end = path.node.end as number
-    },
-  })
-  const injectGlobals = [...globalSet]
   if (force) {
     s.appendLeft(start, `(()=>{const {${desctructGlobal(globals)}}=${globalVar};`)
-    s.appendRight(end, '})()')
+    s.append('})()')
   }
   else {
+    const ast = parseSync(code, { filename: 'any' })
+    const warning: { info: string; loc: SourceLocation }[] = []
+
+    traverse(ast, {
+    // @ts-expect-error miss type
+      ReferencedIdentifier: (path) => {
+        const name = path.node.name
+        if (!path.scope.hasBinding(name, true)) {
+          globals.includes(name) && globalSet.add(name)
+          checkIsDanger(path.node, warning)
+        }
+      },
+      Program(path) {
+        start = path.node.start as number
+        end = path.node.end as number
+      },
+    })
+    const injectGlobals = [...globalSet]
+
+    globals = injectGlobals
     if (injectGlobals.length) {
       s.appendLeft(start, `(()=>{const {${desctructGlobal(injectGlobals)}}=${globalVar};`)
       s.appendRight(end, '})()')
     }
   }
 
-  return { code: s.toString(), map: s.generateMap({ hires: true }), warning, globals: injectGlobals }
+  return { code: s.toString(), map: s.generateMap({ hires: true }), warning, globals }
 }
 
 export function injectGlobalToESM(code: string, globalVar: string, globals: string[], force?: boolean) {
   const globalSet = new Set<string>()
-  const ast = parseSync(code)
   const s = new MagicString(code)
   const warning: { info: string; loc: SourceLocation }[] = []
-  let lastImport
-  traverse(ast, {
-    // @ts-expect-error miss type
-    ReferencedIdentifier: (path) => {
-      const name = path.node.name
-      if (!path.scope.hasBinding(name, true)) {
-        globals.includes(name) && globalSet.add(name)
-        checkIsDanger(path.node, warning)
-      }
-    },
 
-    ImportDeclaration(path) {
-      const { node } = path
-      const { end } = node.source
-      lastImport = end
-    },
-
-  })
-
-  const injectGlobals = [...globalSet]
   if (force) {
-    s.appendRight(lastImport || 0, `\nconst {${desctructGlobal(globals)}}=${globalVar};`)
+    s.appendRight(0, `\nconst {${desctructGlobal(globals)}}=${globalVar};`)
   }
   else {
+    const ast = parseSync(code)
+    let lastImport
+    traverse(ast, {
+      // @ts-expect-error miss type
+      ReferencedIdentifier: (path) => {
+        const name = path.node.name
+        if (!path.scope.hasBinding(name, true)) {
+          globals.includes(name) && globalSet.add(name)
+          checkIsDanger(path.node, warning)
+        }
+      },
+
+      ImportDeclaration(path) {
+        const { node } = path
+        const { end } = node.source
+        lastImport = end
+      },
+
+    })
+
+    const injectGlobals = [...globalSet]
+    globals = injectGlobals
     if (injectGlobals.length)
       s.appendRight(lastImport || 0, `\nconst {${desctructGlobal(injectGlobals)}}=${globalVar};`)
   }
-
-  return { code: s.toString(), map: s.generateMap({ hires: true }), warning, globals: injectGlobals }
+  return { code: s.toString(), map: s.generateMap({ hires: true }), warning, globals }
 }

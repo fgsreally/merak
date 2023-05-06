@@ -6,7 +6,7 @@ export const tsup: Options = process.env.PROD
       format: ['iife', 'esm'],
       globalName: 'Merak',
       define: {
-        __DEV__: 'false',
+        __DEV__: 'true',
       },
       outDir: 'dist/prod',
 

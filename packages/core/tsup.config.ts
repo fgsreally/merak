@@ -8,6 +8,7 @@ export const tsup: Options = process.env.PROD
       define: {
         __DEV__: 'false',
       },
+      minify: true,
       outDir: 'dist/prod',
 
     }
@@ -19,6 +20,7 @@ export const tsup: Options = process.env.PROD
         define: {
           __DEV__: 'true',
         },
+        minify: true,
         outDir: 'dist/dev',
 
       }

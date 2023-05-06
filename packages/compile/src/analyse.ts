@@ -140,6 +140,8 @@ export const analyseJS = (code: string, filePath: string, rootPath: string, glob
 export function injectGlobalToIIFE(code: string, globalVar: string, globals: string[], force?: boolean) {
   const globalSet = new Set<string>()
   const s = new MagicString(code)
+  const warning: { info: string; loc: SourceLocation }[] = []
+
   let start = 0
   let end = 0
   if (force) {
@@ -148,7 +150,6 @@ export function injectGlobalToIIFE(code: string, globalVar: string, globals: str
   }
   else {
     const ast = parseSync(code, { filename: 'any' })
-    const warning: { info: string; loc: SourceLocation }[] = []
 
     traverse(ast, {
     // @ts-expect-error miss type
@@ -182,7 +183,7 @@ export function injectGlobalToESM(code: string, globalVar: string, globals: stri
   const warning: { info: string; loc: SourceLocation }[] = []
 
   if (force) {
-    s.appendRight(0, `\nconst {${desctructGlobal(globals)}}=${globalVar};`)
+    s.prepend(`\nconst {${desctructGlobal(globals)}}=${globalVar};`)
   }
   else {
     const ast = parseSync(code)

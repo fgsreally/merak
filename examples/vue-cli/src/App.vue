@@ -3,8 +3,8 @@
     <router-link to="/" id="tohome">Home</router-link> 
     <router-link to="/about" id="toabout">About</router-link>
   </nav>
-  <div class="merak-symbol">vue-cli app from merak</div>
-  <p style="color:green">{{data}}44</p>
+  <div class="merak-symbol">vue-cli app from merak!</div>
+  <p style="color:green">{{data}}</p>
   <router-view />
 </template>
 

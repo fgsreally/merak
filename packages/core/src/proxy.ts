@@ -1,8 +1,8 @@
 /* eslint-disable no-prototype-builtins */
-import { HMR_VAR, MERAK_EVENT_DESTROY, MERAK_EVENT_PREFIX } from './common'
+import { MERAK_EVENT_DESTROY, MERAK_EVENT_PREFIX } from './common'
 import { getUrlQuery, isBoundedFunction, isCallable, isConstructable } from './utils'
 import type { Merak } from './merak'
-import { getInstance } from './helper'
+import { HMR_VAR, getInstance } from './helper'
 import { patchTimer } from './patch/timer'
 
 const cacheBindFn = new WeakMap()
@@ -31,6 +31,7 @@ export function getBindFn(target: any, p: any) {
 export function createProxyWindow(id: string, url: string) {
   return {
     get(target: any, p: string) {
+      console.log(p)
       // if you want to rewrite proxy logic,don't remove this part
       /** start  */
       if (p === 'isMerak')
@@ -72,9 +73,8 @@ export function createProxyWindow(id: string, url: string) {
     },
 
     set(target: any, p: string, v: any) {
-      console.log(p)
       if (__DEV__) {
-        if (HMR_VAR.includes(p))
+        if (HMR_VAR.includes(p) && !window[p])
           window[p] = v
       }
 

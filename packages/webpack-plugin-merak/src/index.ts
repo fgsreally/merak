@@ -6,6 +6,7 @@ import isVarName from 'is-var-name'
 import type HtmlWebpackPlugin from 'html-webpack-plugin'
 import { Compilation, sources } from 'webpack'
 
+const fileSet = new Set<string>()
 let htmlPlugin: typeof HtmlWebpackPlugin
 export class Merak {
   constructor(public fakeGlobalVar: string, public globals: string[], public options: { filter?: (file: string) => boolean; force?: boolean; logPath?: string; isInLine?: boolean } = {}) {
@@ -14,6 +15,8 @@ export class Merak {
   }
 
   apply(compiler: Compiler) {
+    const { mode } = compiler.options
+
     const format = compiler.options.output.chunkFormat
     const { fakeGlobalVar, globals } = this
     globals.push(...DEFAULT_INJECT_GLOBALS)
@@ -30,6 +33,12 @@ export class Merak {
           chunks.forEach((chunk) => {
             chunk.files.forEach((file) => {
               if (file.endsWith('.js')) {
+                if (mode === 'development') {
+                  if (fileSet.has(file))
+                    return
+                  fileSet.add(file)
+                }
+
                 if (this.options.filter && !this.options.filter(file))
                   return
                 const source = compilation.getAsset(file)!.source.source() as string

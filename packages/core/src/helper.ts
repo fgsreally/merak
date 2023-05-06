@@ -16,6 +16,7 @@ export function getUrl(id: string) {
 }
 
 let MERAK_BODY_STYLE = 'position:relative'
+
 export function setBodyStyle(style: string) {
   MERAK_BODY_STYLE = style
 }
@@ -23,3 +24,5 @@ export function setBodyStyle(style: string) {
 export function getBodyStyle() {
   return MERAK_BODY_STYLE
 }
+
+export const HMR_VAR = ['__VUE_HMR_RUNTIME__']

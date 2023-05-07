@@ -15,7 +15,7 @@ function render() {
 
   app.use(createPinia()).use(ElementPlus)
   app.use(router)
-  app.mount('#app')
+  app.mount(document.querySelector('#app'))
 }
 $onExec(render)
 $stopProp()

@@ -9,9 +9,13 @@ export default defineConfig({
   resolve: {
     alias: {
       '@': fileURLToPath(new URL('./src', import.meta.url)),
+
     },
   },
   build: {
+    rollupOptions: {
+      external: ['vue', 'vue-router'],
+    },
     sourcemap: true,
   },
   server: {

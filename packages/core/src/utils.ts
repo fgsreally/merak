@@ -13,9 +13,17 @@ export function resolveUrl(filePath: string, baseURL: string) {
 }
 
 export function getUrlQuery(url: string) {
-  const query = url.split('?')[1]
+  const querys = url.split('?')[1]
+  const queryMap: Record<string, string> = {}
+  querys.split('&').forEach((item) => {
+    const [key, value] = item.split('=')
+    queryMap[key] = decodeURIComponent(value)
+  })
+  return queryMap
+}
 
-  return query ? JSON.parse(decodeURIComponent(query)) : {}
+export function createQuery(queryMap: Record<string, string>) {
+  return Object.entries(queryMap).map(([k, v]) => `${k}=${encodeURIComponent(v)}`).join('&')
 }
 
 /**

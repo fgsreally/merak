@@ -1,6 +1,6 @@
 /* eslint-disable no-prototype-builtins */
 import { MERAK_EVENT_DESTROY, MERAK_EVENT_PREFIX } from './common'
-import { getUrlQuery, isBoundedFunction, isCallable, isConstructable } from './utils'
+import { createQuery, getUrlQuery, isBoundedFunction, isCallable, isConstructable } from './utils'
 import type { Merak } from './merak'
 import { HMR_VAR, getInstance } from './helper'
 import { patchTimer } from './patch/timer'
@@ -189,8 +189,9 @@ export function createProxyHistory(id: string) {
           const queryMap = getUrlQuery(window.location.href)
 
           queryMap[id] = to === '/undefined' ? '/' : to
-          args[2] = `?${encodeURIComponent(JSON.stringify(queryMap))}`
-          // args[2] = `?${to === '/' ? '' : `test=${to}`}`
+          args[2] = `?${createQuery(queryMap)}`
+
+          // args[2] = `?${encodeURIComponent(JSON.stringify(queryMap))}`
           return history.replaceState(...args)
         }
         return replace
@@ -201,9 +202,8 @@ export function createProxyHistory(id: string) {
           const to = pathname + hash
           const queryMap = getUrlQuery(window.location.href)
           queryMap[id] = to === '/undefined' ? '/' : to
-
-          args[2] = `?${encodeURIComponent(JSON.stringify(queryMap))}`
-          // args[2] = `?${to === '/' ? '' : `test=${to}`}`
+          args[2] = `?${createQuery(queryMap)}`
+          // args[2] = `?${encodeURIComponent(JSON.stringify(queryMap))}`
           return history.pushState(...args)
         }
         return push

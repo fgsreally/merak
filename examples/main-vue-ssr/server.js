@@ -5,10 +5,8 @@ import { fileURLToPath } from 'node:url'
 import express from 'express'
 import axios from 'axios'
 import { compileHTML, resolveHtmlConfig, wrap } from 'merak-compile'
-// import adapter from 'axios/lib/adapters/http.js'
-
-// axios.defaults.adapter = adapter
 const isProduction = process.env.PROD || process.env.CI
+
 export async function createServer(root = process.cwd(), isProd = isProduction) {
   const __dirname = path.dirname(fileURLToPath(import.meta.url))
   const resolve = p => path.resolve(__dirname, p)
@@ -62,14 +60,14 @@ export async function createServer(root = process.cwd(), isProd = isProduction) 
         render = (await import('./dist/server/entry-server.js')).render
       }
 
-      const [appHtml, links] = await render(url, manifest)
-      const appurl = 'http://127.0.0.1:4004/index.html'
+      const [strOrStream, links] = await render(url, manifest)
+      const appurl = 'http://localhost:4004/index.html'
       const { data } = await axios.get(appurl)
       const { config } = resolveHtmlConfig(data)
       const html = template
         .replace('<!--preload-links-->', links)
-        .replace('<!--app-html-->', appHtml)
-        .replace('</body>', `${wrap(compileHTML(data, appurl, config._l), 'http://127.0.0.1:4004')}</body>`)
+        .replace('<!--app-html-->', strOrStream)
+        .replace('</body>', `${wrap(compileHTML(data, appurl, config._l), 'http://localhost:4004')}</body>`)
 
       res.status(200).set({ 'Content-Type': 'text/html' }).end(html)
     }

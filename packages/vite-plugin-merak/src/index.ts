@@ -5,7 +5,7 @@ import type { FilterPattern, PluginOption, ResolvedConfig } from 'vite'
 // @ts-expect-error miss types
 import isVarName from 'is-var-name'
 import { dynamicBase } from 'vite-plugin-dynamic-base'
-
+import { merakCSS } from './lib'
 function createFillStr(length: number) {
   let str = ''
   for (let i = 0; i < length; i++)
@@ -13,6 +13,9 @@ function createFillStr(length: number) {
 
   return str
 }
+
+// eslint-disable-next-line import/export
+export * from './lib'
 
 export function Merak(fakeGlobalVar: string, globals: string[], opts: { isinLine?: boolean; includes?: FilterPattern; exclude?: FilterPattern; logPath?: string; force?: boolean } = {}): PluginOption {
   if (!isVarName(fakeGlobalVar))
@@ -40,7 +43,10 @@ export function Merak(fakeGlobalVar: string, globals: string[], opts: { isinLine
     dynamicBase({
       publicPath,
       transformIndexHtml: false,
-    }) as any, {
+    }) as any,
+
+    merakCSS(),
+    {
       name: 'vite-plugin-merak:dev',
       apply: 'serve',
       enforce: 'post',
@@ -127,5 +133,3 @@ export function Merak(fakeGlobalVar: string, globals: string[], opts: { isinLine
 
   ]
 }
-
-export { merakPostCss } from 'merak-compile'

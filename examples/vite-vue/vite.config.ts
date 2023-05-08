@@ -13,17 +13,15 @@ export default defineConfig({
     },
   },
   build: {
-    rollupOptions: {
-      external: ['vue', 'vue-router'],
-    },
+
     sourcemap: true,
   },
   server: {
     port: 4004,
   },
-  css: {
-    postcss: {
-      plugins: [merakPostCss()],
-    },
-  },
+  // css: {
+  //   postcss: {
+  //     plugins: [merakPostCss()],
+  //   },
+  // },
 })

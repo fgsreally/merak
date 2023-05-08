@@ -11,7 +11,7 @@ export function wrap(html: string, url: string) {
 }
 export class SsrTransformer extends Transform {
   private parser: Parser
-  constructor(public readonly url: string, public templateAttrs: Record<string, string>) {
+  constructor(public readonly url: string, public templateAttrs: Record<string, string> = {}) {
     super()
     this.push(`<template data-merak-url='${url}' ${mergeAttrs(templateAttrs)}>`)
     this.parser = new Parser({
@@ -45,16 +45,3 @@ export class SsrTransformer extends Transform {
     callback()
   }
 }
-
-// example
-// pipeline(
-//   stream1,
-//   res,
-//   (err) => {
-//     if (err) {
-//       console.error('Pipeline failed', err);
-//     } else {
-//       pipeline(stream2, res);
-//     }
-//   }
-// );

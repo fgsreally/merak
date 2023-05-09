@@ -16,7 +16,8 @@ const _hoisted_1 = { class: 'red' }
 
 const __sfc__ = {
   __name: 'App',
-  setup(__props) {
+  setup(__props,{attrs}) {
+    console.log(attrs )
     const style = document.createElement('style')
     style.innerHTML = `.red{
   background-color:red

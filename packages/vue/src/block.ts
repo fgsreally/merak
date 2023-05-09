@@ -1,5 +1,5 @@
-import type { PropType } from 'vue'
-import { defineComponent, h, onMounted, onUnmounted, render } from 'vue'
+import type { PropType, VNode } from 'vue'
+import { defineComponent, h, onBeforeUnmount, onMounted, render } from 'vue'
 import { MERAK_DATA_ID, MERAK_KEEP_ALIVE, Merak, createLibProxy, getInstance } from 'merak-core'
 import { shareEmits, shareProps } from './share'
 
@@ -20,13 +20,8 @@ export const MerakBlock = defineComponent({
 
     const app = getInstance(name) || new Merak(name, url, { proxy: proxy || createLibProxy(name, url), iframe })
     app.setGlobalVars(fakeGlobalVar, globals)
-    // for (const ev in shareEmits) {
-    //   const eventName = MERAK_EVENT_PREFIX + ev + name
-    //   const handler = () => emit(ev as any, name)
-    //   const window = $window()
-    //   window.addEventListener(eventName, handler)
-    //   onUnmounted(() => window.removeEventListener(eventName, handler))
-    // }
+
+    let vnode: VNode
     for (const ev in shareEmits) {
       if (ev === 'errorHandler')
         app[ev] = (arg: any) => emit(ev as any, arg)
@@ -37,10 +32,12 @@ export const MerakBlock = defineComponent({
     onMounted(async () => {
       // const { default: Comp } = await importPromise
       const { default: Comp } = await import(url)
-      render(h(Comp, { ...MerakProps }, slots), app.sandDocument!.querySelector('body')!)
+      vnode = h(Comp, { ...MerakProps }, slots)
+      render(vnode, app.sandDocument!.querySelector('body')!)
     })
-    onUnmounted(() => {
-      app.unmount(false)
+
+    onBeforeUnmount(() => {
+      render(null, app.sandDocument!.querySelector('body')!)
     })
 
     return () => h('merak-app', { [MERAK_DATA_ID]: name, [MERAK_KEEP_ALIVE]: keepAlive })

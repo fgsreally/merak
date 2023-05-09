@@ -30,11 +30,6 @@ export const MerakApp = defineComponent({
       else
         app.lifeCycle[ev] = (arg: any) => emit(ev as any, arg)
     }
-    // const eventName = MERAK_EVENT_PREFIX + ev + name
-    // const handler = () => emit(ev as any, name)
-    // const window = $window()
-    // window.addEventListener(eventName, handler)
-    // onUnmounted(() => window.removeEventListener(eventName, handler))
 
     expose({ app })
     return () => h('merak-app', { [MERAK_DATA_ID]: name, [MERAK_KEEP_ALIVE]: keepAlive })

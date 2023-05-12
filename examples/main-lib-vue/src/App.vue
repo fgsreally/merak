@@ -1,8 +1,10 @@
 <script setup lang="ts">
-import { MerakScope } from 'merak-vue'
-import { defineAsyncComponent, ref } from 'vue'
-// @ts-expect-error miss type
-const Lib = defineAsyncComponent(() => import('../lib'))
+import { MerakImport } from 'merak-vue'
+
+import { ref } from 'vue'
+// import { MerakScope } from 'merak-vue'
+
+// const Lib = defineAsyncComponent(() => import('../lib'))
 const isShow = ref(false)
 </script>
 
@@ -14,8 +16,8 @@ const isShow = ref(false)
     {{ isShow ? 'delete' : 'append' }} component
   </button>
 
-  <!-- <MerakImport v-if="isShow" name="UUID" fake-global-var="vue_lib" url="/lib.js" /> -->
-  <MerakScope v-if="isShow" name="UUID" fake-global-var="vue_lib">
+  <MerakImport v-if="isShow" name="UUID" fake-global-var="vue_lib" url="/lib.js" />
+  <!-- <MerakScope v-if="isShow" name="UUID" fake-global-var="vue_lib">
     <Lib v-bind="{ type: 'lib' }" />
-  </MerakScope>
+  </MerakScope> -->
 </template>

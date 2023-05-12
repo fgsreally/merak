@@ -14,7 +14,6 @@ function createFillStr(length: number) {
   return str
 }
 
-// eslint-disable-next-line import/export
 export * from './lib'
 
 export function Merak(fakeGlobalVar: string, globals: string[], opts: { isinLine?: boolean; includes?: FilterPattern; exclude?: FilterPattern; logPath?: string; force?: boolean } = {}): PluginOption {

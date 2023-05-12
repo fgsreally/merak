@@ -15,10 +15,12 @@ export function resolveUrl(filePath: string, baseURL: string) {
 export function getUrlQuery(url: string) {
   const querys = url.split('?')[1]
   const queryMap: Record<string, string> = {}
-  querys.split('&').forEach((item) => {
-    const [key, value] = item.split('=')
-    queryMap[key] = decodeURIComponent(value)
-  })
+  if (querys) {
+    querys.split('&').forEach((item) => {
+      const [key, value] = item.split('=')
+      queryMap[key] = decodeURIComponent(value)
+    })
+  }
   return queryMap
 }
 

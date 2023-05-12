@@ -141,11 +141,13 @@ export function $perf() {
   return $instance()?.perf
 }
 
-export function $stopProp() {
+export function $stopProp(isPass = false) {
   if (isMerak()) {
     ['click', 'mousemove', 'mousedown', 'mouseup', 'keydown', 'keyup'].forEach((eventName) => {
       document.body.addEventListener(eventName, (event) => {
         event.stopPropagation()
+        if (isPass)
+          $document().dispatchEvent(new CustomEvent(eventName, { detail: { originalEvent: event } }))
       })
     })
   }

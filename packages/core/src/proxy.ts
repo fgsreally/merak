@@ -1,11 +1,14 @@
 /* eslint-disable no-prototype-builtins */
-import { MERAK_EVENT_DESTROY, MERAK_EVENT_PREFIX } from './common'
+import { MERAK_EVENT_DESTROY, MERAK_EVENT_PREFIX, MERAK_GLOBAL_VARS } from './common'
 import { createQuery, getUrlQuery, isBoundedFunction, isCallable, isConstructable } from './utils'
 import type { Merak } from './merak'
-import { HMR_VAR, getInstance } from './helper'
+import { getInstance } from './helper'
 import { patchTimer } from './patch/timer'
 
-const cacheBindFn = new WeakMap()
+export const cacheBindFn = new WeakMap()
+export const GLOBAL_VAR_SET = new Set(['__VUE_HMR_RUNTIME__'])
+
+export const GLOBAL_VAR_MAP = new Map()
 
 export function getBindFn(target: any, p: any) {
   const value = target[p]
@@ -68,15 +71,29 @@ export function createProxyWindow(id: string, url: string) {
           addEventListener(...params)
         }
       }
+      if (GLOBAL_VAR_SET.has(p)) {
+        if (!target[MERAK_GLOBAL_VARS])
+          target[MERAK_GLOBAL_VARS] = new Map()
+          // getInstance(id)!.cacheEvent.push(() => target[MERAK_GLOBAL_VARS].clear())
+
+        if (!target[MERAK_GLOBAL_VARS].has(p)) {
+          target[MERAK_GLOBAL_VARS].set(p, new Proxy({}, {
+            get(_, k) {
+              return getBindFn(target[p], k)
+            },
+            set(_, k, v) {
+              target[p][k] = v
+              return true
+            },
+          }))
+        }
+
+        return target[MERAK_GLOBAL_VARS].get(p)
+      }
       return getBindFn(p in target ? target : window, p)
     },
 
     set(target: any, p: string, v: any) {
-      if (__DEV__) {
-        if (HMR_VAR.includes(p) && !window[p])
-          window[p] = v
-      }
-
       target[p] = v
       return true
     },
@@ -187,11 +204,9 @@ export function createProxyHistory(id: string) {
           const { pathname, hash } = new URL(args[2], location.origin)
           const to = pathname + hash
           const queryMap = getUrlQuery(window.location.href)
-
           queryMap[id] = to === '/undefined' ? '/' : to
           args[2] = `?${createQuery(queryMap)}`
 
-          // args[2] = `?${encodeURIComponent(JSON.stringify(queryMap))}`
           return history.replaceState(...args)
         }
         return replace
@@ -203,7 +218,6 @@ export function createProxyHistory(id: string) {
           const queryMap = getUrlQuery(window.location.href)
           queryMap[id] = to === '/undefined' ? '/' : to
           args[2] = `?${createQuery(queryMap)}`
-          // args[2] = `?${encodeURIComponent(JSON.stringify(queryMap))}`
           return history.pushState(...args)
         }
         return push

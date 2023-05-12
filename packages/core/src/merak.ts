@@ -70,7 +70,7 @@ export class Merak {
   private loadPromise: Promise<any>
 
   /** 缓存事件，卸载时被释放 */
-  private cacheEvent: Function[] = []
+  cacheEvent: (() => void)[] = []
 
   constructor(public id: string, public url: string, public options: {
     loader?: PureLoader
@@ -200,36 +200,6 @@ export class Merak {
           eventTrigger(window, MERAK_EVENT_RELUNCH + this.id)
         }
       }
-      // // work for ssr
-      // if (ele) {
-      //   // mount script on body or iframe
-      //   const originScripts = [...ele.querySelectorAll('script')]
-      //   const scripts = originScripts.filter((script) => {
-      //     !this.iframe && script.remove()
-      //     if (this.execFlag)
-      //       return false
-
-      //     return !script.hasAttribute('merak-ignore') && script.type !== 'importmap'
-      //   })
-      //   this.sandDocument.querySelector('body')?.appendChild(ele)
-
-      //   if (!this.execFlag) {
-      //     this.execHook('transformScript', { originScripts, scripts });
-
-      //     (this.iframe ? this.iframe.contentDocument : this.sandDocument)!.querySelector('body')!.append(...scripts)
-      //     Promise.all(scripts.map(scriptPrimise)).catch((e) => {
-      //       return this.execHook('errorHandler', { type: 'scriptError', error: e })
-      //     }).finally(() => {
-      //       this.perf.record('bootstrap')
-
-      //       this.execFlag = true
-      //       eventTrigger(window, MERAK_EVENT_MOUNT + this.id)
-      //     })
-      //   }
-      //   else {
-      //     eventTrigger(window, MERAK_EVENT_RELUNCH + this.id)
-      //   }
-      // }
     }
 
     this.execHook('tranformDocument', { ele: this.sandDocument! })
@@ -290,29 +260,3 @@ export class Merak {
     this.cleanEvents()
   }
 }
-
-// export function beforeMount(cb: LifeCycle['beforeMount']) {
-//   Merak.lifeCycle.beforeMount = cb
-// }
-// export function beforeUnmount(cb: LifeCycle['beforeUnmount']) {
-//   Merak.lifeCycle.beforeUnmount = cb
-// }
-
-// export function afterUnmount(cb: LifeCycle['afterUnmount']) {
-//   Merak.lifeCycle.afterUnmount = cb
-// }
-
-// export function destroy(cb: LifeCycle['destroy']) {
-//   Merak.lifeCycle.destroy = cb
-// }
-
-// export function transformScript(cb: LifeCycle['transformScript']) {
-//   Merak.lifeCycle.transformScript = cb
-// }
-
-// export function tranformDocument(cb: LifeCycle['tranformDocument']) {
-//   Merak.lifeCycle.tranformDocument = cb
-// }
-// export function errorHandler(cb: LifeCycle['errorHandler']) {
-//   Merak.lifeCycle.errorHandler = cb
-// }

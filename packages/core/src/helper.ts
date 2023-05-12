@@ -3,14 +3,17 @@ import type { Merak } from './merak'
 export const MerakMap: Map<string, Merak> = window.$MerakMap || new Map()
 window.$MerakMap = MerakMap
 
+// 获得子元素对应实例
 export function getInstance(id: string) {
   return MerakMap.get(id)
 }
 
+// 获得子应用对应的shadowroot 的host，可往其上插样式
 export function getHost(id: string) {
   return getInstance(id)?.shadowRoot.host
 }
 
+// 获得子应用对应的url
 export function getUrl(id: string) {
   return (getInstance(id)?.proxyMap.location as Location)?.href
 }
@@ -24,5 +27,3 @@ export function setBodyStyle(style: string) {
 export function getBodyStyle() {
   return MERAK_BODY_STYLE
 }
-
-export const HMR_VAR = ['__VUE_HMR_RUNTIME__']

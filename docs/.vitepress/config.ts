@@ -87,6 +87,10 @@ export default defineConfig({
               link: '/guide/',
             },
             {
+              text: '看前须知',
+              link: '/guide/must-known',
+            },
+            {
               text: '快速上手',
               link: '/guide/quick-start',
             },

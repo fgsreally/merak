@@ -18,7 +18,7 @@ function render() {
   app.mount(document.querySelector('#app'))
 }
 $onExec(render)
-$stopProp()
+$stopProp(true)
 $onDestroy(() => {
   app.unmount()
 })

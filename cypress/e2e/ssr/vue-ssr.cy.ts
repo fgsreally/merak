@@ -11,7 +11,7 @@ describe('vue ssr [dev mode]', () => {
   // })
 
   it('should work', () => {
-    cy.get('a[href="/test/about"]').click()
+    cy.get('a[href="/about"]').click()
     cy.get(getShadowSelector('vite_vue')).shadow().find('.merak-symbol').contains(SUBAPP_CONTENT.vite_vue)
   })
 })

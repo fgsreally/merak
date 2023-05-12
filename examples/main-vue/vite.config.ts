@@ -15,9 +15,7 @@ export default defineConfig({
     },
   },
   build: {
-    rollupOptions: {
-      external: ['vue', 'vue-router'],
-    },
+
   },
   define: {
     __DEV__: true,

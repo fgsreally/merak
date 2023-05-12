@@ -5,9 +5,9 @@
   "addModal": "setup-const",
   "msg": "setup-ref"
 } */
-import { Fragment as _Fragment, createElementBlock as _createElementBlock, createElementVNode as _createElementVNode, openBlock as _openBlock, toDisplayString as _toDisplayString, vModelText as _vModelText, withDirectives as _withDirectives, onUnmounted } from 'vue'
+import { Fragment as _Fragment, createElementBlock as _createElementBlock, createElementVNode as _createElementVNode, openBlock as _openBlock, toDisplayString as _toDisplayString, vModelText as _vModelText, withDirectives as _withDirectives, onUnmounted } from 'https://cdnjs.cloudflare.com/ajax/libs/vue/3.3.1/vue.esm-browser.prod.min.js'
 
-import { ref } from 'vue'
+import { ref } from 'https://cdnjs.cloudflare.com/ajax/libs/vue/3.3.1/vue.esm-browser.prod.min.js'
 
 /** compile ret */
 const { document } = vue_lib

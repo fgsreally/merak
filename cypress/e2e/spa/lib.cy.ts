@@ -11,6 +11,7 @@ describe('lib app [dev mode]', () => {
   })
 
   it('merak should mount', () => {
+    cy.get('button').click()
     cy.get(selector).should('exist')
   })
 })

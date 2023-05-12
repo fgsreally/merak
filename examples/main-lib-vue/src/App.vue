@@ -12,7 +12,7 @@ const isShow = ref(false)
   <div class="red modal">
     div from main
   </div>
-  <button @click="isShow = !isShow">
+  <button id="test" @click="isShow = !isShow">
     {{ isShow ? 'delete' : 'append' }} component
   </button>
 

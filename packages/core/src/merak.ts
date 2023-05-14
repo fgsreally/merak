@@ -2,7 +2,7 @@ import { iframeInstance } from './iframe'
 import type { LoadDone, MerakConfig, ProxyGlobals } from './types'
 import type { PureLoader } from './loaders'
 import { createProxy } from './proxy'
-import { MERAK_EVENT_DESTROY, MERAK_EVENT_HIDDEN, MERAK_EVENT_MOUNT, MERAK_EVENT_RELUNCH, MERAK_SHADE_STYLE } from './common'
+import { MERAK_EVENT, MERAK_SHADE_STYLE } from './common'
 import { eventTrigger, scriptPrimise } from './utils'
 import { MerakMap, getBodyStyle } from './helper'
 import { LifeCycle } from './lifecycle'
@@ -193,19 +193,22 @@ export class Merak {
             this.perf.record('bootstrap')
 
             this.execFlag = true
-            eventTrigger(window, MERAK_EVENT_MOUNT + this.id)
+            eventTrigger(window, MERAK_EVENT.MOUNT + this.id)
           })
         }
         else {
-          eventTrigger(window, MERAK_EVENT_RELUNCH + this.id)
+          eventTrigger(window, MERAK_EVENT.RELUNCH + this.id)
         }
       }
+    }
+    else {
+      eventTrigger(window, MERAK_EVENT.SHOW + this.id)
     }
 
     this.execHook('tranformDocument', { ele: this.sandDocument! })
     this.shadowRoot.appendChild(this.sandDocument!)
     // ExecFlag will be false if it is the first time to mount
-    this.execFlag && eventTrigger(window, MERAK_EVENT_MOUNT + this.id)
+    this.execFlag && eventTrigger(window, MERAK_EVENT.MOUNT + this.id)
     this.execHook('afterMount')
   }
 
@@ -236,13 +239,15 @@ export class Merak {
     if (!isKeepAlive)
       this.destroy()
     else
-      eventTrigger(window, MERAK_EVENT_HIDDEN + this.id)
+      eventTrigger(window, MERAK_EVENT.HIDDEN + this.id)
+
+    eventTrigger(window, MERAK_EVENT.UNMOUNT + this.id)
 
     this.execHook('afterUnmount')
   }
 
   destroy() {
-    eventTrigger(window, MERAK_EVENT_DESTROY + this.id)
+    eventTrigger(window, MERAK_EVENT.DESTROY + this.id)
     this.execHook('destroy')
     if (this.template)
       this.template = this.sandDocument!.innerHTML

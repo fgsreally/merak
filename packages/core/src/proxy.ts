@@ -1,14 +1,19 @@
 /* eslint-disable no-prototype-builtins */
-import { MERAK_EVENT_DESTROY, MERAK_EVENT_PREFIX, MERAK_GLOBAL_VARS } from './common'
+import { MERAK_EVENT, MERAK_EVENT_PREFIX, MERAK_GLOBAL_VARS } from './common'
 import { createQuery, getUrlQuery, isBoundedFunction, isCallable, isConstructable } from './utils'
 import type { Merak } from './merak'
 import { getInstance } from './helper'
 import { patchTimer } from './patch/timer'
 
 export const cacheBindFn = new WeakMap()
-export const GLOBAL_VAR_SET = new Set(['__VUE_HMR_RUNTIME__'])
 
+export const GLOBAL_VAR_SET = new Set()
+export const WINDOW_VAR_SET = new Set(['__VUE_HMR_RUNTIME__'])
 export const GLOBAL_VAR_MAP = new Map()
+
+export function addWindowVar(variable: string) {
+  WINDOW_VAR_SET.add(variable)
+}
 
 export function getBindFn(target: any, p: any) {
   const value = target[p]
@@ -64,7 +69,7 @@ export function createProxyWindow(id: string, url: string) {
             params[0] = eventName + id
           }
           else {
-            addEventListener(MERAK_EVENT_DESTROY + id, () => {
+            addEventListener(MERAK_EVENT.DESTROY + id, () => {
               removeEventListener(...params)
             }, { once: true })
           }
@@ -94,6 +99,10 @@ export function createProxyWindow(id: string, url: string) {
     },
 
     set(target: any, p: string, v: any) {
+      if (WINDOW_VAR_SET.has(p)) {
+        window[p] = v
+        return true
+      }
       target[p] = v
       return true
     },
@@ -257,7 +266,7 @@ export function createProxyLocation(id: string) {
 
 export function createProxy(id: string, url: string) {
   const { globals: { setTimeout, setInterval }, free } = patchTimer()
-  window.addEventListener(`${MERAK_EVENT_DESTROY}${id}`, free)
+  window.addEventListener(`${MERAK_EVENT.DESTROY}${id}`, free)
   return { document: createProxyDocument(id, url), window: createProxyWindow(id, url), history: createProxyHistory(id), location: createProxyLocation(id), setTimeout, setInterval }
 }
 

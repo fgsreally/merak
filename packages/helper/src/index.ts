@@ -2,7 +2,7 @@ import type { Merak as $Merak } from 'merak-core'
 
 export type Merak = $Merak
 
-export type MerakEvent = 'mount' | 'destroy' | 'hidden' | 'unmount' | 'relunch'
+export type MerakEvent = 'mount' | 'destroy' | 'hidden' | 'unmount' | 'relunch' | 'show'
 
 export function $window(): Window {
   return isMerak() ? window.rawWindow : window
@@ -55,9 +55,11 @@ export function $head(): HTMLHeadElement {
 
 export function $on(eventName: MerakEvent, cb: () => any): () => void {
   const event = $eventName(eventName)
-  if (isMerak())
+  if (isMerak()) {
     window.addEventListener(event, cb)
-  return () => isMerak() && window.removeEventListener(event, cb)
+    return () => window.removeEventListener(event, cb)
+  }
+  return () => {}
 }
 
 export function $once(eventName: MerakEvent, cb: () => any): () => void {
@@ -72,9 +74,9 @@ export function $onMount(cb: () => any) {
 }
 
 // I don't sure if it is important
-// export function $onShow(cb: () => any) {
-//   return isMerak() ? $on('show', cb) : cb()
-// }
+export function $onShow(cb: () => any) {
+  return $on('show', cb)
+}
 export function $onRelunch(cb: () => any) {
   return $on('relunch', cb)
 }
@@ -87,12 +89,16 @@ export function $onDestroy(cb: () => any) {
   return $on('destroy', cb)
 }
 
-export function $onUnmount(cb: () => any) {
-  const fn1 = $once('hidden', cb)
-  const fn2 = $on('destroy', cb)
-  return () => {
-    fn1()
-    fn2()
+export function $onUnmount(cb: (e?: Event) => any) {
+  if (isMerak()) {
+    const fn = $on('unmount', cb)
+    return fn
+  }
+  else {
+    window.addEventListener('unload', cb)
+    return () => {
+      window.removeEventListener('unload', cb)
+    }
   }
 }
 

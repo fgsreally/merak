@@ -2,7 +2,7 @@ import { iframeInstance } from './iframe'
 import type { LoadDone, MerakConfig, ProxyGlobals } from './types'
 import type { PureLoader } from './loaders'
 import { createProxy } from './proxy'
-import { MERAK_EVENT, MERAK_SHADE_STYLE } from './common'
+import { MERAK_DATA_ID, MERAK_EVENT, MERAK_SHADE_STYLE } from './common'
 import { eventTrigger, scriptPrimise } from './utils'
 import { MerakMap, getBodyStyle } from './helper'
 import { LifeCycle } from './lifecycle'
@@ -14,6 +14,8 @@ export class Merak {
   static namespace: Record<string, any> = {}
   /** 生命周期 */
   lifeCycle = new LifeCycle()
+
+  public el: HTMLElement | null
   /** css隔离容器 */
   public shadowRoot: ShadowRoot
   /** shadowroot 下的 document */
@@ -63,12 +65,11 @@ export class Merak {
   /** 隔离的全局变量 */
   public globalVars: string[]
 
-  // /** 是否被预渲染 */
-  // public isRender = false
-
   /** 防止重复加载 */
   private loadPromise: Promise<any>
 
+  /** 防止重复执行 */
+  public execPromise: Promise<any>
   /** 缓存事件，卸载时被释放 */
   cacheEvent: (() => void)[] = []
 
@@ -96,6 +97,14 @@ export class Merak {
     this.proxy = this.proxyMap.window as any
   }
 
+  static errorHandler({ type, message }: { type: string; message: string; instance?: Merak }) {
+    console.error(`[merak] ${type}:${message}`)
+  }
+
+  public errorHandler({ type, message }: { type: string; message: string }) {
+    Merak.errorHandler({ type, message, instance: this })
+  }
+
   get namespace() {
     return Merak.namespace
   }
@@ -108,9 +117,6 @@ export class Merak {
   }
 
   // 错误处理
-  protected errorHandler({ type, error }: { type: 'scriptError' | 'loadError'; error: Error }) {
-    console.error(`[merak:${this.id}] ${type}:${error.message}`)
-  }
 
   protected cleanEvents() {
     while (this.cacheEvent.length > 0)
@@ -143,7 +149,7 @@ export class Merak {
     this.perf.record('load')
     return this.loadPromise = (this.loader!.load(url, configOrUrl) as Promise<LoadDone>).then((loadRes) => {
       if (loadRes instanceof Error) {
-        this.errorHandler?.({ type: 'loadError', error: loadRes as any })
+        this.errorHandler?.({ type: 'loadError', message: loadRes.message })
       }
       else {
         this.perf.record('load')
@@ -177,6 +183,10 @@ export class Merak {
       if (this.loader) {
         // mount script on body or iframe
         if (!this.execFlag) {
+          let r: () => void
+          this.execPromise = new Promise<void>((resolve) => {
+            r = resolve
+          })
           const originScripts = Array.from(this.sandDocument.querySelectorAll('script'))
           const scripts = originScripts.filter((script) => {
             !this.iframe && script.remove()
@@ -188,10 +198,10 @@ export class Merak {
           (this.iframe?.contentDocument || this.sandDocument).querySelector('body')?.append(...scripts)
           // only invoke mount event after all scripts load/fail
           Promise.all(scripts.map(scriptPrimise)).catch((e) => {
-            return this.errorHandler?.({ type: 'scriptError', error: e })
+            return this.errorHandler?.({ type: 'scriptError', message: e.message })
           }).finally(() => {
             this.perf.record('bootstrap')
-
+            r()
             this.execFlag = true
             eventTrigger(window, MERAK_EVENT.MOUNT + this.id)
           })
@@ -243,6 +253,10 @@ export class Merak {
 
     eventTrigger(window, MERAK_EVENT.UNMOUNT + this.id)
 
+    if (this.el) {
+      this.el.remove()
+      this.el = null
+    }
     this.execHook('afterUnmount')
   }
 
@@ -264,4 +278,22 @@ export class Merak {
     this.sandDocument = null
     this.cleanEvents()
   }
+}
+
+/**
+ * @experiment just a try
+ */
+
+export function preloadApp(...args: ConstructorParameters<typeof Merak>) {
+  const app = new Merak(...args)
+  const el = document.createElement('merak-app')
+  el.setAttribute(MERAK_DATA_ID, args[0])
+  el.setAttribute('style', 'display:none')
+  app.el = el
+  document.body.appendChild(el)
+  return app
+}
+
+export function setErrorHandler(cb: (arg: { type: 'missInstance' | 'missProperty' | 'loadError' | 'hasMount' | 'scriptError' | string; message: string; instance?: Merak }) => void) {
+  Merak.errorHandler = cb
 }

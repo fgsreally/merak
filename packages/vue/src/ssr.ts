@@ -19,9 +19,6 @@ export const MerakSSR = defineComponent({
     const app = getInstance(name) || new Merak(name, url, { proxy, iframe, loader })
     app.props = MerakProps
     for (const ev in shareEmits) {
-      if (ev === 'errorHandler')
-        app[ev] = (arg: any) => emit(ev as any, arg)
-      else
         app.lifeCycle[ev] = (arg: any) => emit(ev as any, arg)
     }
     // for (const ev in shareEmits) {

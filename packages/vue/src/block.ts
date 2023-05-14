@@ -69,12 +69,9 @@ export const MerakScope = defineComponent({
     const app = getInstance(name) || new Merak(name, url, { proxy: proxy || createLibProxy(name, url), iframe })
     app.setGlobalVars(fakeGlobalVar, globals)
     app.props = MerakProps
-    for (const ev in shareEmits) {
-      if (ev === 'errorHandler')
-        app[ev] = (arg: any) => emit(ev as any, arg)
-      else
-        app.lifeCycle[ev] = (arg: any) => emit(ev as any, arg)
-    }
+    for (const ev in shareEmits)
+      app.lifeCycle[ev] = (arg: any) => emit(ev as any, arg)
+
     onMounted(async () => {
       await nextTick()
       render(slots.default!()[0], app.sandDocument!.querySelector('body')!)

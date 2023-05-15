@@ -5,6 +5,8 @@
   "type": "module",
   "scripts": {
     "dev": "vite",
+    "serve":"serve ./dist --cors -p 5001",
+
     "build": "vue-tsc && vite build",
     "preview": "vite preview"
   },

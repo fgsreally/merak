@@ -68,7 +68,7 @@ jobs:
         with:
           start: node scripts/before-e2e.js
           browser: edge
-          wait-on: 'http://localhost:5001,http://localhost:5002,http://localhost:5003,http://localhost:5004'
-          wait-on-timeout: 600
+          wait-on: 'http://localhost:5000,http://localhost:5002,http://localhost:5003,http://localhost:5004'
+          wait-on-timeout: 1000
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}

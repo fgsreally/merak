@@ -1,5 +1,6 @@
 <script setup lang="ts">
 import { ref } from 'vue'
+import { $jump } from 'merak-helper'
 const dialogVisible = ref(false)
 const value = ref('')
 const modalVisible = ref(false)

@@ -6,7 +6,7 @@ import config from './config.js'
 import { step } from './utils.js'
 const ports = config.map(item => item.port)
 // main app
-ports.push(5001, 5002, 5003, 5004, 3000)
+ports.push(5000, 5002, 5003, 5004, 3000)
 
 const opts = {
   resources: ports.map(port => `http-get://localhost:${port}`),
@@ -25,19 +25,11 @@ export async function runAllExample() {
 
   try {
     if (process.env.CI || process.env.PROD) {
+      step('\n building  project...')
+      await $`pnpm --filter example-* run build`
+
       step('\n serve bundle...')
-      $`pnpm run serve`
-
-      step('\n building sub project...')
-      await $`pnpm --filter example-sub-* run build`
-
-      step('\n http-server  dist...')
-
-      for (const { port, name } of config)
-        $`pnpm --filter ${name} exec -- http-server ./dist --cors -p ${port}`
-      step('\n main project running ...')
-
-      $`pnpm --filter example-main-* --parallel run dev`
+      $`pnpm run example:serve`
 
       await waitOn(opts)
       step('\n start e2e test...')

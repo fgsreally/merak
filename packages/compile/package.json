@@ -1,6 +1,6 @@
 {
   "name": "merak-compile",
-  "version": "1.0.0-rc.0",
+  "version": "1.0.0-rc.8",
   "description": "",
   "main": "dist/index.js",
   "module": "dist/index.mjs",
@@ -23,6 +23,7 @@
     "@babel/types": "^7.21.4",
     "@types/babel__core": "^7.20.0",
     "@types/fs-extra": "^11.0.1",
+    "@types/json2md": "^1.5.1",
     "tsup": "^6.5.0"
   },
   "dependencies": {
@@ -31,8 +32,9 @@
     "fast-glob": "^3.2.12",
     "fs-extra": "^11.1.0",
     "html5parser": "^2.0.2",
+    "htmlparser2": "^8.0.2",
     "is-var-name": "^2.0.0",
-    "magic-string": "^0.27.0",
-    "picocolors": "^1.0.0"
+    "json2md": "^2.0.0",
+    "magic-string": "^0.27.0"
   }
 }

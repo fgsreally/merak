@@ -1,4 +1,4 @@
-## Merak 实例
+# Merak 实例
 
 ```ts
 declare class Merak {

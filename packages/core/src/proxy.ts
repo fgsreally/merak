@@ -1,11 +1,25 @@
 /* eslint-disable no-prototype-builtins */
-import { HMR_VAR, MERAK_EVENT_DESTROY, MERAK_EVENT_PREFIX } from './common'
-import { getMerakEvent, getUrlQuery, isBoundedFunction, isCallable, isConstructable } from './utils'
+import { MERAK_EVENT, MERAK_EVENT_PREFIX } from './common'
+import { createQuery, getUrlQuery, isBoundedFunction, isCallable, isConstructable } from './utils'
 import type { Merak } from './merak'
 import { getInstance } from './helper'
 import { patchTimer } from './patch/timer'
 
-const cacheBindFn = new WeakMap()
+export const cacheBindFn = new WeakMap()
+
+// export const GLOBAL_VAR_SET = new Set()
+// export const GLOBAL_VAR_MAP = new Map()
+export const WINDOW_VAR_SET = new Set<string>()
+
+export function addWindowVar(variable: string) {
+  WINDOW_VAR_SET.add(variable)
+}
+
+if (__DEV__) {
+  addWindowVar('$RefreshSig$')
+  addWindowVar('$RefreshReg$')
+  addWindowVar('__VUE_HMR_RUNTIME__')
+}
 
 export function getBindFn(target: any, p: any) {
   const value = target[p]
@@ -38,7 +52,6 @@ export function createProxyWindow(id: string, url: string) {
 
       if (p === '__merak_url__')
         return url
-
       if (p === '$Merak')
         return getInstance(id)
 
@@ -62,22 +75,40 @@ export function createProxyWindow(id: string, url: string) {
             params[0] = eventName + id
           }
           else {
-            addEventListener(MERAK_EVENT_DESTROY + id, () => {
+            addEventListener(MERAK_EVENT.DESTROY + id, () => {
               removeEventListener(...params)
             }, { once: true })
           }
           addEventListener(...params)
         }
       }
+      // if (GLOBAL_VAR_SET.has(p)) {
+      //   if (!target[MERAK_GLOBAL_VARS])
+      //     target[MERAK_GLOBAL_VARS] = new Map()
+      //     // getInstance(id)!.cacheEvent.push(() => target[MERAK_GLOBAL_VARS].clear())
+
+      //   if (!target[MERAK_GLOBAL_VARS].has(p)) {
+      //     target[MERAK_GLOBAL_VARS].set(p, new Proxy({}, {
+      //       get(_, k) {
+      //         return getBindFn(target[p], k)
+      //       },
+      //       set(_, k, v) {
+      //         target[p][k] = v
+      //         return true
+      //       },
+      //     }))
+      //   }
+
+      //   return target[MERAK_GLOBAL_VARS].get(p)
+      // }
       return getBindFn(p in target ? target : window, p)
     },
 
     set(target: any, p: string, v: any) {
-      if (__DEV__) {
-        if (HMR_VAR.includes(p))
-          window[p] = v
+      if (WINDOW_VAR_SET.has(p)) {
+        window[p] = v
+        return true
       }
-
       target[p] = v
       return true
     },
@@ -188,10 +219,9 @@ export function createProxyHistory(id: string) {
           const { pathname, hash } = new URL(args[2], location.origin)
           const to = pathname + hash
           const queryMap = getUrlQuery(window.location.href)
-
           queryMap[id] = to === '/undefined' ? '/' : to
-          args[2] = `?${encodeURIComponent(JSON.stringify(queryMap))}`
-          // args[2] = `?${to === '/' ? '' : `test=${to}`}`
+          args[2] = `?${createQuery(queryMap)}`
+
           return history.replaceState(...args)
         }
         return replace
@@ -202,9 +232,7 @@ export function createProxyHistory(id: string) {
           const to = pathname + hash
           const queryMap = getUrlQuery(window.location.href)
           queryMap[id] = to === '/undefined' ? '/' : to
-
-          args[2] = `?${encodeURIComponent(JSON.stringify(queryMap))}`
-          // args[2] = `?${to === '/' ? '' : `test=${to}`}`
+          args[2] = `?${createQuery(queryMap)}`
           return history.pushState(...args)
         }
         return push
@@ -225,7 +253,6 @@ export function createProxyLocation(id: string) {
     get(target: any, p: string) {
       const { href } = window.location
       const queryMap = getUrlQuery(href)
-
       const appUrl = new URL((queryMap[id] === '/undefined' ? '/' : queryMap[id]) || '/', location.origin)
       if (
         p in appUrl
@@ -245,7 +272,7 @@ export function createProxyLocation(id: string) {
 
 export function createProxy(id: string, url: string) {
   const { globals: { setTimeout, setInterval }, free } = patchTimer()
-  window.addEventListener(getMerakEvent('destory', id), free)
+  window.addEventListener(`${MERAK_EVENT.DESTROY}${id}`, free)
   return { document: createProxyDocument(id, url), window: createProxyWindow(id, url), history: createProxyHistory(id), location: createProxyLocation(id), setTimeout, setInterval }
 }
 

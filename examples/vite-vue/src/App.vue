@@ -1,4 +1,5 @@
 <script setup lang="ts">
+import { $jump } from 'merak-helper'
 import { RouterLink, RouterView } from 'vue-router'
 const data = 'no data from merak'
 </script>
@@ -6,6 +7,10 @@ const data = 'no data from merak'
 <template>
   <header>
     <div class="wrapper">
+      <img alt="Vue logo" class="logo" src="@/assets/logo.svg" width="125" height="125">
+      <el-button @click="$jump('vite_react', '/about')">
+        jump
+      </el-button>
       <div class="merak-symbol">
         vite-vue app from merak
       </div>

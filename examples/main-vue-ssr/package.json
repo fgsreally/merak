@@ -4,7 +4,8 @@
   "private": true,
   "type": "module",
   "scripts": {
-    "dev": "node server",
+    "dev": "node server.js",
+    "serve": "cross-env PROD=true node server.js",
     "build": "npm run build:client && npm run build:server",
     "build:noExternal": "npm run build:client && npm run build:server:noExternal",
     "build:client": "vite build --ssrManifest --outDir dist/client",
@@ -18,6 +19,9 @@
     "express": "^4.18.2",
     "merak-compile": "workspace:*",
     "merak-vue": "workspace:*",
+    "serve-static": "^1.15.0",
+    "vite-plugin-inspect": "^0.7.24",
+    "vite-plugin-merak": "workspace:*",
     "vue": "^3.2.47",
     "vue-router": "^4.1.6"
   },

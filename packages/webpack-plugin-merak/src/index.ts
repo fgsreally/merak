@@ -1,22 +1,27 @@
+import { resolve } from 'path'
 import type { Compiler } from 'webpack'
-import { DEFAULT_INJECT_GLOBALS, analyseHTML, createWarning, desctructGlobal, injectGlobalToESM, injectGlobalToIIFE } from 'merak-compile'
-import HtmlWebpackPlugin from 'html-webpack-plugin'
+import { DEFAULT_INJECT_GLOBALS, analyseHTML, analyseJSGlobals, injectGlobalToESM, injectGlobalToIIFE, logger } from 'merak-compile'
 // @ts-expect-error miss types
 import isVarName from 'is-var-name'
+import type HtmlWebpackPlugin from 'html-webpack-plugin'
 import { Compilation, sources } from 'webpack'
 
+let htmlPlugin: typeof HtmlWebpackPlugin
 export class Merak {
-  constructor(public fakeGlobalVar: string, public globals: string[], public options?: { filter?: RegExp; force?: boolean }) {
+  constructor(public fakeGlobalVar: string, public options: { filter?: (file: string) => boolean; force?: boolean; logPath?: string; isInLine?: boolean; nativeVars?: string[]; customVars?: string[] } = {}) {
     if (!isVarName(fakeGlobalVar))
       throw new Error(`${fakeGlobalVar} is not a valid var`)
   }
 
   apply(compiler: Compiler) {
-    const format = compiler.options.output.chunkFormat
-    const { fakeGlobalVar, globals } = this
-    globals.push(...DEFAULT_INJECT_GLOBALS)
+    // const { mode } = compiler.options
 
-    const globalVars = [...new Set(globals)] as string[]
+    const format = compiler.options.output.chunkFormat
+    const { fakeGlobalVar, options: { nativeVars = [], customVars = [], force = false } } = this
+    nativeVars.push(...DEFAULT_INJECT_GLOBALS)
+    const isDebug = !!this.options.logPath
+    const injectScript = `const ${fakeGlobalVar}=window.${fakeGlobalVar}||window;${customVars.length > 0 ? `${fakeGlobalVar}.__m_p__=(k)=>new Proxy(()=>{},{get(_, p) {const v= ${fakeGlobalVar}[k][p];return typeof v==='function'?v.bind(${fakeGlobalVar}):v},has(target, p) { return p in ${fakeGlobalVar}[k]}, set(_,p,v){${fakeGlobalVar}[k][p]=v;return true },apply(_,t,a){return ${fakeGlobalVar}[k](...a) }})` : ''}`
+
     compiler.hooks.thisCompilation.tap('MerakPlugin', (compilation) => {
       compilation.hooks.processAssets.tap(
         {
@@ -28,54 +33,43 @@ export class Merak {
           chunks.forEach((chunk) => {
             chunk.files.forEach((file) => {
               if (file.endsWith('.js')) {
+                if (this.options.filter && !this.options.filter(file))
+                  return
                 const source = compilation.getAsset(file)!.source.source() as string
-                const { code, warning } = (format === 'module' ? injectGlobalToESM : injectGlobalToIIFE)(source, fakeGlobalVar, globalVars, this.options?.force || false)
-                warning.forEach(warn => createWarning(warn.info, file, warn.loc.start.line, warn.loc.start.column))
+                if (isDebug) {
+                  const unUsedGlobals = analyseJSGlobals(source, [...nativeVars, ...customVars])
+                  unUsedGlobals.length > 0 && logger.collectUnusedGlobals(file, unUsedGlobals)
+                }
+                const { code, warning } = (format === 'module' ? injectGlobalToESM : injectGlobalToIIFE)(source, fakeGlobalVar, nativeVars, customVars, force)
+
+                if (isDebug)
+                  warning.forEach(warn => logger.collectDangerUsed(file, warn.info, [warn.loc.start.line, warn.loc.start.column]))
 
                 compilation.updateAsset(file, new sources.RawSource(code))
               }
             })
           })
+          isDebug && logger.output(resolve(process.cwd(), this.options.logPath!))
         },
       )
     })
-    // compiler.hooks.thisCompilation.tapAsync('MerakPlugin', (compilation, callback) => {
-    //   const chunks = compilation.chunks
-    //   chunks.forEach((chunk) => {
-    //     chunk.files.forEach((file) => {
-    //       if (file.endsWith('.js')) { // 只对 JavaScript 文件进行处理
 
-    //       }
-    //     })
-    //   })
-    //   callback()
-    // })
-    // if (format === 'module') {
-    //   new WrapperPlugin({
-    //     test: this.options?.filter || /\.js$/, // only wrap output of bundle files with '.js' extension
-    //     header: `const {${desctructGlobal(globalVars)}}=${fakeGlobalVar};`,
-    //     footer: '',
-    //   }).apply(compiler)
-    // }
-    // else {
-    //   new WrapperPlugin({
-    //     test: /\.js$/, // only wrap output of bundle files with '.js' extension
-    //     header: `(()=>{const {${desctructGlobal(globalVars)}}=${fakeGlobalVar};`,
-    //     footer: '})()',
-    //   }).apply(compiler)
-    // }
+    for (const plugin of compiler.options.plugins) {
+      if (plugin.constructor.name === 'HtmlWebpackPlugin')
+        htmlPlugin = plugin.constructor as any
+    }
 
-    compiler.hooks.compilation.tap('webpack-merak', (compilation) => {
-      HtmlWebpackPlugin.getHooks(compilation).alterAssetTags.tap(
-        'webpack-merak',
+    htmlPlugin && compiler.hooks.compilation.tap('MerakPlugin', async (compilation) => {
+      htmlPlugin.getHooks(compilation).alterAssetTags.tap(
+        'MerakPlugin',
         (data) => {
           // 额外添加scripts
           const scriptTag = data.assetTags.scripts
           scriptTag.unshift({
             tagName: 'script',
             voidTag: false,
-            meta: { plugin: 'webpack-merak' },
-            innerHTML: `const ${fakeGlobalVar}=window.${fakeGlobalVar}||window`,
+            meta: { plugin: 'MerakPlugin' },
+            innerHTML: injectScript,
             attributes: {
               'merak-ignore': true,
             },
@@ -84,10 +78,16 @@ export class Merak {
           return data
         },
       )
-      HtmlWebpackPlugin.getHooks(compilation).beforeEmit.tap('webpack-merak', (data) => {
-        const merakConfig = { _f: fakeGlobalVar, _g: globalVars, _l: analyseHTML(data.html) }
-
-        data.html = data.html.replace('</body>', `<merak-base config='${JSON.stringify(merakConfig)}'></merak-base></body`)
+      htmlPlugin.getHooks(compilation).beforeEmit.tap('MerakPlugin', (data) => {
+        const merakConfig = { _f: fakeGlobalVar, _n: nativeVars, _c: customVars, _l: analyseHTML(data.html) }
+        if (this.options.isInLine === false) {
+          compilation.emitAsset('merak.json', new sources.RawSource(
+            JSON.stringify(merakConfig),
+          ))
+        }
+        else {
+          data.html = data.html.replace('</body>', `<m-b config='${encodeURIComponent(JSON.stringify(merakConfig))}'></m-b></body>`)
+        }
 
         return data
       })
@@ -95,8 +95,8 @@ export class Merak {
   }
 }
 
-export function injectGlobals(fakeGlobalVar: string, globals: string[], code: string) {
-  return `(()=>{const {${desctructGlobal(globals)}}=${fakeGlobalVar}\n${code})()`
-}
+// export function injectGlobals(fakeGlobalVar: string, globals: string[], code: string) {
+//   return `(()=>{const {${desctructGlobal(globals)}}=${fakeGlobalVar}\n${code})()`
+// }
 
 export { merakPostCss } from 'merak-compile'

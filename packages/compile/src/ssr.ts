@@ -1,31 +1,47 @@
-import type { TransformCallback } from 'stream'
 import { Transform } from 'stream'
-export class MerakSsrStream extends Transform {
-  index = 0
-  replacements: number[]
-  url: string
-  setConfig(params: { replacements: number[]; url: string }) {
-    this.url = params.url
-    this.replacements = params.replacements
+import { Parser } from 'htmlparser2'
+import { resolveUrl } from './utils'
+
+function mergeAttrs(attrs: Record<string, string>) {
+  return Object.entries(attrs).reduce((p, c) => `${p} ${c[0]}='${c[1]}'`, '')
+}
+
+export function wrap(html: string, url: string) {
+  return `<template data-merak-url='${url}'>${html}</template>`
+}
+export class SsrTransformer extends Transform {
+  private parser: Parser
+  constructor(public readonly url: string, public templateAttrs: Record<string, string> = {}) {
+    super()
+    this.push(`<template data-merak-url='${url}' ${mergeAttrs(templateAttrs)}>`)
+    this.parser = new Parser({
+      onopentag: (tag, attrs) => {
+        if ('merak-ignore' in attrs)
+          return
+        if (['link', 'a'].includes(tag) && 'href' in attrs)
+          attrs.href = resolveUrl(attrs.href, url)
+
+        if (['script', 'img', 'video', 'audio', 'iframe', 'source'].includes(tag) && 'src' in attrs)
+          attrs.src = resolveUrl(attrs.src, url)
+
+        const tagName = `<${tag}${mergeAttrs(attrs)}>`
+        this.push(tagName)
+      },
+      onclosetag: (tag) => {
+        const closeTag = `</${tag}>`
+        this.push(closeTag)
+      },
+      ontext: (text) => {
+        this.push(text)
+      },
+      onend: () => {
+        this.push('</template>')
+      },
+    })
   }
 
-  _transform(chunk: any, encoding: BufferEncoding, callback: TransformCallback) {
-    const data = chunk.toString()
-    let str = ''
-    const length = data.length
-    let loc = 0
-    for (let i = 0; i < this.replacements.length; i++) {
-      const start = this.replacements[i]
-      if (start > this.index + length) {
-        str += data.slice(loc)
-        break
-      }
-      str += data.slice(loc, start) + this.url
-      loc = start
-    }
-    this.index += length
-
-    this.push(str)
+  _transform(chunk: any, encoding: string, callback: () => void) {
+    this.parser.write(chunk.toString())
     callback()
   }
 }

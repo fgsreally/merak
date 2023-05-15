@@ -44,7 +44,7 @@ class YourMerak extends Merak {
 
 ## 路由
 
-简而言之，至少在默认配置下，`merak`的很多表现和无界几乎一致，路由也沿袭着`query={"子应用id":'子应用路由'}`,
+简而言之，至少在默认配置下，`merak`的很多表现和无界几乎一致，路由也沿袭着`query`的模式,
 
 
 ## 子应用事件
@@ -67,4 +67,4 @@ if (window.$Merak) {
 
 > 子应用中，以`merak_`开头的事件,默认会加上这个项目的`id`,比如`merak_relunch`在项目`vite_vue`中就会变成`merak_relunchvite_vue`,保证该事件仅对应特定子应用,且这类事件不会被注销
 
-> 建议直接使用[merak-helper]('../api/helper.md')
+> 建议直接使用[merak-helper]('./api/helper.md')

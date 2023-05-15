@@ -6,14 +6,13 @@ const loader = new PureLoader()
 const data = {
   data: 'data from main',
 }
-const app1 = new Merak('vite_react', 'http://127.0.0.1:4003/', { loader })
-app1.preRender()
+const app1 = new Merak('vite_react', 'http://localhost:4003/', { loader })
 
-const app2 = new Merak('vite_vue', 'http://127.0.0.1:4004/', { loader })
+const app2 = new Merak('vite_vue', 'http://localhost:4004/', { loader })
 app2.load()
 
 window.app = app2
-const app3 = new Merak('vue_cli', 'http://127.0.0.1:4005/', { loader })
+const app3 = new Merak('vue_cli', 'http://localhost:4005/', { loader })
 app1.props = app2.props = app3.props = data
 const el = document.createElement('button')
 el.textContent = 'click to see the micro-app'

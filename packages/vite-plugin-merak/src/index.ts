@@ -1,135 +1,141 @@
-/* eslint-disable no-console */
-import { DEFAULT_INJECT_GLOBALS, analyseHTML, analyseJSGlobals, createWarning, desctructGlobal, injectGlobalToESM, injectGlobalToIIFE } from 'merak-compile'
+import { resolve } from 'path'
+import { DEFAULT_INJECT_GLOBALS, analyseHTML, analyseJSGlobals, createCustomVarProxy, desctructGlobal, injectGlobalToESM, injectGlobalToIIFE, logger } from 'merak-compile'
 import { createFilter } from 'vite'
 import type { FilterPattern, PluginOption, ResolvedConfig } from 'vite'
 // @ts-expect-error miss types
 import isVarName from 'is-var-name'
-import type { TransformOptions } from './transform'
+import { dynamicBase } from 'vite-plugin-dynamic-base'
+import { merakCSS } from './lib'
+function createFillStr(length: number) {
+  let str = ''
+  for (let i = 0; i < length; i++)
+    str += 'a'
 
-import { transformAsset, transformChunk, transformHtml } from './transform'
-export function Merak(fakeGlobalVar: string, globals: string[], opts: { isinLine?: boolean; includes?: FilterPattern; exclude?: FilterPattern; debug?: boolean }): PluginOption {
+  return str
+}
+
+export * from './lib'
+
+export function Merak(fakeGlobalVar: string, opts: { isinLine?: boolean; includes?: FilterPattern; exclude?: FilterPattern; logPath?: string; force?: boolean; nativeVars?: string[]; customVars?: string[] } = {}): PluginOption {
   if (!isVarName(fakeGlobalVar))
     throw new Error(`${fakeGlobalVar} is not a valid var`)
 
-  globals.push(...DEFAULT_INJECT_GLOBALS)
+  // const globalVars = [...new Set(globals)] as string[]
+  const { nativeVars = [], customVars = [], includes = /\.(vue|ts|js|tsx|jsx|mjs)/, exclude = /\.(css|scss|sass|less)$/, logPath, force, isinLine = true } = opts
+  const merakConfig = { _f: fakeGlobalVar, _n: nativeVars, _c: customVars } as any
 
-  const globalVars = [...new Set(globals)] as string[]
-  const merakConfig = { _f: fakeGlobalVar, _g: globalVars } as any
-  const resolvedOpts = {
-    includes: /\.(vue|ts|js|tsx|jsx|mjs)/,
-    exclude: /\.(css|scss|sass|less)$/,
-    isinLine: true,
-    ...opts,
-  } as Required<typeof opts>
-  const { isinLine, includes, exclude } = resolvedOpts
+  nativeVars.push(...DEFAULT_INJECT_GLOBALS)
+
+  const isDebug = !!logPath
   const filter = createFilter(includes, exclude)
-  const PATH_PLACEHOLDER = '/dynamic_base__/'
   let config: ResolvedConfig
-  const publicPath = `${fakeGlobalVar}.__merak_url__`
-  // const preloadHelperId = 'vite/preload-helper'
+  const publicPath = `(${fakeGlobalVar}.__merak_url__||'')`
+  // work in sourcemap(maybe..)
+  const base = `/__dy_base_${createFillStr(publicPath.length + 12)}/`
 
-  const baseOptions: TransformOptions = { assetsDir: 'assets', base: PATH_PLACEHOLDER, publicPath: ` ${publicPath}` }
-  return [{
-    name: 'vite-plugin-merak:debug',
-    transform(code, id) {
-      if (!filter(id))
-        return
-      if (process.env.DEBUG || opts.debug) {
-        console.log(`\n${id}`)
-        console.table(analyseJSGlobals(code, globalVars))
-      }
-    },
-  }, {
-    name: 'vite-plugin-merak:dev',
-    apply: 'serve',
-    enforce: 'post',
+  const injectScript = `const ${fakeGlobalVar}=window.${fakeGlobalVar}||window;${customVars.length > 0 ? `${fakeGlobalVar}.__m_p__=(k)=>new Proxy(()=>{},{get(_, p) {const v= ${fakeGlobalVar}[k][p];return typeof v==='function'?v.bind(${fakeGlobalVar}):v},has(target, p) { return p in ${fakeGlobalVar}[k]}, set(_,p,v){${fakeGlobalVar}[k][p]=v;return true },apply(_,t,a){return ${fakeGlobalVar}[k](...a) }})` : ''}`
+  return [
+    dynamicBase({
+      publicPath,
+      transformIndexHtml: false,
+    }) as any,
 
-    async transformIndexHtml(html) {
-      html = html.replace('</head>', `</head><script merak-ignore>const ${fakeGlobalVar}=window.${fakeGlobalVar}||window</script>`)
-      merakConfig._l = analyseHTML(html)
-      html = html.replace('</body>', `<merak-base config="${JSON.stringify(merakConfig)}"></merak-base></body>`)
-      return html
-    },
+    merakCSS(),
+    {
+      name: 'vite-plugin-merak:dev',
+      apply: 'serve',
+      enforce: 'post',
 
-    transform(code, id) {
-      if (filter(id)) {
-        // if (extname(id) === '.css')
-        //   return
-        return `const {${desctructGlobal(globalVars)}}=${fakeGlobalVar}\n${code}`
-      }
-    },
-  }, {
-    name: 'vite-plugin-merak:build',
-    apply: 'build',
-    enforce: 'post',
-    config() {
-      return {
-        base: PATH_PLACEHOLDER,
-      }
-    },
-    configResolved(_conf) {
-      config = _conf
-      baseOptions.assetsDir = _conf.build.assetsDir
-    },
+      async transformIndexHtml(html) {
+        html = html.replace('<head>', `<head><script merak-ignore>${injectScript}</script>`)
+        merakConfig._l = analyseHTML(html)
+        html = html.replace('</body>', `<m-b config='${encodeURIComponent(JSON.stringify(merakConfig))}'></m-b></body>`)
+        return html
+      },
 
-    async renderChunk(raw, chunk, opts) {
-      if (!filter(chunk.fileName))
-        return
+      transform(code, id) {
+        if (filter(id)) {
+          // if (extname(id) === '.css')
+          //   return
+          return `const {${desctructGlobal(nativeVars)}}=${fakeGlobalVar};${createCustomVarProxy(fakeGlobalVar, customVars)}${code}`
+        }
+      },
+    }, {
+      name: 'vite-plugin-merak:build',
+      apply: 'build',
+      enforce: 'post',
+      config(_conf) {
+        return {
+          base,
+        }
+      },
+      configResolved(_conf) {
+        config = _conf
+      },
 
-      const { map, code, warning } = (opts.format === 'es' ? injectGlobalToESM : injectGlobalToIIFE)(raw, fakeGlobalVar, globalVars)
-      warning.forEach(warn => createWarning(warn.info, chunk.fileName, warn.loc.start.line, warn.loc.start.column),
-      )
-      if (config.build.sourcemap)
-        return { map, code }
+      async renderChunk(raw, chunk, opts) {
+        if (!filter(chunk.fileName))
+          return
 
-      return {
-        code,
-      }
-    },
-    transformIndexHtml(html) {
-      html = html.replace('</head>', `</head><script merak-ignore>const ${fakeGlobalVar}=window.${fakeGlobalVar}||window</script>`)
-      return html
-    },
+        const unUsedGlobals = analyseJSGlobals(raw, [...nativeVars, ...customVars])
+        unUsedGlobals.length > 0 && logger.collectUnusedGlobals(chunk.fileName, unUsedGlobals)
+        const { map, code, warning } = (opts.format === 'es' ? injectGlobalToESM : injectGlobalToIIFE)(raw, fakeGlobalVar, nativeVars, customVars, force)
+        if (isDebug) {
+          warning.forEach(warn => logger.collectDangerUsed(chunk.fileName, warn.info, [warn.loc.start.line, warn.loc.start.column]),
+          )
+        }
+        if (config.build.sourcemap)
+          return { map, code }
 
-    async generateBundle({ format }, bundle) {
-      if (config.build.ssr)
-        return
+        return {
+          code,
+        }
+      },
+      transformIndexHtml(html) {
+        return {
+          html,
+          tags: [
+            {
+              tag: 'script',
+              attrs: { 'merak-ignore': true },
+              children: injectScript,
 
-      if (format !== 'es' && format !== 'system')
-        return
+              injectTo: 'head-prepend',
 
-      await Promise.all(
-        Object.entries(bundle).map(async ([, chunk]) => {
-          if (chunk.type === 'chunk' && chunk.code.includes(baseOptions.base)) {
-            chunk.code = await transformChunk(format, chunk.code, baseOptions)
-          }
-          else if (chunk.type === 'asset' && typeof chunk.source === 'string') {
-            if (!chunk.fileName.endsWith('.html')) {
-              chunk.source = await transformAsset(chunk.source, baseOptions)
-            }
-            else {
-              chunk.source = transformHtml(chunk.source, baseOptions)
-              merakConfig._l = analyseHTML(chunk.source)
+            },
+          ],
+        }
+      },
 
-              if (!isinLine) {
-                this.emitFile({
-                  fileName: 'merak.json',
-                  source: JSON.stringify(merakConfig),
-                  type: 'asset',
-                })
+      async generateBundle(_, bundle) {
+        if (config.build.ssr)
+          return
+
+        await Promise.all(
+          Object.entries(bundle).map(async ([, chunk]) => {
+            if (chunk.type === 'asset' && typeof chunk.source === 'string') {
+              if (chunk.fileName.endsWith('.html')) {
+                chunk.source = chunk.source.replaceAll(base, './')
+                merakConfig._l = analyseHTML(chunk.source)
+
+                if (!isinLine) {
+                  this.emitFile({
+                    fileName: 'merak.json',
+                    source: JSON.stringify(merakConfig),
+                    type: 'asset',
+                  })
+                }
+                else {
+                  chunk.source = chunk.source.replace('</body>', `<m-b config='${encodeURIComponent(JSON.stringify(merakConfig))}'></m-b></body>`)
+                }
               }
-              else {
-                chunk.source = chunk.source.replace('</body>', `<merak-base config='${JSON.stringify(merakConfig)}'></merak-base></body`)
-              }
             }
-          }
-        }),
-      )
-    },
+          }),
+        )
+        isDebug && logger.output(resolve(process.cwd(), logPath))
+      },
 
-  },
+    },
 
   ]
 }
-
-export { merakPostCss } from 'merak-compile'

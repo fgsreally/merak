@@ -33,7 +33,7 @@ export enum SUBAPP_URL {
 }
 
 export enum MAINAPP_URL {
-  VUE_LIB = 'http://localhost:5001/',
+  VUE_LIB = 'http://localhost:5000/',
   VANILLA = 'http://localhost:5002/',
   VUE = 'http://localhost:5003/',
   VUE_SSR = 'http://localhost:5004/',

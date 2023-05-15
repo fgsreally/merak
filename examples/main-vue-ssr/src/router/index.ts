@@ -1,8 +1,8 @@
-import { createMemoryHistory, createRouter } from 'vue-router'
+import { createMemoryHistory, createRouter, createWebHistory } from 'vue-router'
 import HomeView from '../views/HomeView.vue'
 
 const router = createRouter({
-  history: createMemoryHistory('/test/'),
+  history: import.meta.env.SSR ? createMemoryHistory() : createWebHistory(),
   routes: [
     {
       path: '/',

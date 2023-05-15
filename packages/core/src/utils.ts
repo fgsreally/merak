@@ -8,21 +8,24 @@ export async function loadTextFile(url: string) {
   return res.text()
 }
 
-// export function createUrl(code: string, type = 'text/javascript') {
-//   const blob = new Blob([code], { type })
-//   return URL.createObjectURL(blob)
-// }
 export function resolveUrl(filePath: string, baseURL: string) {
   return new URL(filePath, baseURL).href
 }
 
-export function getMerakEvent(event: string, id: string) {
-  return `merak_${event}${id}`
+export function getUrlQuery(url: string) {
+  const querys = url.split('?')[1]
+  const queryMap: Record<string, string> = {}
+  if (querys) {
+    querys.split('&').forEach((item) => {
+      const [key, value] = item.split('=')
+      queryMap[key] = decodeURIComponent(value)
+    })
+  }
+  return queryMap
 }
 
-export function getUrlQuery(url: string) {
-  const query = url.split('?')[1]
-  return query ? JSON.parse(decodeURIComponent(query)) : {}
+export function createQuery(queryMap: Record<string, string>) {
+  return Object.entries(queryMap).map(([k, v]) => `${k}=${encodeURIComponent(v)}`).join('&')
 }
 
 /**
@@ -43,15 +46,15 @@ export function eventTrigger(el: HTMLElement | Window | Document, eventName: str
 export function resolveHtmlConfig(html: string) {
   let config
 
-  html = html.replace(/<merak-base[^>]+config=['"](.*)['"][\s>]<\/merak-base>/, (js, conf) => {
-    config = JSON.parse(conf)
+  html = html.replace(/<m-b[^>]+config=['"](.*)['"][\s>]<\/m-b>/, (js, conf) => {
+    config = JSON.parse(decodeURIComponent(conf))
     return ''
   })
   return { html, config }
 }
 
 export function desctructGlobal(globals: string[]) {
-  return globals.reduce((p, c) => `${p}${c},`, '')
+  return globals.join(',')
 }
 
 const boundedMap = new WeakMap<CallableFunction, boolean>()
@@ -107,4 +110,8 @@ export function scriptPrimise(script: HTMLScriptElement) {
     script.addEventListener('load', resolve)
     script.addEventListener('error', reject)
   })
+}
+
+export function createCustomVarProxy(globalVar: string, customVars: string[]) {
+  return customVars.map(item => `const ${item}=${globalVar}.__m_p__('${item}')`).reduce((p, c) => `${p + c};`, '')
 }

@@ -6,13 +6,13 @@
   "main": "index.js",
   "scripts": {
     "predev":"npm run build",
-    "dev": "http-server dist --cors -p=4002",
-    "build": "merak"
+    "dev": "serve  --cors -p 4002",
+    "compile": "merak"
   },
   "keywords": [],
   "author": "",
   "license": "ISC",
   "dependencies": {
-    "merak-compile": "workspace:1.0.0-rc.0"
+    "merak-compile": "workspace:*"
   }
 }

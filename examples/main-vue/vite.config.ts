@@ -6,14 +6,16 @@ import { Merak, merakPostCss } from 'vite-plugin-merak'
 
 // https://vitejs.dev/config/
 export default defineConfig({
-  plugins: [vue(), Merak('main_vue', [], {})],
+  plugins: [vue(), Merak('main_vue', { customVars: ['__VUE_HMR_RUNTIME__'] })],
   resolve: {
     alias: {
       '@': fileURLToPath(new URL('./src', import.meta.url)),
-      'merak-core/loader': 'http://localhost:3000/loaders/index.mjs',
-      'merak-core': 'http://localhost:3000/index.mjs',
-
+      'merak-core/loader': 'http://localhost:3000/prod/index.mjs',
+      'merak-core': 'http://localhost:3000/prod/index.mjs',
     },
+  },
+  build: {
+
   },
   define: {
     __DEV__: true,

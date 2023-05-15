@@ -43,7 +43,8 @@ export function defineWebComponent() {
     }
 
     disconnectedCallback(): void {
-      const app = getInstance(this.id) as Merak
+      const id = this.getAttribute(MERAK_DATA_ID)!
+      const app = getInstance(id) as Merak
       const isKeepAlive = this.hasAttribute(MERAK_KEEP_ALIVE) && this.getAttribute(MERAK_KEEP_ALIVE) !== 'false'
 
       app.unmount(isKeepAlive)

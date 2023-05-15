@@ -18,16 +18,9 @@ export const MerakSSR = defineComponent({
     const { url, proxy, keepAlive, iframe, props: MerakProps, name, loader } = props
     const app = getInstance(name) || new Merak(name, url, { proxy, iframe, loader })
     app.props = MerakProps
-    for (const ev in shareEmits) {
-        app.lifeCycle[ev] = (arg: any) => emit(ev as any, arg)
-    }
-    // for (const ev in shareEmits) {
-    //   const eventName = MERAK_EVENT_PREFIX + ev + name
-    //   const handler = () => emit(ev as any, name)
-    //   const window = $window()
-    //   window.addEventListener(eventName, handler)
-    //   onUnmounted(() => window.removeEventListener(eventName, handler))
-    // }
+    for (const ev in shareEmits)
+      app.lifeCycle[ev] = (arg: any) => emit(ev as any, arg)
+
     expose({ app })
     return () => h('merak-app', { [MERAK_DATA_ID]: name, [MERAK_KEEP_ALIVE]: keepAlive })
   },

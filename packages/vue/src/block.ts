@@ -4,8 +4,19 @@ import { defineComponent, h, nextTick, onBeforeUnmount, onMounted, render } from
 import { MERAK_DATA_ID, MERAK_KEEP_ALIVE, Merak, createLibProxy, getInstance } from 'merak-core'
 import { $location } from 'merak-helper'
 import { shareEmits, shareProps } from './share'
+
+const shareLibProps = {
+  nativeVars: {
+    type: Array as PropType<string[]>,
+    default: ['document', 'window', 'self', 'globalThis', 'setTimeout', 'setInterval'],
+  },
+  customVars: {
+    type: Array as PropType<string[]>,
+  },
+}
 export const MerakImport = defineComponent({
   props: {
+    ...shareLibProps,
     ...shareProps,
     fakeGlobalVar: {
       type: String,
@@ -18,16 +29,13 @@ export const MerakImport = defineComponent({
   },
   emits: shareEmits,
   setup(props, { slots, emit }) {
-    const { fakeGlobalVar, name, url, props: MerakProps, proxy, iframe, keepAlive, globals = [] } = props
+    const { fakeGlobalVar, name, url, props: MerakProps, proxy, iframe, keepAlive, nativeVars = [], customVars = [] } = props
 
     const app = getInstance(name) || new Merak(name, url, { proxy: proxy || createLibProxy(name, url), iframe })
-    app.setGlobalVars(fakeGlobalVar, globals)
+    app.setGlobalVars(fakeGlobalVar, nativeVars, customVars)
 
     let vnode: VNode
     for (const ev in shareEmits) {
-      if (ev === 'errorHandler')
-        app[ev] = (arg: any) => emit(ev as any, arg)
-      else
         app.lifeCycle[ev] = (arg: any) => emit(ev as any, arg)
     }
     // const importPromise = import(url)
@@ -49,6 +57,8 @@ export const MerakImport = defineComponent({
 export const MerakScope = defineComponent({
   props: {
     ...shareProps,
+    ...shareLibProps,
+
     url: {
       type: String,
       required: false as const,
@@ -58,16 +68,15 @@ export const MerakScope = defineComponent({
       type: String,
       required: true as const,
     },
-    globals: {
-      type: Array as PropType<string[]>,
-    },
+
   },
   emits: shareEmits,
   setup(props, { slots, emit }) {
-    const { fakeGlobalVar, name, url, props: MerakProps, proxy, iframe, keepAlive, globals = [] } = props
+    const { fakeGlobalVar, name, url, props: MerakProps, proxy, iframe, keepAlive, nativeVars = [], customVars = [] } = props
 
     const app = getInstance(name) || new Merak(name, url, { proxy: proxy || createLibProxy(name, url), iframe })
-    app.setGlobalVars(fakeGlobalVar, globals)
+
+    app.setGlobalVars(fakeGlobalVar, nativeVars, customVars)
     app.props = MerakProps
     for (const ev in shareEmits)
       app.lifeCycle[ev] = (arg: any) => emit(ev as any, arg)

@@ -23,7 +23,12 @@ export function getInstance(id: string) {
   return $window().$MerakMap.get(id)
 }
 
+/**
+ * @no_recommand 不建议使用
+ */
 export function $jump(project: string, to: string) {
+  if (!isMerak())
+    return
   const instance = getInstance(project)
   if (instance) {
     instance.proxyMap.history.pushState(null, '', to)
@@ -31,11 +36,6 @@ export function $jump(project: string, to: string) {
     instance.proxy.dispatchEvent(event)
   }
 }
-
-// function getQueryMap() {
-//   return JSON.parse(decodeURIComponent($location().search.slice(1)),
-//   )
-// }
 
 export function $eventName(event: string) {
   return `merak_${event}`
@@ -59,7 +59,7 @@ export function $on(eventName: MerakEvent, cb: () => any): () => void {
     window.addEventListener(event, cb)
     return () => window.removeEventListener(event, cb)
   }
-  return () => {}
+  return () => { }
 }
 
 export function $once(eventName: MerakEvent, cb: () => any): () => void {
@@ -125,10 +125,14 @@ export function $sandbox(script: string) {
 // work for esm script
 export function $esm(script: string) {
   if (isMerak()) {
-    const { fakeGlobalVar, globalVars } = window.$Merak
-    return `const {${globalVars.reduce((p: string, c: string) => `${p},${c}`)}}=${fakeGlobalVar};${script}`
+    const { fakeGlobalVar, nativeVars, customVars } = window.$Merak
+    return `const {${nativeVars.reduce((p: string, c: string) => `${p},${c}`)}}=${fakeGlobalVar};${createCustomVarProxy(fakeGlobalVar, customVars)}${script}`
   }
   return script
+}
+
+function createCustomVarProxy(globalVar: string, customVars: string[]) {
+  return customVars.map(item => `const ${item}=${globalVar}.__m_p__('${item}')`).reduce((p, c) => `${p + c};`, '')
 }
 
 export function $instance() {

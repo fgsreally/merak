@@ -26,7 +26,7 @@ export class PureLoader extends Loader {
       }
       const template = compileHTML(htmlStr, sourceUrl, config._l)
 
-      const loadRes = { url: sourceUrl, fakeGlobalVar: config._f, template, globals: config._g } as LoadDone
+      const loadRes = { url: sourceUrl, fakeGlobalVar: config._f, template, nativeVars: config._n, customVars: config._c } as LoadDone
       this.loadCache.set(sourceUrl, loadRes)
       return loadRes
     }

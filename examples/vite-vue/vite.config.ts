@@ -5,7 +5,7 @@ import vue from '@vitejs/plugin-vue'
 import { Merak } from 'vite-plugin-merak'
 
 export default defineConfig({
-  plugins: [vue(), Merak('vite_vue', [], {})],
+  plugins: [vue(), Merak('vite_vue')],
   resolve: {
     alias: {
       '@': fileURLToPath(new URL('./src', import.meta.url)),

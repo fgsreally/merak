@@ -1,5 +1,5 @@
 /* eslint-disable no-prototype-builtins */
-import { MERAK_EVENT, MERAK_EVENT_PREFIX, MERAK_GLOBAL_VARS } from './common'
+import { MERAK_EVENT, MERAK_EVENT_PREFIX } from './common'
 import { createQuery, getUrlQuery, isBoundedFunction, isCallable, isConstructable } from './utils'
 import type { Merak } from './merak'
 import { getInstance } from './helper'
@@ -7,12 +7,18 @@ import { patchTimer } from './patch/timer'
 
 export const cacheBindFn = new WeakMap()
 
-export const GLOBAL_VAR_SET = new Set()
-export const WINDOW_VAR_SET = new Set(['__VUE_HMR_RUNTIME__'])
-export const GLOBAL_VAR_MAP = new Map()
+// export const GLOBAL_VAR_SET = new Set()
+// export const GLOBAL_VAR_MAP = new Map()
+export const WINDOW_VAR_SET = new Set<string>()
 
 export function addWindowVar(variable: string) {
   WINDOW_VAR_SET.add(variable)
+}
+
+if (__DEV__) {
+  addWindowVar('$RefreshSig$')
+  addWindowVar('$RefreshReg$')
+  addWindowVar('__VUE_HMR_RUNTIME__')
 }
 
 export function getBindFn(target: any, p: any) {
@@ -76,25 +82,25 @@ export function createProxyWindow(id: string, url: string) {
           addEventListener(...params)
         }
       }
-      if (GLOBAL_VAR_SET.has(p)) {
-        if (!target[MERAK_GLOBAL_VARS])
-          target[MERAK_GLOBAL_VARS] = new Map()
-          // getInstance(id)!.cacheEvent.push(() => target[MERAK_GLOBAL_VARS].clear())
+      // if (GLOBAL_VAR_SET.has(p)) {
+      //   if (!target[MERAK_GLOBAL_VARS])
+      //     target[MERAK_GLOBAL_VARS] = new Map()
+      //     // getInstance(id)!.cacheEvent.push(() => target[MERAK_GLOBAL_VARS].clear())
 
-        if (!target[MERAK_GLOBAL_VARS].has(p)) {
-          target[MERAK_GLOBAL_VARS].set(p, new Proxy({}, {
-            get(_, k) {
-              return getBindFn(target[p], k)
-            },
-            set(_, k, v) {
-              target[p][k] = v
-              return true
-            },
-          }))
-        }
+      //   if (!target[MERAK_GLOBAL_VARS].has(p)) {
+      //     target[MERAK_GLOBAL_VARS].set(p, new Proxy({}, {
+      //       get(_, k) {
+      //         return getBindFn(target[p], k)
+      //       },
+      //       set(_, k, v) {
+      //         target[p][k] = v
+      //         return true
+      //       },
+      //     }))
+      //   }
 
-        return target[MERAK_GLOBAL_VARS].get(p)
-      }
+      //   return target[MERAK_GLOBAL_VARS].get(p)
+      // }
       return getBindFn(p in target ? target : window, p)
     },
 

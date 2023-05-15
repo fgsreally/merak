@@ -111,3 +111,7 @@ export function scriptPrimise(script: HTMLScriptElement) {
     script.addEventListener('error', reject)
   })
 }
+
+export function createCustomVarProxy(globalVar: string, customVars: string[]) {
+  return customVars.map(item => `const ${item}=${globalVar}.__m_p__('${item}')`).reduce((p, c) => `${p + c};`, '')
+}

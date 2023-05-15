@@ -30,7 +30,9 @@ export class Merak {
 
   public perf = new Perf()
   /** 所有全局的代理 */
-  public proxyMap = {} as unknown as ProxyGlobals
+  public proxyMap = {
+
+  } as unknown as ProxyGlobals
 
   /** 子应用的html */
   public template: string
@@ -62,8 +64,11 @@ export class Merak {
   /** 配置文件地址，配置内联时为空 */
   public configOrUrl?: string | MerakConfig
 
-  /** 隔离的全局变量 */
-  public globalVars: string[]
+  /** 隔离的原生全局变量 */
+  public nativeVars: string[]
+
+  /** 隔离的自定义全局变量 */
+  public customVars: string[]
 
   /** 防止重复加载 */
   private loadPromise: Promise<any>
@@ -94,7 +99,29 @@ export class Merak {
     for (const i in proxy)
       this.proxyMap[i] = typeof proxy[i] === 'function' ? proxy[i] : new Proxy({} as any, proxy[i])
 
-    this.proxy = this.proxyMap.window as any
+    const windowProxy = this.proxy = this.proxyMap.window as any
+
+    /**
+     * @experiment
+     * work for customVars in dev mode
+     */
+
+    this.proxyMap.__m_p__ = (k: string) => new Proxy(() => {}, {
+      get(_, p) {
+        const v = windowProxy[k][p]
+        return typeof v === 'function' ? v.bind(windowProxy) : v
+      },
+      has(_, p) {
+        return p in windowProxy[k]
+      },
+      set(_, p, v) {
+        windowProxy[k][p] = v
+        return true
+      },
+      apply(_, t, a) {
+        return windowProxy[k](...a)
+      },
+    })
   }
 
   static errorHandler({ type, message }: { type: string; message: string; instance?: Merak }) {
@@ -123,9 +150,10 @@ export class Merak {
       this.cacheEvent.pop()!()
   }
 
-  setGlobalVars(fakeGlobalVar: string, globalVars: string[]) {
+  setGlobalVars(fakeGlobalVar: string, nativeVars: string[], customVars: string[]) {
     this.fakeGlobalVar = fakeGlobalVar
-    this.globalVars = globalVars
+    this.nativeVars = nativeVars
+    this.customVars = customVars
   }
 
   active() {
@@ -153,10 +181,10 @@ export class Merak {
       }
       else {
         this.perf.record('load')
-        const { template, fakeGlobalVar, globals } = this.execHook('load', loadRes) || loadRes
+        const { template, fakeGlobalVar, nativeVars, customVars } = this.execHook('load', loadRes) || loadRes
 
         this.template = template
-        this.setGlobalVars(fakeGlobalVar, globals)
+        this.setGlobalVars(fakeGlobalVar, nativeVars, customVars)
       }
     })
   }
@@ -191,7 +219,7 @@ export class Merak {
           const scripts = originScripts.filter((script) => {
             !this.iframe && script.remove()
             return !script.hasAttribute('merak-ignore') && script.type !== 'importmap'
-          }).map(script => cloneScript(script, this.fakeGlobalVar, this.globalVars))
+          }).map(script => cloneScript(script, this.fakeGlobalVar, this.nativeVars, this.customVars))
 
           this.execHook('transformScript', { originScripts, scripts });
           // TODO JS queue

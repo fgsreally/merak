@@ -6,7 +6,7 @@ import { Merak, merakPostCss } from 'vite-plugin-merak'
 
 // https://vitejs.dev/config/
 export default defineConfig({
-  plugins: [vue(), Merak('main_vue', [], {})],
+  plugins: [vue(), Merak('main_vue', { customVars: ['__VUE_HMR_RUNTIME__'] })],
   resolve: {
     alias: {
       '@': fileURLToPath(new URL('./src', import.meta.url)),

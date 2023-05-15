@@ -1,6 +1,7 @@
 export interface MerakConfig {
   _l: [number, number][]
-  _g: string[]
+  _n: string[]
+  _c: string[]
   _f: string
 }
 
@@ -8,7 +9,8 @@ export interface LoadDone {
   url: string
   fakeGlobalVar: string
   template: string
-  globals: string[]
+  nativeVars: string[]
+  customVars: string[]
 
 }
 

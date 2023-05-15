@@ -1,5 +1,5 @@
 import { resolve } from 'path'
-import { DEFAULT_INJECT_GLOBALS, analyseHTML, analyseJSGlobals, desctructGlobal, injectGlobalToESM, injectGlobalToIIFE, logger } from 'merak-compile'
+import { DEFAULT_INJECT_GLOBALS, analyseHTML, analyseJSGlobals, createCustomVarProxy, desctructGlobal, injectGlobalToESM, injectGlobalToIIFE, logger } from 'merak-compile'
 import { createFilter } from 'vite'
 import type { FilterPattern, PluginOption, ResolvedConfig } from 'vite'
 // @ts-expect-error miss types
@@ -16,28 +16,24 @@ function createFillStr(length: number) {
 
 export * from './lib'
 
-export function Merak(fakeGlobalVar: string, globals: string[], opts: { isinLine?: boolean; includes?: FilterPattern; exclude?: FilterPattern; logPath?: string; force?: boolean } = {}): PluginOption {
+export function Merak(fakeGlobalVar: string, opts: { isinLine?: boolean; includes?: FilterPattern; exclude?: FilterPattern; logPath?: string; force?: boolean; nativeVars?: string[]; customVars?: string[] } = {}): PluginOption {
   if (!isVarName(fakeGlobalVar))
     throw new Error(`${fakeGlobalVar} is not a valid var`)
 
-  globals.push(...DEFAULT_INJECT_GLOBALS)
+  // const globalVars = [...new Set(globals)] as string[]
+  const { nativeVars = [], customVars = [], includes = /\.(vue|ts|js|tsx|jsx|mjs)/, exclude = /\.(css|scss|sass|less)$/, logPath, force, isinLine = true } = opts
+  const merakConfig = { _f: fakeGlobalVar, _n: nativeVars, _c: customVars } as any
 
-  const globalVars = [...new Set(globals)] as string[]
-  const merakConfig = { _f: fakeGlobalVar, _g: globalVars } as any
-  const resolvedOpts = {
-    includes: /\.(vue|ts|js|tsx|jsx|mjs)/,
-    exclude: /\.(css|scss|sass|less)$/,
-    isinLine: true,
-    ...opts,
-  } as Required<typeof opts>
-  const isDebug = !!resolvedOpts.logPath
-  const { isinLine, includes, exclude } = resolvedOpts
+  nativeVars.push(...DEFAULT_INJECT_GLOBALS)
+
+  const isDebug = !!logPath
   const filter = createFilter(includes, exclude)
   let config: ResolvedConfig
   const publicPath = `(${fakeGlobalVar}.__merak_url__||'')`
   // work in sourcemap(maybe..)
   const base = `/__dy_base_${createFillStr(publicPath.length + 12)}/`
 
+  const injectScript = `const ${fakeGlobalVar}=window.${fakeGlobalVar}||window;${customVars.length > 0 ? `${fakeGlobalVar}.__m_p__=(k)=>new Proxy(()=>{},{get(_, p) {const v= ${fakeGlobalVar}[k][p];return typeof v==='function'?v.bind(${fakeGlobalVar}):v},has(target, p) { return p in ${fakeGlobalVar}[k]}, set(_,p,v){${fakeGlobalVar}[k][p]=v;return true },apply(_,t,a){return ${fakeGlobalVar}[k](...a) }})` : ''}`
   return [
     dynamicBase({
       publicPath,
@@ -51,7 +47,7 @@ export function Merak(fakeGlobalVar: string, globals: string[], opts: { isinLine
       enforce: 'post',
 
       async transformIndexHtml(html) {
-        html = html.replace('</head>', `</head><script merak-ignore>const ${fakeGlobalVar}=window.${fakeGlobalVar}||window</script>`)
+        html = html.replace('<head>', `<head><script merak-ignore>${injectScript}</script>`)
         merakConfig._l = analyseHTML(html)
         html = html.replace('</body>', `<m-b config='${encodeURIComponent(JSON.stringify(merakConfig))}'></m-b></body>`)
         return html
@@ -59,9 +55,9 @@ export function Merak(fakeGlobalVar: string, globals: string[], opts: { isinLine
 
       transform(code, id) {
         if (filter(id)) {
-        // if (extname(id) === '.css')
-        //   return
-          return `const {${desctructGlobal(globalVars)}}=${fakeGlobalVar}\n${code}`
+          // if (extname(id) === '.css')
+          //   return
+          return `const {${desctructGlobal(nativeVars)}}=${fakeGlobalVar};${createCustomVarProxy(fakeGlobalVar, customVars)}${code}`
         }
       },
     }, {
@@ -81,9 +77,9 @@ export function Merak(fakeGlobalVar: string, globals: string[], opts: { isinLine
         if (!filter(chunk.fileName))
           return
 
-        const unUsedGlobals = analyseJSGlobals(raw, globalVars)
+        const unUsedGlobals = analyseJSGlobals(raw, [...nativeVars, ...customVars])
         unUsedGlobals.length > 0 && logger.collectUnusedGlobals(chunk.fileName, unUsedGlobals)
-        const { map, code, warning } = (opts.format === 'es' ? injectGlobalToESM : injectGlobalToIIFE)(raw, fakeGlobalVar, globalVars, resolvedOpts.force)
+        const { map, code, warning } = (opts.format === 'es' ? injectGlobalToESM : injectGlobalToIIFE)(raw, fakeGlobalVar, nativeVars, customVars, force)
         if (isDebug) {
           warning.forEach(warn => logger.collectDangerUsed(chunk.fileName, warn.info, [warn.loc.start.line, warn.loc.start.column]),
           )
@@ -96,8 +92,19 @@ export function Merak(fakeGlobalVar: string, globals: string[], opts: { isinLine
         }
       },
       transformIndexHtml(html) {
-        html = html.replace('</head>', `</head><script merak-ignore>const ${fakeGlobalVar}=window.${fakeGlobalVar}||window</script>`)
-        return html
+        return {
+          html,
+          tags: [
+            {
+              tag: 'script',
+              attrs: { 'merak-ignore': true },
+              children: injectScript,
+
+              injectTo: 'head-prepend',
+
+            },
+          ],
+        }
       },
 
       async generateBundle(_, bundle) {
@@ -125,7 +132,7 @@ export function Merak(fakeGlobalVar: string, globals: string[], opts: { isinLine
             }
           }),
         )
-        isDebug && logger.output(resolve(process.cwd(), resolvedOpts.logPath))
+        isDebug && logger.output(resolve(process.cwd(), logPath))
       },
 
     },

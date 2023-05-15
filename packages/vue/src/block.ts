@@ -35,9 +35,9 @@ export const MerakImport = defineComponent({
     app.setGlobalVars(fakeGlobalVar, nativeVars, customVars)
 
     let vnode: VNode
-    for (const ev in shareEmits) {
-        app.lifeCycle[ev] = (arg: any) => emit(ev as any, arg)
-    }
+    for (const ev in shareEmits)
+      app.lifeCycle[ev] = (arg: any) => emit(ev as any, arg)
+
     // const importPromise = import(url)
     onMounted(async () => {
       // const { default: Comp } = await importPromise

@@ -54,7 +54,7 @@ export function resolveHtmlConfig(html: string) {
 }
 
 export function desctructGlobal(globals: string[]) {
-  return globals.reduce((p, c) => `${p}${c},`, '')
+  return globals.join(',')
 }
 
 const boundedMap = new WeakMap<CallableFunction, boolean>()

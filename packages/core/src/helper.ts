@@ -1,4 +1,4 @@
-import type { Merak } from './merak'
+import { Merak } from './merak'
 
 export const MerakMap: Map<string, Merak> = window.$MerakMap || new Map()
 window.$MerakMap = MerakMap
@@ -26,4 +26,19 @@ export function setBodyStyle(style: string) {
 
 export function getBodyStyle() {
   return MERAK_BODY_STYLE
+}
+
+export function $$jump(project: string, to: string) {
+  const instance = getInstance(project)
+  if (instance) {
+    (instance.proxyMap.history as History).pushState(null, '', to)
+    const event = new PopStateEvent('popstate')
+    instance.proxy.dispatchEvent(event)
+  }
+}
+
+export function $$namespace(): (typeof Merak)['namespace']
+export function $$namespace<K extends keyof (typeof Merak)['namespace']>(key: string): (typeof Merak)['namespace'][K]
+export function $$namespace(key?: string) {
+  return key ? Merak.namespace[key] : Merak.namespace as any
 }

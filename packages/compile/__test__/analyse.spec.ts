@@ -21,14 +21,9 @@ describe('analyse file', () => {
   //   expect(code).toMatchSnapshot()
   // })
 
-  it('compile iife js in prod', async () => {
+  it('compile iife js', async () => {
     const filePath = resolve(__dirname, './fixtures/iife.js')
-    const { code } = injectGlobalToIIFE(await fs.promises.readFile(filePath, 'utf-8'), '$test', ['document', 'self', 'window'], [])
-    expect(code).toMatchSnapshot()
-  })
-  it('compile iife js in dev', async () => {
-    const filePath = resolve(__dirname, './fixtures/iife.js')
-    const { code } = injectGlobalToIIFE(await fs.promises.readFile(filePath, 'utf-8'), '$test', ['document', 'self', 'window'], ['$$customvar'], true)
+    const { code } = injectGlobalToIIFE(await fs.promises.readFile(filePath, 'utf-8'), '$test', ['document', 'self', 'window'])
     expect(code).toMatchSnapshot()
   })
 })

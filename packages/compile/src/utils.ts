@@ -8,7 +8,7 @@ export function relativePath(from: string, to: string) {
   return relative(from, to).replace(/\\/g, '/')
 }
 export function desctructGlobal(globals: string[]) {
-  return globals.join(',')
+  return globals.reduce((p, c) => `${p}${c},`, '')
 }
 
 export function resolveHtmlConfig(html: string) {

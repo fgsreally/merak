@@ -75,10 +75,14 @@ export class Merak {
 
   /** 是否处于预加载状态 */
   public isPreload: boolean
+
   /** 缓存事件，卸载时被释放 */
   cacheEvent: (() => void)[] = []
 
-  constructor(public id: string, public url: string, public options: {
+  /** 资源的基准url */
+  public url: string
+
+  constructor(public id: string, url: string, public options: {
     loader?: PureLoader
     proxy?: ProxyGlobals
     configOrUrl?: string | MerakConfig
@@ -92,7 +96,7 @@ export class Merak {
       return MerakMap.get(id) as Merak
     }
     MerakMap.set(id, this)
-
+    this.url = new URL(url).origin
     const { proxy = createProxy(id, url), configOrUrl, loader } = options
     this.configOrUrl = configOrUrl
     this.loader = loader

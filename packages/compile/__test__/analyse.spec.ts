@@ -1,7 +1,7 @@
 import fs from 'fs'
 import { resolve } from 'path'
 import { describe, expect, it } from 'vitest'
-import { analyseHTML, injectGlobalToIIFE } from '../src'
+import { analyseHTML, injectGlobalToESM, injectGlobalToIIFE } from '../src'
 describe('analyse file', () => {
   it('analyse html file', async () => {
     const content = await fs.promises.readFile(resolve(__dirname, './fixtures/index.html'), 'utf-8')
@@ -15,11 +15,11 @@ describe('analyse file', () => {
       expect(getPath(content, start, end)).toMatchSnapshot()
   })
 
-  // it('compile esm js', async () => {
-  //   const filePath = resolve(__dirname, './fixtures/esm.js')
-  //   const { code } = injectGlobalToESM(await fs.promises.readFile(filePath, 'utf-8'), '$test', ['document', 'window'])
-  //   expect(code).toMatchSnapshot()
-  // })
+  it('compile esm js', async () => {
+    const filePath = resolve(__dirname, './fixtures/esm.js')
+    const { code } = injectGlobalToESM(await fs.promises.readFile(filePath, 'utf-8'), '$test', ['document', 'window'], ['d'])
+    expect(code).toMatchSnapshot()
+  })
 
   it('compile iife js', async () => {
     const filePath = resolve(__dirname, './fixtures/iife.js')

@@ -3,7 +3,7 @@ import type { LoadDone, MerakConfig, ProxyGlobals } from './types'
 import type { PureLoader } from './loaders'
 import { createProxy } from './proxy'
 import { MERAK_DATA_ID, MERAK_EVENT, MERAK_SHADE_STYLE } from './common'
-import { eventTrigger, scriptPrimise } from './utils'
+import { debug, eventTrigger, scriptPrimise } from './utils'
 import { MerakMap, getBodyStyle } from './helper'
 import { LifeCycle } from './lifecycle'
 import { cloneScript } from './compile'
@@ -13,7 +13,7 @@ export class Merak {
   /** 所有子应用共享 */
   static namespace: Record<string, any> = {}
   /** 生命周期 */
-  lifeCycle = new LifeCycle()
+  public lifeCycle = new LifeCycle()
 
   public el: HTMLElement | null
   /** css隔离容器 */
@@ -41,7 +41,7 @@ export class Merak {
   public loader: PureLoader | undefined
 
   /** 挂载数据 */
-  public props: any
+  public props: any = {}
 
   /** 子应用激活标志 */
   public activeFlag = false
@@ -50,7 +50,7 @@ export class Merak {
   public mountIndex = 0
 
   /** 子应用JS运行标志 */
-  public execFlag = false
+  public execPromise: Promise<void> | false = false
 
   /** 子应用mount标志 */
   public mountFlag = false
@@ -73,8 +73,8 @@ export class Merak {
   /** 防止重复加载 */
   private loadPromise: Promise<any>
 
-  /** 防止重复执行 */
-  public execPromise: Promise<any>
+  /** 是否处于预加载状态 */
+  public isPreload: boolean
   /** 缓存事件，卸载时被释放 */
   cacheEvent: (() => void)[] = []
 
@@ -87,7 +87,8 @@ export class Merak {
   ) {
     if (MerakMap.has(id)) {
       if (__DEV__)
-        throw new Error(`"${id}" already exists`)
+        console.warn(`[merak]: "${id}" already exists`)
+
       return MerakMap.get(id) as Merak
     }
     MerakMap.set(id, this)
@@ -106,8 +107,9 @@ export class Merak {
      * work for customVars in dev mode
      */
 
-    this.proxyMap.__m_p__ = (k: string) => new Proxy(() => {}, {
+    this.proxyMap.__m_p__ = (k: string) => new Proxy(() => { }, {
       get(_, p) {
+        debug(`get [${p as string}] from ${k}`, id)
         const v = windowProxy[k][p]
         return typeof v === 'function' ? v.bind(windowProxy) : v
       },
@@ -124,12 +126,15 @@ export class Merak {
     })
   }
 
-  static errorHandler({ type, message }: { type: string; message: string; instance?: Merak }) {
-    console.error(`[merak] ${type}:${message}`)
+  static errorHandler({ type, error }: { type: string; error: Error; instance?: Merak }) {
+    if (__DEV__)
+      console.error(error)
+    else
+      console.error(`[merak] ${type}:${error.message}`)
   }
 
-  public errorHandler({ type, message }: { type: string; message: string }) {
-    Merak.errorHandler({ type, message, instance: this })
+  public errorHandler({ type, error }: { type: string; error: Error }) {
+    Merak.errorHandler({ type, error, instance: this })
   }
 
   get namespace() {
@@ -177,7 +182,7 @@ export class Merak {
     this.perf.record('load')
     return this.loadPromise = (this.loader!.load(url, configOrUrl) as Promise<LoadDone>).then((loadRes) => {
       if (loadRes instanceof Error) {
-        this.errorHandler?.({ type: 'loadError', message: loadRes.message })
+        this.errorHandler?.({ type: 'loadError', error: loadRes as Error })
       }
       else {
         this.perf.record('load')
@@ -210,29 +215,30 @@ export class Merak {
       // work for spa
       if (this.loader) {
         // mount script on body or iframe
-        if (!this.execFlag) {
-          let r: () => void
-          this.execPromise = new Promise<void>((resolve) => {
-            r = resolve
-          })
+        if (!this.execPromise) {
           const originScripts = Array.from(this.sandDocument.querySelectorAll('script'))
           const scripts = originScripts.filter((script) => {
             !this.iframe && script.remove()
             return !script.hasAttribute('merak-ignore') && script.type !== 'importmap'
           }).map(script => cloneScript(script, this.fakeGlobalVar, this.nativeVars, this.customVars))
 
-          this.execHook('transformScript', { originScripts, scripts });
-          // TODO JS queue
-          (this.iframe?.contentDocument || this.sandDocument).querySelector('body')?.append(...scripts)
+          this.execHook('transformScript', { originScripts, scripts })
+          let r: () => void
+          this.execPromise = new Promise((resolve) => {
+            r = resolve
+          })
           // only invoke mount event after all scripts load/fail
           Promise.all(scripts.map(scriptPrimise)).catch((e) => {
-            return this.errorHandler?.({ type: 'scriptError', message: e.message })
+            return this.errorHandler?.({ type: 'scriptError', error: e })
           }).finally(() => {
             this.perf.record('bootstrap')
             r()
-            this.execFlag = true
+
             eventTrigger(window, MERAK_EVENT.MOUNT + this.id)
-          })
+            this.execHook('afterMount')
+          });
+          // TODO JS queue
+          (this.iframe?.contentDocument || this.sandDocument).querySelector('body')?.append(...scripts)
         }
         else {
           eventTrigger(window, MERAK_EVENT.RELUNCH + this.id)
@@ -245,9 +251,11 @@ export class Merak {
 
     this.execHook('tranformDocument', { ele: this.sandDocument! })
     this.shadowRoot.appendChild(this.sandDocument!)
-    // ExecFlag will be false if it is the first time to mount
-    this.execFlag && eventTrigger(window, MERAK_EVENT.MOUNT + this.id)
-    this.execHook('afterMount')
+    // execPromise  will be false if it is the first time to mount
+    if (this.execPromise) {
+      eventTrigger(window, MERAK_EVENT.MOUNT + this.id)
+      this.execHook('afterMount')
+    }
   }
 
   mount() {
@@ -298,7 +306,7 @@ export class Merak {
       const isIframeDestroy = iframeInstance.remove(this.options.iframe as string)
       this.iframe = null
       if (isIframeDestroy)
-        this.execFlag = false
+        this.execPromise = false
     }
     else {
       delete window[this.fakeGlobalVar]
@@ -314,14 +322,17 @@ export class Merak {
 
 export function preloadApp(...args: ConstructorParameters<typeof Merak>) {
   const app = new Merak(...args)
-  const el = document.createElement('merak-app')
-  el.setAttribute(MERAK_DATA_ID, args[0])
-  el.setAttribute('style', 'display:none')
-  app.el = el
-  document.body.appendChild(el)
+  if (!app.execPromise) {
+    const el = document.createElement('merak-app')
+    el.setAttribute(MERAK_DATA_ID, args[0])
+    el.setAttribute('style', 'display:none')
+    app.el = el
+    document.body.appendChild(el)
+    app.isPreload = true
+  }
   return app
 }
 
-export function setErrorHandler(cb: (arg: { type: 'missInstance' | 'missProperty' | 'loadError' | 'hasMount' | 'scriptError' | string; message: string; instance?: Merak }) => void) {
+export function setErrorHandler(cb: (arg: { type: 'missInstance' | 'missProperty' | 'loadError' | 'hasMount' | 'scriptError' | string; error: Error; instance?: Merak }) => void) {
   Merak.errorHandler = cb
 }

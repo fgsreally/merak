@@ -12,8 +12,14 @@ const cli = cac('merak')
 const root = process.cwd()
 const require = createRequire(root)
 
-cli
-  .command('', 'parse all file to merak-format')
+cli.command('init', 'create merak.config.json').action(() => {
+  fse.outputFile(resolve(root, 'merak.config.json'), JSON.stringify({
+    $schema: 'https://unpkg.com/merak-compile/assets/schema.json',
+    fakeGlobalVar: '',
+  }))
+})
+
+cli.command('', 'parse all file to merak-format')
   .option('-c, --config', 'config file', {
     default: 'merak.config.json',
   })

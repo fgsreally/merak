@@ -102,16 +102,16 @@ export function $onUnmount(cb: (e?: Event) => any) {
   }
 }
 
-export function $onExec(cb: () => any) {
-  if (!isMerak())
-    cb()
-  const fn1 = $once('mount', cb)
-  const fn2 = $on('relunch', cb)
-  return () => {
-    fn1()
-    fn2()
-  }
-}
+// export function $onExec(cb: () => any) {
+//   if (!isMerak())
+//     cb()
+//   const fn1 = $once('mount', cb)
+//   const fn2 = $on('relunch', cb)
+//   return () => {
+//     fn1()
+//     fn2()
+//   }
+// }
 
 // work for eval
 export function $sandbox(script: string) {
@@ -136,15 +136,19 @@ function createCustomVarProxy(globalVar: string, customVars: string[]) {
 }
 
 export function $instance() {
-  return window.$Merak as undefined | $Merak
+  return window.$Merak as $Merak
 }
 
-export function $props<T = Record<string, any>>(): undefined | T {
-  return $instance()?.props
+export function $props(): $Merak['props']
+export function $props<K extends keyof $Merak['props']>(key: string): $Merak['props'][K]
+export function $props(key?: string) {
+  return key ? $instance().props[key] : $instance().props as any
 }
 
-export function $namespace() {
-  return $instance()?.namespace
+export function $namespace(): $Merak['namespace']
+export function $namespace<K extends keyof $Merak['namespace']>(key: string): $Merak['namespace'][K]
+export function $namespace(key?: string) {
+  return key ? $instance().namespace[key] : $instance().namespace as any
 }
 
 export function $perf() {

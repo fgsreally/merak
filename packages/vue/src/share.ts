@@ -28,7 +28,7 @@ export const shareProps = {
   },
   props: {
     type: Object as PropType<any>,
-    // required: true,
+
   },
   proxy: {
     type: Object as PropType<ProxyGlobals>,

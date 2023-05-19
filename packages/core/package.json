@@ -1,6 +1,6 @@
 {
   "name": "merak-core",
-  "version": "1.0.0-rc.8",
+  "version": "1.0.0-rc.9",
   "description": "",
   "main": "dist/index.js",
   "module": "dist/index.mjs",
@@ -23,13 +23,11 @@
     }
   },
   "scripts": {
-    "serve": "serve ./dist --cors -p 3000",
+    "serve": "http-server ./dist --cors -p 3000",
     "dev": "tsup --watch",
     "build": "tsup && npm run build:prod && npm run build:dev",
     "build:prod": "cross-env PROD=true tsup",
     "build:dev": "cross-env DEV=true tsup"
-
-
   },
   "keywords": [],
   "files": [
@@ -38,7 +36,11 @@
   "author": "",
   "license": "MIT",
   "devDependencies": {
-    "merak-compile":"workspace:*",
+    "@types/debug": "^4.1.7",
+    "merak-compile": "workspace:*",
     "tsup": "^6.5.0"
+  },
+  "dependencies": {
+    "debug": "^4.3.4"
   }
 }

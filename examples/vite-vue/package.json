@@ -4,7 +4,7 @@
   "private": true,
   "scripts": {
     "dev": "vite --cors",
-    "serve":"serve ./dist --cors -p 4004",
+    "serve":"http-server ./dist --cors -p 4004",
     "build": "run-p type-check build-only",
     "preview": "vite preview",
     "build-only": "vite build",

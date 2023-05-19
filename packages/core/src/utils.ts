@@ -1,4 +1,6 @@
 /* eslint-disable no-prototype-builtins */
+
+import Debug from 'debug'
 export async function loadJSONFile(url: string) {
   const res = await fetch(url)
   return res.json()
@@ -54,7 +56,7 @@ export function resolveHtmlConfig(html: string) {
 }
 
 export function desctructGlobal(globals: string[]) {
-  return globals.reduce((p, c) => `${p}${c},`, '')
+  return globals.join(',')
 }
 
 const boundedMap = new WeakMap<CallableFunction, boolean>()
@@ -106,8 +108,21 @@ export const isCallable = (fn: any) => {
 }
 
 export function scriptPrimise(script: HTMLScriptElement) {
-  return new Promise((resolve, reject) => {
+  return new Promise<any>((resolve, reject) => {
+    if (!script.src) {
+      resolve(true)
+      return
+    }
     script.addEventListener('load', resolve)
     script.addEventListener('error', reject)
   })
+}
+
+export function createCustomVarProxy(globalVar: string, customVars: string[]) {
+  return customVars.map(item => `const ${item}=${globalVar}.__m_p__('${item}')`).reduce((p, c) => `${p + c};`, '')
+}
+
+export function debug(info: string, id?: string) {
+  if (__DEV__)
+    Debug(`merak:${id || '*'}`)(info)
 }

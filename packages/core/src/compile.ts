@@ -1,4 +1,4 @@
-import { desctructGlobal, resolveUrl } from './utils'
+import { createCustomVarProxy, desctructGlobal, resolveUrl } from './utils'
 
 export function compileHTML(code: string, baseUrl: string, loc: [number, number][]) {
   const originStr = code
@@ -13,7 +13,7 @@ export function compileHTML(code: string, baseUrl: string, loc: [number, number]
   return code
 }
 
-export function cloneScript(script: HTMLScriptElement, fakeGlobalVar: string, globalVars: string[]) {
+export function cloneScript(script: HTMLScriptElement, fakeGlobalVar: string, nativeVars: string[], customVars: string[]) {
   const { src, async, defer, type, innerHTML } = script
   const newScriptEl = document.createElement('script')
 
@@ -27,11 +27,12 @@ export function cloneScript(script: HTMLScriptElement, fakeGlobalVar: string, gl
     newScriptEl.defer = defer
 
   if (innerHTML) {
+    const code = `const {${desctructGlobal(nativeVars)}}=${fakeGlobalVar};${createCustomVarProxy(fakeGlobalVar, customVars)}${innerHTML}`
     if (type === 'module')
-      newScriptEl.innerHTML = `const {${desctructGlobal(globalVars)}}=${fakeGlobalVar};\n${innerHTML}`
+      newScriptEl.innerHTML = code
 
     else
-      script.innerHTML = `(()=>{const {${desctructGlobal(globalVars)}}=${fakeGlobalVar};${innerHTML}\n})()`
+      script.innerHTML = `(()=>{${code}})()`
   }
   return newScriptEl
 }

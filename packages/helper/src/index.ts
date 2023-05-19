@@ -2,7 +2,7 @@ import type { Merak as $Merak } from 'merak-core'
 
 export type Merak = $Merak
 
-export type MerakEvent = 'mount' | 'destroy' | 'hidden' | 'unmount' | 'relunch'
+export type MerakEvent = 'mount' | 'destroy' | 'hidden' | 'unmount' | 'relunch' | 'show'
 
 export function $window(): Window {
   return isMerak() ? window.rawWindow : window
@@ -23,7 +23,12 @@ export function getInstance(id: string) {
   return $window().$MerakMap.get(id)
 }
 
+/**
+ * @no_recommand 不建议使用
+ */
 export function $jump(project: string, to: string) {
+  if (!isMerak())
+    return
   const instance = getInstance(project)
   if (instance) {
     instance.proxyMap.history.pushState(null, '', to)
@@ -31,11 +36,6 @@ export function $jump(project: string, to: string) {
     instance.proxy.dispatchEvent(event)
   }
 }
-
-// function getQueryMap() {
-//   return JSON.parse(decodeURIComponent($location().search.slice(1)),
-//   )
-// }
 
 export function $eventName(event: string) {
   return `merak_${event}`
@@ -55,9 +55,11 @@ export function $head(): HTMLHeadElement {
 
 export function $on(eventName: MerakEvent, cb: () => any): () => void {
   const event = $eventName(eventName)
-  if (isMerak())
+  if (isMerak()) {
     window.addEventListener(event, cb)
-  return () => isMerak() && window.removeEventListener(event, cb)
+    return () => window.removeEventListener(event, cb)
+  }
+  return () => { }
 }
 
 export function $once(eventName: MerakEvent, cb: () => any): () => void {
@@ -72,9 +74,9 @@ export function $onMount(cb: () => any) {
 }
 
 // I don't sure if it is important
-// export function $onShow(cb: () => any) {
-//   return isMerak() ? $on('show', cb) : cb()
-// }
+export function $onShow(cb: () => any) {
+  return $on('show', cb)
+}
 export function $onRelunch(cb: () => any) {
   return $on('relunch', cb)
 }
@@ -87,25 +89,29 @@ export function $onDestroy(cb: () => any) {
   return $on('destroy', cb)
 }
 
-export function $onUnmount(cb: () => any) {
-  const fn1 = $once('hidden', cb)
-  const fn2 = $on('destroy', cb)
-  return () => {
-    fn1()
-    fn2()
+export function $onUnmount(cb: (e?: Event) => any) {
+  if (isMerak()) {
+    const fn = $on('unmount', cb)
+    return fn
+  }
+  else {
+    window.addEventListener('unload', cb)
+    return () => {
+      window.removeEventListener('unload', cb)
+    }
   }
 }
 
-export function $onExec(cb: () => any) {
-  if (!isMerak())
-    cb()
-  const fn1 = $once('mount', cb)
-  const fn2 = $on('relunch', cb)
-  return () => {
-    fn1()
-    fn2()
-  }
-}
+// export function $onExec(cb: () => any) {
+//   if (!isMerak())
+//     cb()
+//   const fn1 = $once('mount', cb)
+//   const fn2 = $on('relunch', cb)
+//   return () => {
+//     fn1()
+//     fn2()
+//   }
+// }
 
 // work for eval
 export function $sandbox(script: string) {
@@ -119,22 +125,30 @@ export function $sandbox(script: string) {
 // work for esm script
 export function $esm(script: string) {
   if (isMerak()) {
-    const { fakeGlobalVar, globalVars } = window.$Merak
-    return `const {${globalVars.reduce((p: string, c: string) => `${p},${c}`)}}=${fakeGlobalVar};${script}`
+    const { fakeGlobalVar, nativeVars, customVars } = window.$Merak
+    return `const {${nativeVars.reduce((p: string, c: string) => `${p},${c}`)}}=${fakeGlobalVar};${createCustomVarProxy(fakeGlobalVar, customVars)}${script}`
   }
   return script
 }
 
+function createCustomVarProxy(globalVar: string, customVars: string[]) {
+  return customVars.map(item => `const ${item}=${globalVar}.__m_p__('${item}')`).reduce((p, c) => `${p + c};`, '')
+}
+
 export function $instance() {
-  return window.$Merak as undefined | $Merak
+  return window.$Merak as $Merak
 }
 
-export function $props<T = Record<string, any>>(): undefined | T {
-  return $instance()?.props
+export function $props(): $Merak['props']
+export function $props<K extends keyof $Merak['props']>(key: string): $Merak['props'][K]
+export function $props(key?: string) {
+  return key ? $instance().props[key] : $instance().props as any
 }
 
-export function $namespace() {
-  return $instance()?.namespace
+export function $namespace(): $Merak['namespace']
+export function $namespace<K extends keyof $Merak['namespace']>(key: string): $Merak['namespace'][K]
+export function $namespace(key?: string) {
+  return key ? $instance().namespace[key] : $instance().namespace as any
 }
 
 export function $perf() {

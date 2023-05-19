@@ -23,7 +23,7 @@ describe('analyse file', () => {
 
   it('compile iife js', async () => {
     const filePath = resolve(__dirname, './fixtures/iife.js')
-    const { code } = injectGlobalToIIFE(await fs.promises.readFile(filePath, 'utf-8'), '$test', ['document', 'self', 'window'])
+    const { code } = injectGlobalToIIFE(await fs.promises.readFile(filePath, 'utf-8'), '$test', ['document', 'self', 'window'], [])
     expect(code).toMatchSnapshot()
   })
 })

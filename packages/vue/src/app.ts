@@ -1,9 +1,9 @@
 import type { MerakConfig } from 'merak-core'
-import { MERAK_DATA_ID, MERAK_KEEP_ALIVE, Merak, getInstance } from 'merak-core'
+import { $$jump, MERAK_DATA_ID, MERAK_KEEP_ALIVE, Merak, getInstance } from 'merak-core'
 import type { Loader } from 'merak-core/loader'
 import { PureLoader } from 'merak-core/loader'
 import type { PropType } from 'vue'
-import { defineComponent, h } from 'vue'
+import { defineComponent, h, watch } from 'vue'
 import { shareEmits, shareProps } from './share'
 export const vueLoader = new PureLoader()
 export const MerakApp = defineComponent({
@@ -17,21 +17,27 @@ export const MerakApp = defineComponent({
       type: Object as PropType<Loader>,
       default: vueLoader,
     },
+    route: {
+      type: String,
+    },
 
   },
   emits: shareEmits,
-  setup(props, { expose, emit }) {
-    const { url, proxy, loader, configOrUrl, keepAlive, props: MerakProps, iframe, name } = props
+  setup(props, { emit }) {
+    const { url, proxy, loader, configOrUrl, props: MerakProps, iframe, name, route } = props
     const app = getInstance(name) || new Merak(name, url, { loader, configOrUrl, proxy, iframe })
-    app.props = MerakProps
+    if (MerakProps)
+      app.props = MerakProps
     for (const ev in shareEmits) {
-      if (ev === 'errorHandler')
-        app[ev] = (arg: any) => emit(ev as any, arg)
-      else
+      if (!app.lifeCycle[ev])
         app.lifeCycle[ev] = (arg: any) => emit(ev as any, arg)
     }
+    if (route && route !== '/')
+      $$jump(props.name, route, false)
 
-    expose({ app })
-    return () => h('merak-app', { [MERAK_DATA_ID]: name, [MERAK_KEEP_ALIVE]: keepAlive })
+    watch(() => props.route, (n) => {
+      n && $$jump(props.name, n)
+    })
+    return () => h('merak-app', { [MERAK_DATA_ID]: props.name, [MERAK_KEEP_ALIVE]: props.keepAlive })
   },
 })

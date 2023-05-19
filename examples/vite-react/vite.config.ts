@@ -4,7 +4,7 @@ import { Merak, merakPostCss } from 'vite-plugin-merak'
 
 // https://vitejs.dev/config/
 export default defineConfig({
-  plugins: [react(), Merak('vite_react', ['$RefreshSig$', '$RefreshReg$'], {})],
+  plugins: [react(), Merak('vite_react')],
   server: {
     port: 4003,
   },

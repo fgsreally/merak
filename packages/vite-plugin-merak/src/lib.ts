@@ -6,19 +6,15 @@ import isVarName from 'is-var-name'
 import type { FilterPattern, PluginOption } from 'vite'
 
 export { merakPostCss }
-export function MerakLib(fakeGlobalVar: string, globals: string[], opts: { isinLine?: boolean; includes?: FilterPattern; exclude?: FilterPattern; logPath?: string; force?: boolean } = {}): PluginOption {
-  const resolvedOpts = {
-    includes: /\.(ts|js|tsx|jsx|mjs)/,
-    ...opts,
-  } as Required<typeof opts>
+export function MerakLib(fakeGlobalVar: string, opts: { isinLine?: boolean; includes?: FilterPattern; exclude?: FilterPattern; logPath?: string; force?: boolean; nativeVars?: string[]; customVars?: string[] } = {}): PluginOption {
+  const { nativeVars = [], customVars = [], includes = /\.(ts|js|tsx|jsx|mjs)/, exclude, logPath, force } = opts
   if (!isVarName(fakeGlobalVar))
     throw new Error(`${fakeGlobalVar} is not a valid var`)
 
-  globals.push(...DEFAULT_INJECT_GLOBALS.filter(item => !['location', 'history'].includes(item)))
+  nativeVars.push(...DEFAULT_INJECT_GLOBALS.filter(item => !['location', 'history'].includes(item)))
 
-  const globalVars = [...new Set(globals)] as string[]
-  const isDebug = !!resolvedOpts.logPath
-  const { includes, exclude } = resolvedOpts
+  // const globalVars = [...new Set(globals)] as string[]
+  const isDebug = !!logPath
   const filter = createFilter(includes, exclude)
   return [merakCSS(), {
     name: 'vite-plugin-merak:lib',
@@ -28,9 +24,9 @@ export function MerakLib(fakeGlobalVar: string, globals: string[], opts: { isinL
       if (!filter(chunk.fileName))
         return
 
-      const unUsedGlobals = analyseJSGlobals(raw, globalVars)
+      const unUsedGlobals = analyseJSGlobals(raw, [...nativeVars, ...customVars])
       unUsedGlobals.length > 0 && logger.collectUnusedGlobals(chunk.fileName, unUsedGlobals)
-      const { map, code, warning } = (opts.format === 'es' ? injectGlobalToESM : injectGlobalToIIFE)(raw, fakeGlobalVar, globalVars, resolvedOpts.force)
+      const { map, code, warning } = (opts.format === 'es' ? injectGlobalToESM : injectGlobalToIIFE)(raw, fakeGlobalVar, nativeVars, customVars, force)
       if (isDebug) {
         warning.forEach(warn => logger.collectDangerUsed(chunk.fileName, warn.info, [warn.loc.start.line, warn.loc.start.column]),
         )
@@ -38,7 +34,7 @@ export function MerakLib(fakeGlobalVar: string, globals: string[], opts: { isinL
       return { map, code }
     },
     closeBundle() {
-      isDebug && logger.output(resolve(process.cwd(), resolvedOpts.logPath))
+      isDebug && logger.output(resolve(process.cwd(), logPath))
     },
   }]
 }

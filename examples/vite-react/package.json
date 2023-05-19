@@ -5,7 +5,7 @@
   "type": "module",
   "scripts": {
     "dev": "vite --cors",
-    "serve":"serve ./dist --cors -p 4003",
+    "serve":"http-server ./dist --cors -p 4003",
     "build": "tsc && vite build",
     "preview": "vite preview"
   },

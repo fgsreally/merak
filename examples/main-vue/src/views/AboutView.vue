@@ -21,7 +21,7 @@ function relunch() {
     <p>from vite-vue</p>
     <MerakApp name="vite_vue" url="http://localhost:4004" class="micro" route="/about" :props="data" @mount="mount" @relunch="relunch" />
     <p>from vite-react</p>
-    <MerakApp name="vite_react" url="http://localhost:4003" iframe="react" class="micro" :props="data" />
+    <MerakApp name="vite_react" url="http://localhost:4003" keep-alive class="micro" :props="data" />
   </div>
 </template>
 

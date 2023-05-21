@@ -1,5 +1,5 @@
 import { Merak } from 'merak-core'
-import { PureLoader } from 'merak-core/loader'
+import { PureLoader } from 'merak-core'
 
 const loader = new PureLoader()
 

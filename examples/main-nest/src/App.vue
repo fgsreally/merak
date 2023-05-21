@@ -3,7 +3,7 @@ import { MerakApp } from 'merak-vue'
 </script>
 
 <template>
-  <MerakApp name="main_vue" url="http://127.0.0.1:5003/" keep-alive class="micro" />
+  <MerakApp name="main_vue" url="http://localhost:5003/" keep-alive class="micro" />
 </template>
 
 <style scoped>

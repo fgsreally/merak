@@ -3,7 +3,7 @@ import { createPinia } from 'pinia'
 import ElementPlus from 'element-plus'
 import 'element-plus/dist/index.css'
 import type { App as AppType } from 'vue'
-import { $onMount, $onUnmount, $props, $stopProp } from 'merak-helper'
+import { $onMount, $onUnmount, $stopProp } from 'merak-helper'
 import App from './App.vue'
 import router from './router'
 import './assets/main.css'
@@ -22,5 +22,3 @@ $stopProp(true)
 $onUnmount(() => {
   app.unmount()
 })
-
-console.log($props('name'))

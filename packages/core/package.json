@@ -38,6 +38,6 @@
   "devDependencies": {
     "merak-compile": "workspace:*",
     "tsup": "^6.5.0"
-  },
+  }
 
 }

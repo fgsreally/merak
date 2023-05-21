@@ -1,8 +1,8 @@
 export interface MerakConfig {
-  _l: [number, number][]
   _n: string[]
   _c: string[]
   _f: string
+  [key: string]: any
 }
 
 export interface LoadDone {

@@ -23,7 +23,7 @@ export const MerakApp = defineComponent({
 
   },
   emits: shareEmits,
-  setup(props, { emit }) {
+  setup(props, { emit, expose }) {
     const { url, proxy, loader, configOrUrl, props: MerakProps, iframe, name, route } = props
     const app = getInstance(name) || new Merak(name, url, { loader, configOrUrl, proxy, iframe })
     if (MerakProps)
@@ -32,7 +32,8 @@ export const MerakApp = defineComponent({
       if (!app.lifeCycle[ev])
         app.lifeCycle[ev] = (arg: any) => emit(ev as any, arg)
     }
-    if (route && route !== '/')
+    expose({ app })
+    if (route)
       $$jump(props.name, route, false)
 
     watch(() => props.route, (n) => {

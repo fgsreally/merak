@@ -28,7 +28,7 @@ export const MerakSSR = defineComponent({
       if (!app.lifeCycle[ev])
         app.lifeCycle[ev] = (arg: any) => emit(ev as any, arg)
     }
-    if (route && route !== '/')
+    if (route )
       $$jump(props.name, route, false)
 
     watch(() => props.route, (n) => {

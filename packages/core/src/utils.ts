@@ -1,6 +1,5 @@
 /* eslint-disable no-prototype-builtins */
 
-import Debug from 'debug'
 export async function loadJSONFile(url: string) {
   const res = await fetch(url)
   return res.json()
@@ -123,6 +122,9 @@ export function createCustomVarProxy(globalVar: string, customVars: string[]) {
 }
 
 export function debug(info: string, id?: string) {
-  if (__DEV__)
-    Debug(`merak:${id || '*'}`)(info)
+  if (__DEV__) {
+    if (window.MERAK_DEBUG === id)
+      // eslint-disable-next-line no-console
+      console.debug(info)
+  }
 }

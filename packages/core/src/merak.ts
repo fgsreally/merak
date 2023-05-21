@@ -1,5 +1,5 @@
 import { iframeInstance } from './iframe'
-import type { LoadDone, MerakConfig, ProxyGlobals } from './types'
+import type { LoadDone, MerakConfig, NameSpace, Props, ProxyGlobals } from './types'
 import type { PureLoader } from './loaders'
 import { createProxy } from './proxy'
 import { MERAK_DATA_ID, MERAK_EVENT, MERAK_SHADE_STYLE } from './common'
@@ -11,7 +11,7 @@ import { Perf } from './perf'
 
 export class Merak {
   /** 所有子应用共享 */
-  static namespace: Record<string, any> = {}
+  static namespace: NameSpace = {}
   /** 生命周期 */
   public lifeCycle = new LifeCycle()
 
@@ -41,7 +41,7 @@ export class Merak {
   public loader: PureLoader | undefined
 
   /** 挂载数据 */
-  public props: any = {}
+  public props: Props
 
   /** 子应用激活标志 */
   public activeFlag = false

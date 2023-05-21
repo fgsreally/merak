@@ -1,6 +1,6 @@
-import type { Merak as $Merak } from 'merak-core'
+import type { Merak, NameSpace, Props } from 'merak-core'
 
-export type Merak = $Merak
+export { Merak, Props, NameSpace }
 
 export type MerakEvent = 'mount' | 'destroy' | 'hidden' | 'unmount' | 'relunch' | 'show'
 
@@ -136,17 +136,17 @@ function createCustomVarProxy(globalVar: string, customVars: string[]) {
 }
 
 export function $instance() {
-  return window.$Merak as $Merak
+  return window.$Merak as Merak
 }
 
-export function $props(): $Merak['props']
-export function $props<K extends keyof $Merak['props']>(key: string): $Merak['props'][K]
+export function $props(): Props
+export function $props<K extends keyof Props>(key: string): Props[K]
 export function $props(key?: string) {
   return key ? $instance().props[key] : $instance().props as any
 }
 
-export function $namespace(): $Merak['namespace']
-export function $namespace<K extends keyof $Merak['namespace']>(key: string): $Merak['namespace'][K]
+export function $namespace(): NameSpace
+export function $namespace<K extends keyof NameSpace>(key: string): NameSpace[K]
 export function $namespace(key?: string) {
   return key ? $instance().namespace[key] : $instance().namespace as any
 }

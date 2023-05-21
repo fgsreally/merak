@@ -18,3 +18,9 @@ export interface ProxyGlobals {
   window: ProxyHandler<Window>
   [key: string]: ProxyHandler<any> | Function
 }
+
+export interface Props {
+}
+
+export interface NameSpace {
+}

@@ -36,11 +36,7 @@
   "author": "",
   "license": "MIT",
   "devDependencies": {
-    "@types/debug": "^4.1.7",
     "merak-compile": "workspace:*",
     "tsup": "^6.5.0"
-  },
-  "dependencies": {
-    "debug": "^4.3.4"
   }
 }

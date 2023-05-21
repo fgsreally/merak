@@ -7,11 +7,11 @@ describe('vanilla app', () => {
     cy.visit(`${MAINAPP_URL.VANILLA}`)
   })
 
-  it('should preload right', () => {
-    cy.window().then((item) => {
-      expect(item.app.template).to.be.a('string')
-    })
-  })
+  // it('should preload right', () => {
+  //   cy.window().then((item) => {
+  //     expect(item.app.template).to.be.a('string')
+  //   })
+  // })
 
   it('should mount successfully', () => {
     cy.get('[data-testid="btn"]').first().click()

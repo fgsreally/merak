@@ -29,18 +29,18 @@ export const MerakImport = defineComponent({
       required: false as const,
       default: $location().origin,
     },
-    source:{
+    source: {
       type: String,
       required: true as const,
-    }
+    },
     globals: {
       type: Array as PropType<string[]>,
     },
   },
   setup(props, { slots }) {
-    const { fakeGlobalVar, name, url, props: MerakProps, proxy, iframe, nativeVars = shareNativeVars, customVars = [],source } = props
+    const { fakeGlobalVar, name, url, props: MerakProps, proxy, iframe, nativeVars = shareNativeVars, customVars = [], source } = props
 
-    const app = getInstance(name) || new Merak(name,  url, { proxy: proxy || createLibProxy(name, url), iframe })
+    const app = getInstance(name) || new Merak(name, url, { proxy: proxy || createLibProxy(name, url), iframe })
     app.setGlobalVars(fakeGlobalVar, nativeVars, customVars)
 
     let vnode: VNode

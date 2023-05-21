@@ -39,7 +39,6 @@ export const MerakImport = defineComponent({
   },
   setup(props, { slots }) {
     const { fakeGlobalVar, name, url, props: MerakProps, proxy, iframe, nativeVars = shareNativeVars, customVars = [], source } = props
-
     const app = getInstance(name) || new Merak(name, url, { proxy: proxy || createLibProxy(name, url), iframe })
     app.setGlobalVars(fakeGlobalVar, nativeVars, customVars)
 

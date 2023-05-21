@@ -141,6 +141,7 @@ export function $instance() {
 
 export function $props(): Props
 export function $props<K extends keyof Props>(key: string): Props[K]
+
 export function $props(key?: string) {
   return key ? $instance().props[key] : $instance().props as any
 }

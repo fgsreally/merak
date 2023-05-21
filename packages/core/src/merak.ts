@@ -292,6 +292,7 @@ export class Merak {
 
     eventTrigger(window, MERAK_EVENT.UNMOUNT + this.id)
 
+
     if (this.el) {
       this.el.remove()
       this.el = null

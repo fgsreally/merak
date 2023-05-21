@@ -159,7 +159,9 @@ export function injectGlobalToIIFE(code: string, globalVar: string, nativeVars: 
         if (!path.scope.hasBinding(name, true)) {
           nativeVars.includes(name) && nativeSet.add(name)
           if (customVars.includes(name)) {
-            const { start } = path.node.source || {}
+            const { start } = path.node || {}
+
+
             start && s.appendLeft(start, `${globalVar}.`)
           }
           checkIsDanger(path.node, warning)
@@ -185,7 +187,6 @@ export function injectGlobalToESM(code: string,
   globalVar: string,
   nativeVars: string[],
   customVars: string[],
-
   force?: boolean) {
   const nativeSet = new Set<string>()
 
@@ -207,7 +208,7 @@ export function injectGlobalToESM(code: string,
         if (!path.scope.hasBinding(name, true)) {
           nativeVars.includes(name) && nativeSet.add(name)
           if (customVars.includes(name)) {
-            const { start } = path.node.source || {}
+            const { start } = path.node || {}
             start && s.appendLeft(start, `${globalVar}.`)
           }
 

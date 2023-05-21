@@ -1,9 +1,7 @@
-import { $$jump, MERAK_DATA_ID, MERAK_KEEP_ALIVE, Merak, getInstance } from 'merak-core'
+import { $$jump, MERAK_DATA_ID, MERAK_KEEP_ALIVE, Merak, SSRLoader, getInstance } from 'merak-core'
 import type { PropType } from 'vue'
 import { defineComponent, h, watch } from 'vue'
-import type { Loader } from 'merak-core/loader'
-import { SSRLoader } from 'merak-core/loader'
-
+import type { Loader } from 'merak-core'
 import { shareEmits, shareProps } from './share'
 export const vueSSRLoader = new SSRLoader()
 export const MerakSSR = defineComponent({
@@ -28,7 +26,7 @@ export const MerakSSR = defineComponent({
       if (!app.lifeCycle[ev])
         app.lifeCycle[ev] = (arg: any) => emit(ev as any, arg)
     }
-    if (route && route !== '/')
+    if (route)
       $$jump(props.name, route, false)
 
     watch(() => props.route, (n) => {

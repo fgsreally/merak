@@ -1,7 +1,7 @@
 <script setup lang="ts">
-import { $jump } from 'merak-helper'
+import { $jump, $props } from 'merak-helper'
 import { RouterLink, RouterView } from 'vue-router'
-const data = 'no data from merak'
+const data = $props('data') || 'no data from merak'
 </script>
 
 <template>

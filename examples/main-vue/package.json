@@ -4,7 +4,7 @@
   "private": true,
   "scripts": {
     "dev": "vite --cors",
-    "serve":"http-server ./dist --cors -p 5003",
+    "serve": "http-server ./dist --cors -p 5003",
     "build": "run-p type-check build-only",
     "preview": "vite preview",
     "build-only": "vite build",
@@ -12,6 +12,7 @@
   },
   "dependencies": {
     "merak-core": "workspace:*",
+    "merak-helper": "workspace:1.0.0-rc.10",
     "merak-vue": "workspace:*",
     "pinia": "^2.0.28",
     "vue": "^3.2.45",

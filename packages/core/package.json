@@ -1,6 +1,6 @@
 {
   "name": "merak-core",
-  "version": "1.0.0-rc.9",
+  "version": "1.0.0-rc.10",
   "description": "",
   "main": "dist/index.js",
   "module": "dist/index.mjs",
@@ -36,11 +36,8 @@
   "author": "",
   "license": "MIT",
   "devDependencies": {
-    "@types/debug": "^4.1.7",
     "merak-compile": "workspace:*",
     "tsup": "^6.5.0"
   },
-  "dependencies": {
-    "debug": "^4.3.4"
-  }
+
 }

@@ -1,8 +1,8 @@
 export interface MerakConfig {
-  _l: [number, number][]
   _n: string[]
   _c: string[]
   _f: string
+  [key: string]: any
 }
 
 export interface LoadDone {
@@ -17,4 +17,10 @@ export interface LoadDone {
 export interface ProxyGlobals {
   window: ProxyHandler<Window>
   [key: string]: ProxyHandler<any> | Function
+}
+
+export interface Props {
+}
+
+export interface NameSpace {
 }

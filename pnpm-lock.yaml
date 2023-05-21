@@ -121,6 +121,9 @@ importers:
       merak-core:
         specifier: workspace:*
         version: link:../../packages/core
+      merak-helper:
+        specifier: workspace:1.0.0-rc.9
+        version: link:../../packages/helper
       merak-vue:
         specifier: workspace:*
         version: link:../../packages/vue

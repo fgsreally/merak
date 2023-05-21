@@ -24,20 +24,29 @@ export const MerakImport = defineComponent({
       type: String,
       required: true as const,
     },
+    url: {
+      type: String,
+      required: false as const,
+      default: $location().origin,
+    },
+    source:{
+      type: String,
+      required: true as const,
+    }
     globals: {
       type: Array as PropType<string[]>,
     },
   },
   setup(props, { slots }) {
-    const { fakeGlobalVar, name, url, props: MerakProps, proxy, iframe, nativeVars = shareNativeVars, customVars = [] } = props
+    const { fakeGlobalVar, name, url, props: MerakProps, proxy, iframe, nativeVars = shareNativeVars, customVars = [],source } = props
 
-    const app = getInstance(name) || new Merak(name, url, { proxy: proxy || createLibProxy(name, url), iframe })
+    const app = getInstance(name) || new Merak(name,  url, { proxy: proxy || createLibProxy(name, url), iframe })
     app.setGlobalVars(fakeGlobalVar, nativeVars, customVars)
 
     let vnode: VNode
 
     onMounted(async () => {
-      const { default: Comp } = await import(url)
+      const { default: Comp } = await import(source)
       vnode = h(Comp, { ...MerakProps }, slots)
       render(vnode, app.sandDocument!.querySelector('body')!)
     })
@@ -58,7 +67,7 @@ export const MerakScope = defineComponent({
     url: {
       type: String,
       required: false as const,
-      default: $location().href,
+      default: $location().origin,
     },
     fakeGlobalVar: {
       type: String,

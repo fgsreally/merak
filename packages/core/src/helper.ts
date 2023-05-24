@@ -47,3 +47,16 @@ export function $$namespace(key?: string) {
 export function $$emit(id: string, event: string, detail?: any) {
   eventTrigger(window, event + id, detail)
 }
+
+/**
+ * @experiment
+ */
+export function handleEvent() {
+  const listener = Element.prototype.addEventListener
+  Element.prototype.addEventListener = (type: string, cb: any) => listener(type, (e) => {
+    const { detail } = e as any
+    if (detail.isMerak)
+      return cb(detail.event)
+    return cb(e)
+  })
+}

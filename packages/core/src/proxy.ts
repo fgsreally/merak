@@ -232,10 +232,10 @@ export function createProxyHistory(id: string) {
         function replace(...args: [any, any, any]) {
           const { pathname, hash } = new URL(args[2], location.origin)
           const to = pathname + hash
+
           const queryMap = getUrlQuery(window.location.href)
           queryMap[id] = to === '/undefined' ? '/' : to
-          args[2] = `?${createQuery(queryMap)}`
-
+          args[2] = `${location.hash.split('?')[0]}?${createQuery(queryMap)}`
           return history.replaceState(...args)
         }
         return replace
@@ -243,10 +243,11 @@ export function createProxyHistory(id: string) {
       if (p === 'pushState') {
         function push(...args: [any, any, any]) {
           const { pathname, hash } = new URL(args[2], location.origin)
+
           const to = pathname + hash
           const queryMap = getUrlQuery(window.location.href)
           queryMap[id] = to === '/undefined' ? '/' : to
-          args[2] = `?${createQuery(queryMap)}`
+          args[2] = `${location.hash.split('?')[0]}?${createQuery(queryMap)}`
           return history.pushState(...args)
         }
         return push

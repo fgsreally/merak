@@ -15,6 +15,7 @@ export function defineWebComponent() {
       const app = getInstance(oldVal)
       if (!app)
         return
+
       app.unmount(false)
       this.connectedCallback()
     }
@@ -40,10 +41,10 @@ export function defineWebComponent() {
         if (__DEV__)
           console.warn(` app [${id}] has been mounted`)
         // work for preload
-        if (app.isPreload) {
+        if (app.preloadStat) {
           await app.execPromise
-          app.isPreload = false
-          app.unmount(true)
+          app.unmount(app.preloadStat === 'script')
+          app.preloadStat = false
         }
         else {
           app.errorHandler({ type: 'hasMount', error: new Error(` app [${id}] has been mounted`) })
@@ -56,12 +57,10 @@ export function defineWebComponent() {
       app.mount()
     }
 
-    disconnectedCallback(): void {
+    disconnectedCallback() {
       const id = this.getAttribute(MERAK_DATA_ID)!
       const app = getInstance(id)!
-      const isKeepAlive = this.hasAttribute(MERAK_KEEP_ALIVE) && this.getAttribute(MERAK_KEEP_ALIVE) !== 'false'
-
-      app.unmount(isKeepAlive)
+      app.unmount(this.hasAttribute(MERAK_KEEP_ALIVE) && this.getAttribute(MERAK_KEEP_ALIVE) !== 'false')
     }
   }
 

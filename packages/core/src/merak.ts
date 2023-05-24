@@ -74,7 +74,7 @@ export class Merak {
   private loadPromise: Promise<any>
 
   /** 是否处于预加载状态 */
-  public isPreload: boolean
+  public preloadStat: false | 'assets' | 'script' = false
 
   /** 缓存事件，卸载时被释放 */
   cacheEvent: (() => void)[] = []
@@ -158,6 +158,11 @@ export class Merak {
       this.cacheEvent.pop()!()
   }
 
+  protected eventTrigger(el: HTMLElement | Window | Document, eventName: string) {
+    if (!this.preloadStat)
+      eventTrigger(el, eventName, this)
+  }
+
   setGlobalVars(fakeGlobalVar: string, nativeVars: string[], customVars: string[]) {
     this.fakeGlobalVar = fakeGlobalVar
     this.nativeVars = nativeVars
@@ -200,7 +205,6 @@ export class Merak {
   private mountTemplateAndScript() {
     this.execHook('beforeMount')
     this.active()
-
     if (!this.cacheFlag) {
       this.sandDocument = document.importNode(window.document.implementation.createHTMLDocument('').documentElement, true)
       if (this.template) // template
@@ -219,44 +223,46 @@ export class Merak {
       if (this.loader) {
         // mount script on body or iframe
         if (!this.execPromise) {
-          const originScripts = Array.from(this.sandDocument.querySelectorAll('script'))
-          const scripts = originScripts.filter((script) => {
-            !this.iframe && script.remove()
-            return !script.hasAttribute('merak-ignore') && script.type !== 'importmap'
-          }).map(script => cloneScript(script, this.fakeGlobalVar, this.nativeVars, this.customVars))
+          if (this.preloadStat !== 'assets') {
+            const originScripts = Array.from(this.sandDocument.querySelectorAll('script'))
+            const scripts = originScripts.filter((script) => {
+              !this.iframe && script.remove()
+              return !script.hasAttribute('merak-ignore') && script.type !== 'importmap'
+            }).map(script => cloneScript(script, this.fakeGlobalVar, this.nativeVars, this.customVars))
 
-          this.execHook('transformScript', { originScripts, scripts })
-          let r: () => void
-          this.execPromise = new Promise((resolve) => {
-            r = resolve
-          })
-          // only invoke mount event after all scripts load/fail
-          Promise.all(scripts.map(scriptPrimise)).catch((e) => {
-            return this.errorHandler?.({ type: 'scriptError', error: e })
-          }).finally(() => {
-            this.perf.record('bootstrap')
-            r()
+            this.execHook('transformScript', { originScripts, scripts })
+            let r: () => void
+            this.execPromise = new Promise((resolve) => {
+              r = resolve
+            })
+            // only invoke mount event after all scripts load/fail
+            Promise.all(scripts.map(scriptPrimise)).catch((e) => {
+              return this.errorHandler?.({ type: 'scriptError', error: e })
+            }).finally(() => {
+              this.perf.record('bootstrap')
+              r()
 
-            eventTrigger(window, MERAK_EVENT.MOUNT + this.id)
-            this.execHook('afterMount')
-          });
-          // TODO JS queue
-          (this.iframe?.contentDocument || this.sandDocument).querySelector('body')?.append(...scripts)
+              this.eventTrigger(window, MERAK_EVENT.MOUNT + this.id)
+              this.execHook('afterMount')
+            });
+            // TODO JS queue
+            (this.iframe?.contentDocument || this.sandDocument).querySelector('body')?.append(...scripts)
+          }
         }
         else {
-          eventTrigger(window, MERAK_EVENT.RELUNCH + this.id)
+          this.eventTrigger(window, MERAK_EVENT.RELUNCH + this.id)
         }
       }
     }
     else {
-      eventTrigger(window, MERAK_EVENT.SHOW + this.id)
+      this.eventTrigger(window, MERAK_EVENT.SHOW + this.id)
     }
 
     this.execHook('tranformDocument', { ele: this.sandDocument! })
     this.shadowRoot.appendChild(this.sandDocument!)
     // execPromise  will be false if it is the first time to mount
     if (this.execPromise) {
-      eventTrigger(window, MERAK_EVENT.MOUNT + this.id)
+      this.eventTrigger(window, MERAK_EVENT.MOUNT + this.id)
       this.execHook('afterMount')
     }
   }
@@ -280,28 +286,33 @@ export class Merak {
 
   // called directly by shadow
   unmount(isKeepAlive: boolean) {
+    if (!this.mountFlag)
+      return
+
     this.cacheFlag = isKeepAlive
 
     this.execHook('beforeUnmount')
     this.mountFlag = false
 
     if (!isKeepAlive)
-      this.destroy()
+      this.eventTrigger(window, MERAK_EVENT.DESTROY + this.id)
+
     else
-      eventTrigger(window, MERAK_EVENT.HIDDEN + this.id)
+      this.eventTrigger(window, MERAK_EVENT.HIDDEN + this.id)
 
-    eventTrigger(window, MERAK_EVENT.UNMOUNT + this.id)
-
+    this.eventTrigger(window, MERAK_EVENT.UNMOUNT + this.id)
 
     if (this.el) {
       this.el.remove()
       this.el = null
     }
+
     this.execHook('afterUnmount')
   }
 
-  destroy() {
-    eventTrigger(window, MERAK_EVENT.DESTROY + this.id)
+  deactive() {
+    if (!this.activeFlag)
+      return
     this.execHook('destroy')
     if (this.template)
       this.template = this.sandDocument!.innerHTML
@@ -324,15 +335,16 @@ export class Merak {
  * @experiment just a try
  */
 
-export function preloadApp(...args: ConstructorParameters<typeof Merak>) {
+export function preload(type: 'script' | 'assets', ...args: ConstructorParameters<typeof Merak>) {
   const app = new Merak(...args)
   if (!app.execPromise) {
     const el = document.createElement('merak-app')
     el.setAttribute(MERAK_DATA_ID, args[0])
     el.setAttribute('style', 'display:none')
     app.el = el
+    app.preloadStat = type
+
     document.body.appendChild(el)
-    app.isPreload = true
   }
   return app
 }

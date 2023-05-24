@@ -45,6 +45,10 @@ export function isMerak() {
   return !!window.isMerak
 }
 
+export function $base() {
+  return isMerak() ? $instance()!.url : location.origin
+}
+
 export function $body(): HTMLElement {
   return $document().body
 }
@@ -64,9 +68,12 @@ export function $on(eventName: MerakEvent, cb: () => any): () => void {
 
 export function $once(eventName: MerakEvent, cb: () => any): () => void {
   const event = $eventName(eventName)
-  if (isMerak())
+  if (isMerak()) {
     window.addEventListener(event, cb, { once: true })
-  return () => isMerak() && window.removeEventListener(event, cb)
+    return () => window.removeEventListener(event, cb)
+  }
+
+  return () => { }
 }
 
 export function $onMount(cb: () => any) {
@@ -89,7 +96,7 @@ export function $onDestroy(cb: () => any) {
   return $on('destroy', cb)
 }
 
-export function $onUnmount(cb: (e?: Event) => any) {
+export function $onUnmount(cb: () => any) {
   if (isMerak()) {
     const fn = $on('unmount', cb)
     return fn
@@ -102,16 +109,10 @@ export function $onUnmount(cb: (e?: Event) => any) {
   }
 }
 
-// export function $onExec(cb: () => any) {
-//   if (!isMerak())
-//     cb()
-//   const fn1 = $once('mount', cb)
-//   const fn2 = $on('relunch', cb)
-//   return () => {
-//     fn1()
-//     fn2()
-//   }
-// }
+export function $onExec(cb: () => any) {
+  cb()
+  return isMerak() ? $on('relunch', cb) : () => {}
+}
 
 // work for eval
 export function $sandbox(script: string) {
@@ -156,14 +157,20 @@ export function $perf() {
   return $instance()?.perf
 }
 
-export function $stopProp(isPass = false) {
+export function $stopBubble(isPass = false) {
   if (isMerak()) {
     ['click', 'mousemove', 'mousedown', 'mouseup', 'keydown', 'keyup'].forEach((eventName) => {
       document.body.addEventListener(eventName, (event) => {
         event.stopPropagation()
         if (isPass)
-          $document().dispatchEvent(new CustomEvent(eventName, { detail: { originalEvent: event } }))
+          $document().dispatchEvent(new CustomEvent(eventName, { detail: { isMerak: true, event } }))
       })
     })
   }
+}
+/**
+ * @danger !!
+ */
+export function $done() {
+  $instance()?.deactive()
 }

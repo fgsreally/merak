@@ -21,6 +21,5 @@ $onMount(render)
 $stopBubble(true)
 $onUnmount(() => {
   app.unmount()
-  console.log('done')
   $done()
 })

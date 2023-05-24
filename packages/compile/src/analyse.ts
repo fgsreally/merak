@@ -161,7 +161,6 @@ export function injectGlobalToIIFE(code: string, globalVar: string, nativeVars: 
           if (customVars.includes(name)) {
             const { start } = path.node || {}
 
-
             start && s.appendLeft(start, `${globalVar}.`)
           }
           checkIsDanger(path.node, warning)

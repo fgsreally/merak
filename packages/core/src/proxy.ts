@@ -3,6 +3,7 @@ import { MERAK_EVENT, MERAK_EVENT_PREFIX } from './common'
 import { createQuery, debug, getUrlQuery, isBoundedFunction, isCallable, isConstructable } from './utils'
 import { getInstance } from './helper'
 import { patchTimer } from './patch/timer'
+import { patchListener } from './patch/listener'
 
 export const cacheBindFn = new WeakMap()
 
@@ -65,42 +66,7 @@ export function createProxyWindow(id: string, url: string) {
         return getInstance(id)!.proxyMap[p]
       /** end  */
 
-      // work for merak custom event
-      // prefer to keep it if you don't want to make break change
-      if (p === 'addEventListener') {
-        return (...params: Parameters<typeof addEventListener>) => {
-          const eventName = params[0]
-
-          if (eventName.startsWith(MERAK_EVENT_PREFIX)) {
-            params[0] = eventName + id
-          }
-          else {
-            addEventListener(MERAK_EVENT.DESTROY + id, () => {
-              removeEventListener(...params)
-            }, { once: true })
-          }
-          addEventListener(...params)
-        }
-      }
-      // if (GLOBAL_VAR_SET.has(p)) {
-      //   if (!target[MERAK_GLOBAL_VARS])
-      //     target[MERAK_GLOBAL_VARS] = new Map()
-      //     // getInstance(id)!.cacheEvent.push(() => target[MERAK_GLOBAL_VARS].clear())
-
-      //   if (!target[MERAK_GLOBAL_VARS].has(p)) {
-      //     target[MERAK_GLOBAL_VARS].set(p, new Proxy({}, {
-      //       get(_, k) {
-      //         return getBindFn(target[p], k)
-      //       },
-      //       set(_, k, v) {
-      //         target[p][k] = v
-      //         return true
-      //       },
-      //     }))
-      //   }
-
-      //   return target[MERAK_GLOBAL_VARS].get(p)
-      // }
+  
       return getBindFn(p in target ? target : window, p)
     },
 
@@ -247,6 +213,7 @@ export function createProxyHistory(id: string) {
           const to = pathname + hash
           const queryMap = getUrlQuery(window.location.href)
           queryMap[id] = to === '/undefined' ? '/' : to
+          // work for hash
           args[2] = `${location.hash.split('?')[0]}?${createQuery(queryMap)}`
           return history.pushState(...args)
         }
@@ -293,7 +260,7 @@ export function createProxyLocation(id: string) {
 export function createProxy(id: string, url: string) {
   const { globals: { setTimeout, setInterval }, free } = patchTimer()
   window.addEventListener(`${MERAK_EVENT.DESTROY}${id}`, free)
-  return { document: createProxyDocument(id, url), window: createProxyWindow(id, url), history: createProxyHistory(id), location: createProxyLocation(id), setTimeout, setInterval }
+  return { document: createProxyDocument(id, url), window: createProxyWindow(id, url), history: createProxyHistory(id), location: createProxyLocation(id), setTimeout, setInterval,addEventListener:patchListener() }
 }
 
 export function createLibProxy(id: string, url: string) {

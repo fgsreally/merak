@@ -4,6 +4,7 @@ export { Merak, Props, NameSpace }
 
 export type MerakEvent = 'mount' | 'destroy' | 'hidden' | 'unmount' | 'relunch' | 'show'
 
+// get real window 
 export function $window(): Window {
   return isMerak() ? window.rawWindow : window
 }
@@ -18,7 +19,7 @@ export function $history() {
 export function $location() {
   return $window().location
 }
-
+// the same as getInstance in merak-core
 export function getInstance(id: string) {
   return $window().$MerakMap.get(id)
 }
@@ -44,7 +45,7 @@ export function $eventName(event: string) {
 export function isMerak() {
   return !!window.isMerak
 }
-
+//sub app baseUrl
 export function $base() {
   return isMerak() ? $instance()!.url : location.origin
 }
@@ -76,10 +77,6 @@ export function $once(eventName: MerakEvent, cb: () => any): () => void {
   return () => { }
 }
 
-export function $onMount(cb: () => any) {
-  return isMerak() ? $on('mount', cb) : cb()
-}
-
 // I don't sure if it is important
 export function $onShow(cb: () => any) {
   return $on('show', cb)
@@ -94,6 +91,14 @@ export function $onHidden(cb: () => any) {
 
 export function $onDestroy(cb: () => any) {
   return $on('destroy', cb)
+}
+
+/**
+ * $onMount $onUnmount $onExec run both in merak and individual app
+ */
+
+export function $onMount(cb: () => any) {
+  return isMerak() ? $on('mount', cb) : cb()
 }
 
 export function $onUnmount(cb: () => any) {
@@ -169,7 +174,7 @@ export function $stopBubble(isPass = false) {
   }
 }
 /**
- * @danger !!
+ * Tell the host application that it's time to uninstall,
  */
 export function $done() {
   $instance()?.deactive()

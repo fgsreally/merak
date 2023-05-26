@@ -43,6 +43,8 @@ export function getBindFn(target: any, p: any) {
 }
 
 export function createProxyWindow(id: string, url: string) {
+  const instance = getInstance(id)!
+
   return {
     get(target: any, p: string) {
       debug(`get [${p}] from window`, id)
@@ -54,16 +56,16 @@ export function createProxyWindow(id: string, url: string) {
       if (p === '__merak_url__')
         return url
       if (p === '$Merak')
-        return getInstance(id)
+        return instance
 
       if (p === 'rawWindow')
         return window
 
       if (['self', 'window', 'globalThis'].includes(p))
-        return getInstance(id)!.proxy
+        return instance.proxy
 
-      if (p in getInstance(id)!.proxyMap)
-        return getInstance(id)!.proxyMap[p]
+      if (p in instance.proxyMap)
+        return instance.proxyMap[p]
       /** end  */
 
       return getBindFn(p in target ? target : window, p)
@@ -73,7 +75,7 @@ export function createProxyWindow(id: string, url: string) {
       debug(`set [${p}] to window`, id)
 
       if (WINDOW_VAR_SET.has(p)) {
-        const iframe = getInstance(id)!.iframe
+        const iframe = instance.iframe
         if (iframe)
           iframe.contentWindow![p] = v
 
@@ -90,6 +92,7 @@ export function createProxyWindow(id: string, url: string) {
 }
 
 export function createProxyDocument(id: string, url: string) {
+  const instance = getInstance(id)!
   return {
     get(target: any, p: string) {
       debug(`get [${p}] from document`, id)
@@ -97,7 +100,7 @@ export function createProxyDocument(id: string, url: string) {
       if (p === 'rawDocument')
         return document
       if (p === 'defaultView')
-        return getInstance(id)!.proxy
+        return instance!.proxy
       // work for vite dev mode
       // to handle assets
       if (__DEV__) {
@@ -128,23 +131,23 @@ export function createProxyDocument(id: string, url: string) {
         }
       }
       if (p === 'activeElement')
-        return getInstance(id)!.sandDocument?.querySelector('body')
+        return instance!.sandDocument?.querySelector('body')
 
       if (p === 'documentURI' || p === 'URL')
-        return (getInstance(id) as any).proxyMap.location.href
+        return (instance.proxyMap.location as Location).href
 
       if (p === 'querySelector')
-        return getInstance(id)!.sandDocument!.querySelector.bind((getInstance(id)!.sandDocument as HTMLElement))
+        return instance.sandDocument!.querySelector.bind((instance.sandDocument as HTMLElement))
 
       if (
         p === 'getElementsByTagName'
         || p === 'getElementsByClassName'
         || p === 'getElementsByName' || p === 'getElementById'
       ) {
-        return new Proxy(getInstance(id)!.sandDocument!.querySelectorAll, {
+        return new Proxy(instance.sandDocument!.querySelectorAll, {
           apply(_, _ctx, args) {
             let arg = args[0] as string
-            if (_ctx !== getInstance(id)!.proxyMap.document)
+            if (_ctx !== instance.proxyMap.document)
               // eslint-disable-next-line prefer-spread
               return _ctx[p].apply(_ctx, args)
 
@@ -158,23 +161,23 @@ export function createProxyDocument(id: string, url: string) {
 
             if (p === 'getElementById') {
               arg = `#${arg}`
-              return getInstance(id)!.sandDocument!.querySelector(arg)
+              return instance.sandDocument!.querySelector(arg)
             }
-            return getInstance(id)!.sandDocument!.querySelectorAll(arg)
+            return instance.sandDocument!.querySelectorAll(arg)
           },
         })
       }
 
       if (p === 'documentElement' || p === 'scrollingElement')
-        return getInstance(id)!.sandDocument!.firstElementChild
+        return instance.sandDocument!.firstElementChild
       if (p === 'forms')
-        return getInstance(id)!.sandDocument!.querySelectorAll('form')
+        return instance.sandDocument!.querySelectorAll('form')
       if (p === 'images')
-        return getInstance(id)!.sandDocument!.querySelectorAll('img')
+        return instance.sandDocument!.querySelectorAll('img')
       if (p === 'links')
-        return getInstance(id)!.sandDocument!.querySelectorAll('a')
+        return instance.sandDocument!.querySelectorAll('a')
       if (p === 'body' || p === 'head')
-        return getInstance(id)!.sandDocument!.querySelector(p)
+        return instance.sandDocument!.querySelector(p)
 
       return getBindFn(p in target ? target : document, p)
     },

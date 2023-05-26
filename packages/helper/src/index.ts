@@ -4,7 +4,7 @@ export { Merak, Props, NameSpace }
 
 export type MerakEvent = 'mount' | 'destroy' | 'hidden' | 'unmount' | 'relunch' | 'show'
 
-// get real window 
+// get real window
 export function $window(): Window {
   return isMerak() ? window.rawWindow : window
 }
@@ -45,7 +45,7 @@ export function $eventName(event: string) {
 export function isMerak() {
   return !!window.isMerak
 }
-//sub app baseUrl
+// sub app baseUrl
 export function $base() {
   return isMerak() ? $instance()!.url : location.origin
 }

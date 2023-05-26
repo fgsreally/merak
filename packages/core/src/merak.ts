@@ -212,14 +212,16 @@ export class Merak {
       this.sandDocument = document.importNode(window.document.implementation.createHTMLDocument('').documentElement, true)
       if (this.template) // template
         this.sandDocument.innerHTML = this.template
-      if (this.mountIndex === 0) {
-        this.perf.record(PERF_TIME.BOOTSTRAP)
 
+      if (this.mountIndex === 0) {
         const shade = document.createElement('div')
         shade.setAttribute('style', MERAK_SHADE_STYLE)
-        this.sandDocument.insertBefore(shade, this.sandDocument.firstChild)
+        shade.setAttribute('id', 'merak-shade')
+
+        // this.sandDocument.insertBefore(shade, this.sandDocument.firstChild)
         const body = this.sandDocument.querySelector('body')!
         body.setAttribute('style', getBodyStyle())
+        body.appendChild(shade)
       }
 
       // work for spa
@@ -250,6 +252,7 @@ export class Merak {
             });
             // TODO JS queue
             (this.iframe?.contentDocument || this.sandDocument).querySelector('body')?.append(...scripts)
+            this.perf.record(PERF_TIME.BOOTSTRAP)
           }
         }
         else {
@@ -282,8 +285,8 @@ export class Merak {
     }
 
     else { this.mountTemplateAndScript() }
-
-    this.mountIndex++
+    if (!this.preloadStat)
+      this.mountIndex++
     this.mountFlag = true
   }
 
@@ -317,6 +320,8 @@ export class Merak {
   deactive() {
     if (!this.activeFlag)
       return
+      // if sub app emit $done,cache will be removed
+    this.cacheFlag = false
     this.execHook(MERAK_HOOK.DESTROY)
     if (this.template)
       this.template = this.sandDocument!.innerHTML

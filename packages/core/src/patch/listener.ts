@@ -1,6 +1,6 @@
 import { MERAK_EVENT, MERAK_EVENT_PREFIX } from '../common'
 
-export function patchListener() {
+export function patchListener(id: string) {
   // work for merak custom event
   // prefer to keep it if you don't want to make break change
   return (...params: Parameters<typeof addEventListener>) => {

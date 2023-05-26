@@ -1,5 +1,5 @@
 /* eslint-disable no-prototype-builtins */
-import { MERAK_EVENT, MERAK_EVENT_PREFIX } from './common'
+import { MERAK_EVENT } from './common'
 import { createQuery, debug, getUrlQuery, isBoundedFunction, isCallable, isConstructable } from './utils'
 import { getInstance } from './helper'
 import { patchTimer } from './patch/timer'
@@ -66,7 +66,6 @@ export function createProxyWindow(id: string, url: string) {
         return getInstance(id)!.proxyMap[p]
       /** end  */
 
-  
       return getBindFn(p in target ? target : window, p)
     },
 
@@ -175,7 +174,7 @@ export function createProxyDocument(id: string, url: string) {
       if (p === 'links')
         return getInstance(id)!.shadowRoot.querySelectorAll('a')
       if (p === 'body' || p === 'head')
-        return getInstance(id)!.shadowRoot.querySelector(p)
+        return getInstance(id)!.sandDocument!.querySelector(p)
 
       return getBindFn(p in target ? target : document, p)
     },
@@ -260,7 +259,7 @@ export function createProxyLocation(id: string) {
 export function createProxy(id: string, url: string) {
   const { globals: { setTimeout, setInterval }, free } = patchTimer()
   window.addEventListener(`${MERAK_EVENT.DESTROY}${id}`, free)
-  return { document: createProxyDocument(id, url), window: createProxyWindow(id, url), history: createProxyHistory(id), location: createProxyLocation(id), setTimeout, setInterval,addEventListener:patchListener() }
+  return { document: createProxyDocument(id, url), window: createProxyWindow(id, url), history: createProxyHistory(id), location: createProxyLocation(id), setTimeout, setInterval, addEventListener: patchListener(id) }
 }
 
 export function createLibProxy(id: string, url: string) {

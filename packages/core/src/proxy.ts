@@ -158,21 +158,21 @@ export function createProxyDocument(id: string, url: string) {
 
             if (p === 'getElementById') {
               arg = `#${arg}`
-              return getInstance(id)!.shadowRoot.querySelector(arg)
+              return getInstance(id)!.sandDocument!.querySelector(arg)
             }
-            return getInstance(id)!.shadowRoot.querySelectorAll(arg)
+            return getInstance(id)!.sandDocument!.querySelectorAll(arg)
           },
         })
       }
 
       if (p === 'documentElement' || p === 'scrollingElement')
-        return getInstance(id)!.shadowRoot.firstElementChild
+        return getInstance(id)!.sandDocument!.firstElementChild
       if (p === 'forms')
-        return getInstance(id)!.shadowRoot.querySelectorAll('form')
+        return getInstance(id)!.sandDocument!.querySelectorAll('form')
       if (p === 'images')
-        return getInstance(id)!.shadowRoot.querySelectorAll('img')
+        return getInstance(id)!.sandDocument!.querySelectorAll('img')
       if (p === 'links')
-        return getInstance(id)!.shadowRoot.querySelectorAll('a')
+        return getInstance(id)!.sandDocument!.querySelectorAll('a')
       if (p === 'body' || p === 'head')
         return getInstance(id)!.sandDocument!.querySelector(p)
 

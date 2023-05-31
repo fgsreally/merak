@@ -54,11 +54,8 @@ export function Merak(fakeGlobalVar: string, opts: { isinLine?: boolean; include
       },
 
       transform(code, id) {
-        if (filter(id)) {
-          // if (extname(id) === '.css')
-          //   return
+        if (filter(id))
           return `const {${desctructGlobal(nativeVars)}}=${fakeGlobalVar};${createCustomVarProxy(fakeGlobalVar, customVars)}${code}`
-        }
       },
     }, {
       name: 'vite-plugin-merak:build',

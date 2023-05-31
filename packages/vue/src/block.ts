@@ -17,6 +17,8 @@ const shareLibProps = {
   },
 }
 export const MerakImport = defineComponent({
+  inheritAttrs: false,
+
   props: {
     ...shareLibProps,
     ...shareProps,
@@ -59,6 +61,8 @@ export const MerakImport = defineComponent({
 })
 
 export const MerakScope = defineComponent({
+  inheritAttrs: false,
+
   props: {
     ...shareProps,
     ...shareLibProps,

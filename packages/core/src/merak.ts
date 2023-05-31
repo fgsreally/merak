@@ -209,22 +209,22 @@ export class Merak {
     this.execHook(MERAK_HOOK.BEFORE_MOUNT)
     this.active()
     if (!this.cacheFlag) {
-      this.sandDocument = document.importNode(window.document.implementation.createHTMLDocument('').documentElement, true)
-      if (this.template) // template
-        this.sandDocument.innerHTML = this.template
+      if (!this.sandDocument) {
+        this.sandDocument = document.importNode(window.document.implementation.createHTMLDocument('').documentElement, true)
+        if (this.template) // template
+          this.sandDocument.innerHTML = this.template
+      }
 
       if (this.mountIndex === 0) {
         const shade = document.createElement('div')
         shade.setAttribute('style', MERAK_SHADE_STYLE)
         shade.setAttribute('id', 'merak-shade')
 
-        // this.sandDocument.insertBefore(shade, this.sandDocument.firstChild)
         const body = this.sandDocument.querySelector('body')!
         body.setAttribute('style', getBodyStyle())
         body.appendChild(shade)
       }
 
-      // work for spa
       if (this.loader) {
         // mount script on body or iframe
         if (!this.execPromise) {
@@ -295,16 +295,17 @@ export class Merak {
     if (!this.mountFlag)
       return
 
-    this.cacheFlag = isKeepAlive
-
     this.execHook(MERAK_HOOK.BEFORE_UNMOUNT)
     this.mountFlag = false
-
-    if (!isKeepAlive)
+    // just a flag
+    this.cacheFlag = isKeepAlive
+    if (!isKeepAlive) {
       this.eventTrigger(window, MERAK_EVENT.DESTROY + this.id)
-
-    else
-      this.eventTrigger(window, MERAK_EVENT.HIDDEN + this.id)
+      // in iframe mode, main app can decide to destroy the sub
+      if (this.iframe)
+        this.deactive()
+    }
+    else { this.eventTrigger(window, MERAK_EVENT.HIDDEN + this.id) }
 
     this.eventTrigger(window, MERAK_EVENT.UNMOUNT + this.id)
 
@@ -320,8 +321,7 @@ export class Merak {
   deactive() {
     if (!this.activeFlag)
       return
-      // if sub app emit $done,cache will be removed
-    this.cacheFlag = false
+
     this.execHook(MERAK_HOOK.DESTROY)
     if (this.template)
       this.template = this.sandDocument!.innerHTML

@@ -119,6 +119,17 @@ export function $onExec(cb: () => any) {
   return isMerak() ? $on('relunch', cb) : () => {}
 }
 
+// export function $onExec(cb: () => any) {
+//   if (!isMerak())
+//     cb()
+//   const fn1 = $once('mount', cb)
+//   const fn2 = $on('relunch', cb)
+//   return () => {
+//     fn1()
+//     fn2()
+//   }
+// }
+
 // work for eval
 export function $sandbox(script: string) {
   if (isMerak()) {
@@ -147,7 +158,6 @@ export function $instance() {
 
 export function $props(): Props
 export function $props<K extends keyof Props>(key: string): Props[K]
-
 export function $props(key?: string) {
   return key ? $instance().props[key] : $instance().props as any
 }

@@ -1,6 +1,6 @@
 /**
  * this file was working for dynamic mode,to inject globalVars in browser
- * but now, merak perfers to inject globalVars by compiling, the file is  useless
+ * but now, merak perfers to inject globalVars by compiling, the file is useless
  * I plan to provide an new dynamic mode in future,
  * so keep the file
  */

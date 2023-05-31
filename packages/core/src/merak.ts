@@ -111,11 +111,7 @@ export class Merak {
 
     /**
      * @experiment
-<<<<<<< HEAD
-     * work for customVars in dev mode
-=======
      * work for customVars
->>>>>>> main
      */
 
     this.proxyMap.__m_p__ = (k: string) => new Proxy(() => { }, {

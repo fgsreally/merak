@@ -147,7 +147,7 @@ export function createProxyDocument(id: string, url: string) {
         return new Proxy(instance.sandDocument!.querySelectorAll, {
           apply(_, _ctx, args) {
             let arg = args[0] as string
-            if (_ctx !== getInstance(id)!.proxyMap.document)
+            if (_ctx !== instance!.proxyMap.document)
               // eslint-disable-next-line prefer-spread
               return _ctx[p].apply(_ctx, args)
 

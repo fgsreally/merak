@@ -224,7 +224,6 @@ export class Merak {
         shade.setAttribute('style', MERAK_SHADE_STYLE)
         shade.setAttribute('id', 'merak-shade')
 
-        // this.sandDocument.insertBefore(shade, this.sandDocument.firstChild)
         const body = this.sandDocument.querySelector('body')!
         body.setAttribute('style', getBodyStyle())
         body.appendChild(shade)

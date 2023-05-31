@@ -12,7 +12,7 @@ export function merakPostCss() {
         if (node.selector) {
           node.selector = node.selectors
             .map((selector: any) => {
-              if (/:root/g.test(selector))
+              if (/:root/g.test(selector) && !/:host/g.test(selector))
                 return selector.replace(/:root/g, ':root,:host')
 
               return selector

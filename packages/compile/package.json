@@ -1,6 +1,6 @@
 {
   "name": "merak-compile",
-  "version": "1.0.0-rc.12",
+  "version": "1.0.0-rc.13",
   "description": "",
   "main": "dist/index.js",
   "module": "dist/index.mjs",

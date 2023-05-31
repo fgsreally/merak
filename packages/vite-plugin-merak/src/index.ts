@@ -55,8 +55,6 @@ export function Merak(fakeGlobalVar: string, opts: { isinLine?: boolean; include
 
       transform(code, id) {
         if (filter(id)) {
-          // if (extname(id) === '.css')
-          //   return
           return `const {${desctructGlobal(nativeVars)}}=${fakeGlobalVar};${createCustomVarProxy(fakeGlobalVar, customVars)}${code}`
         }
       },

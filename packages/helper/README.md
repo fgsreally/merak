@@ -23,5 +23,5 @@ declare function $instance(): Merak$1 | undefined
 declare function $props<T = Record<string, any>>(): undefined | T
 declare function $namespace(): Record<string, any> | undefined
 declare function $perf(): merak_core.Perf | undefined
-declare function $stopProp(): void
+declare function $stopBubble(): void
 ```

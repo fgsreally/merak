@@ -4,6 +4,7 @@ export { Merak, Props, NameSpace }
 
 export type MerakEvent = 'mount' | 'destroy' | 'hidden' | 'unmount' | 'relunch' | 'show'
 
+// get real window
 export function $window(): Window {
   return isMerak() ? window.rawWindow : window
 }
@@ -18,7 +19,7 @@ export function $history() {
 export function $location() {
   return $window().location
 }
-
+// the same as getInstance in merak-core
 export function getInstance(id: string) {
   return $window().$MerakMap.get(id)
 }
@@ -44,6 +45,10 @@ export function $eventName(event: string) {
 export function isMerak() {
   return !!window.isMerak
 }
+// sub app baseUrl
+export function $base() {
+  return isMerak() ? $instance()!.url : location.origin
+}
 
 export function $body(): HTMLElement {
   return $document().body
@@ -64,13 +69,12 @@ export function $on(eventName: MerakEvent, cb: () => any): () => void {
 
 export function $once(eventName: MerakEvent, cb: () => any): () => void {
   const event = $eventName(eventName)
-  if (isMerak())
+  if (isMerak()) {
     window.addEventListener(event, cb, { once: true })
-  return () => isMerak() && window.removeEventListener(event, cb)
-}
+    return () => window.removeEventListener(event, cb)
+  }
 
-export function $onMount(cb: () => any) {
-  return isMerak() ? $on('mount', cb) : cb()
+  return () => { }
 }
 
 // I don't sure if it is important
@@ -89,7 +93,15 @@ export function $onDestroy(cb: () => any) {
   return $on('destroy', cb)
 }
 
-export function $onUnmount(cb: (e?: Event) => any) {
+/**
+ * $onMount $onUnmount $onExec run both in merak and individual app
+ */
+
+export function $onMount(cb: () => any) {
+  return isMerak() ? $on('mount', cb) : cb()
+}
+
+export function $onUnmount(cb: () => any) {
   if (isMerak()) {
     const fn = $on('unmount', cb)
     return fn
@@ -100,6 +112,11 @@ export function $onUnmount(cb: (e?: Event) => any) {
       window.removeEventListener('unload', cb)
     }
   }
+}
+
+export function $onExec(cb: () => any) {
+  cb()
+  return isMerak() ? $on('relunch', cb) : () => {}
 }
 
 // export function $onExec(cb: () => any) {
@@ -155,14 +172,20 @@ export function $perf() {
   return $instance()?.perf
 }
 
-export function $stopProp(isPass = false) {
+export function $stopBubble(isPass = false) {
   if (isMerak()) {
     ['click', 'mousemove', 'mousedown', 'mouseup', 'keydown', 'keyup'].forEach((eventName) => {
       document.body.addEventListener(eventName, (event) => {
         event.stopPropagation()
         if (isPass)
-          $document().dispatchEvent(new CustomEvent(eventName, { detail: { originalEvent: event } }))
+          $document().dispatchEvent(new CustomEvent(eventName, { detail: { isMerak: true, event } }))
       })
     })
   }
+}
+/**
+ * Tell the host application that it's time to uninstall,
+ */
+export function $done() {
+  $instance()?.deactive()
 }

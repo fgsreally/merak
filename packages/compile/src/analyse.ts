@@ -54,7 +54,7 @@ export const analyseHTML = (code: string) => {
 
 export const analyseJSGlobals = (code: string, globalVars: string[]) => {
   const unUsedGlobalSet = new Set<string>()
-  const ast = parseSync(code, { filename: 'any' })
+  const ast = parseSync(code, { filename: 'any' }) as any
   traverse(ast, {
     // record all global variable
     Identifier(path) {
@@ -72,7 +72,7 @@ export const analyseJSGlobals = (code: string, globalVars: string[]) => {
 
 export function analyseInlineESM(code: string) {
   const importLoc = [] as [number, number][]
-  const ast = parseSync(code)
+  const ast = parseSync(code) as any
 
   traverse(ast, {
 
@@ -104,7 +104,7 @@ export const analyseJS = (code: string, filePath: string, rootPath: string, glob
     imports: [],
     dynamicImports: {},
   } as unknown as MerakJSFile
-  const ast = parseSync(code)
+  const ast = parseSync(code) as any
 
   const globalSet = new Set()
   traverse(ast, {
@@ -150,10 +150,9 @@ export function injectGlobalToIIFE(code: string, globalVar: string, nativeVars: 
     s.append('})()')
   }
   else {
-    const ast = parseSync(code, { filename: 'any' })
+    const ast = parseSync(code, { filename: 'any' }) as any
 
     traverse(ast, {
-      // @ts-expect-error miss type
       ReferencedIdentifier: (path) => {
         const name = path.node.name
         if (!path.scope.hasBinding(name, true)) {
@@ -197,10 +196,9 @@ export function injectGlobalToESM(code: string,
     s.prepend(`\nconst {${desctructGlobal(nativeVars)}}=${globalVar};`)
   }
   else {
-    const ast = parseSync(code)
+    const ast = parseSync(code) as any
     let lastImport
     traverse(ast, {
-      // @ts-expect-error miss type
       ReferencedIdentifier: (path) => {
         const name = path.node.name
 
@@ -208,7 +206,6 @@ export function injectGlobalToESM(code: string,
           nativeVars.includes(name) && nativeSet.add(name)
           if (customVars.includes(name)) {
             const { start } = path.node || {}
-
             start && s.appendLeft(start, `${globalVar}.`)
           }
 

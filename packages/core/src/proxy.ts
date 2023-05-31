@@ -1,8 +1,9 @@
 /* eslint-disable no-prototype-builtins */
-import { MERAK_EVENT, MERAK_EVENT_PREFIX } from './common'
+import { MERAK_EVENT } from './common'
 import { createQuery, debug, getUrlQuery, isBoundedFunction, isCallable, isConstructable } from './utils'
 import { getInstance } from './helper'
 import { patchTimer } from './patch/timer'
+import { patchListener } from './patch/listener'
 
 export const cacheBindFn = new WeakMap()
 
@@ -42,6 +43,8 @@ export function getBindFn(target: any, p: any) {
 }
 
 export function createProxyWindow(id: string, url: string) {
+  const instance = getInstance(id)!
+
   return {
     get(target: any, p: string) {
       debug(`get [${p}] from window`, id)
@@ -53,54 +56,18 @@ export function createProxyWindow(id: string, url: string) {
       if (p === '__merak_url__')
         return url
       if (p === '$Merak')
-        return getInstance(id)
+        return instance
 
       if (p === 'rawWindow')
         return window
 
       if (['self', 'window', 'globalThis'].includes(p))
-        return getInstance(id)!.proxy
+        return instance.proxy
 
-      if (p in getInstance(id)!.proxyMap)
-        return getInstance(id)!.proxyMap[p]
+      if (p in instance.proxyMap)
+        return instance.proxyMap[p]
       /** end  */
 
-      // work for merak custom event
-      // prefer to keep it if you don't want to make break change
-      if (p === 'addEventListener') {
-        return (...params: Parameters<typeof addEventListener>) => {
-          const eventName = params[0]
-
-          if (eventName.startsWith(MERAK_EVENT_PREFIX)) {
-            params[0] = eventName + id
-          }
-          else {
-            addEventListener(MERAK_EVENT.DESTROY + id, () => {
-              removeEventListener(...params)
-            }, { once: true })
-          }
-          addEventListener(...params)
-        }
-      }
-      // if (GLOBAL_VAR_SET.has(p)) {
-      //   if (!target[MERAK_GLOBAL_VARS])
-      //     target[MERAK_GLOBAL_VARS] = new Map()
-      //     // getInstance(id)!.cacheEvent.push(() => target[MERAK_GLOBAL_VARS].clear())
-
-      //   if (!target[MERAK_GLOBAL_VARS].has(p)) {
-      //     target[MERAK_GLOBAL_VARS].set(p, new Proxy({}, {
-      //       get(_, k) {
-      //         return getBindFn(target[p], k)
-      //       },
-      //       set(_, k, v) {
-      //         target[p][k] = v
-      //         return true
-      //       },
-      //     }))
-      //   }
-
-      //   return target[MERAK_GLOBAL_VARS].get(p)
-      // }
       return getBindFn(p in target ? target : window, p)
     },
 
@@ -108,7 +75,7 @@ export function createProxyWindow(id: string, url: string) {
       debug(`set [${p}] to window`, id)
 
       if (WINDOW_VAR_SET.has(p)) {
-        const iframe = getInstance(id)!.iframe
+        const iframe = instance.iframe
         if (iframe)
           iframe.contentWindow![p] = v
 
@@ -125,6 +92,7 @@ export function createProxyWindow(id: string, url: string) {
 }
 
 export function createProxyDocument(id: string, url: string) {
+  const instance = getInstance(id)!
   return {
     get(target: any, p: string) {
       debug(`get [${p}] from document`, id)
@@ -132,7 +100,7 @@ export function createProxyDocument(id: string, url: string) {
       if (p === 'rawDocument')
         return document
       if (p === 'defaultView')
-        return getInstance(id)!.proxy
+        return instance!.proxy
       // work for vite dev mode
       // to handle assets
       if (__DEV__) {
@@ -163,20 +131,20 @@ export function createProxyDocument(id: string, url: string) {
         }
       }
       if (p === 'activeElement')
-        return getInstance(id)!.sandDocument?.querySelector('body')
+        return instance!.sandDocument?.querySelector('body')
 
       if (p === 'documentURI' || p === 'URL')
-        return (getInstance(id) as any).proxyMap.location.href
+        return (instance.proxyMap.location as Location).href
 
       if (p === 'querySelector')
-        return getInstance(id)!.sandDocument!.querySelector.bind((getInstance(id)!.sandDocument as HTMLElement))
+        return instance.sandDocument!.querySelector.bind((instance.sandDocument as HTMLElement))
 
       if (
         p === 'getElementsByTagName'
         || p === 'getElementsByClassName'
         || p === 'getElementsByName' || p === 'getElementById'
       ) {
-        return new Proxy(getInstance(id)!.sandDocument!.querySelectorAll, {
+        return new Proxy(instance.sandDocument!.querySelectorAll, {
           apply(_, _ctx, args) {
             let arg = args[0] as string
             if (_ctx !== getInstance(id)!.proxyMap.document)
@@ -193,23 +161,23 @@ export function createProxyDocument(id: string, url: string) {
 
             if (p === 'getElementById') {
               arg = `#${arg}`
-              return getInstance(id)!.shadowRoot.querySelector(arg)
+              return instance.sandDocument!.querySelector(arg)
             }
-            return getInstance(id)!.shadowRoot.querySelectorAll(arg)
+            return instance.sandDocument!.querySelectorAll(arg)
           },
         })
       }
 
       if (p === 'documentElement' || p === 'scrollingElement')
-        return getInstance(id)!.shadowRoot.firstElementChild
+        return instance.sandDocument!.firstElementChild
       if (p === 'forms')
-        return getInstance(id)!.shadowRoot.querySelectorAll('form')
+        return instance.sandDocument!.querySelectorAll('form')
       if (p === 'images')
-        return getInstance(id)!.shadowRoot.querySelectorAll('img')
+        return instance.sandDocument!.querySelectorAll('img')
       if (p === 'links')
-        return getInstance(id)!.shadowRoot.querySelectorAll('a')
+        return instance.sandDocument!.querySelectorAll('a')
       if (p === 'body' || p === 'head')
-        return getInstance(id)!.shadowRoot.querySelector(p)
+        return instance.sandDocument!.querySelector(p)
 
       return getBindFn(p in target ? target : document, p)
     },
@@ -232,10 +200,10 @@ export function createProxyHistory(id: string) {
         function replace(...args: [any, any, any]) {
           const { pathname, hash } = new URL(args[2], location.origin)
           const to = pathname + hash
+
           const queryMap = getUrlQuery(window.location.href)
           queryMap[id] = to === '/undefined' ? '/' : to
-          args[2] = `?${createQuery(queryMap)}`
-
+          args[2] = `${location.hash.split('?')[0]}?${createQuery(queryMap)}`
           return history.replaceState(...args)
         }
         return replace
@@ -243,10 +211,12 @@ export function createProxyHistory(id: string) {
       if (p === 'pushState') {
         function push(...args: [any, any, any]) {
           const { pathname, hash } = new URL(args[2], location.origin)
+
           const to = pathname + hash
           const queryMap = getUrlQuery(window.location.href)
           queryMap[id] = to === '/undefined' ? '/' : to
-          args[2] = `?${createQuery(queryMap)}`
+          // work for hash
+          args[2] = `${location.hash.split('?')[0]}?${createQuery(queryMap)}`
           return history.pushState(...args)
         }
         return push
@@ -292,7 +262,11 @@ export function createProxyLocation(id: string) {
 export function createProxy(id: string, url: string) {
   const { globals: { setTimeout, setInterval }, free } = patchTimer()
   window.addEventListener(`${MERAK_EVENT.DESTROY}${id}`, free)
+<<<<<<< HEAD
   return { document: createProxyDocument(id, url), window: createProxyWindow(id, url), history: createProxyHistory(id), location: createProxyLocation(id), setTimeout, setInterval }
+=======
+  return { document: createProxyDocument(id, url), window: createProxyWindow(id, url), history: createProxyHistory(id), location: createProxyLocation(id), setTimeout, setInterval, addEventListener: patchListener(id) }
+>>>>>>> main
 }
 
 export function createLibProxy(id: string, url: string) {

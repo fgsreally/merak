@@ -5,6 +5,7 @@ import { defineComponent, h, watch } from 'vue'
 import { shareEmits, shareProps } from './share'
 export const vueLoader = new PureLoader()
 export const MerakApp = defineComponent({
+  inheritAttrs:false,
   props: {
     ...shareProps,
     configOrUrl: {

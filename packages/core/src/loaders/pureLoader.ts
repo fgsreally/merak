@@ -25,7 +25,6 @@ export class PureLoader extends Loader {
         config = ret.config as unknown as MerakConfig
       }
       const template = compileHTML(htmlStr, sourceUrl, config._l as [number, number][])
-
       const loadRes = { url: sourceUrl, fakeGlobalVar: config._f, template, nativeVars: config._n, customVars: config._c } as LoadDone
       this.loadCache.set(sourceUrl, loadRes)
       return loadRes

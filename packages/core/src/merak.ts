@@ -297,7 +297,8 @@ export class Merak {
 
     this.execHook(MERAK_HOOK.BEFORE_UNMOUNT)
     this.mountFlag = false
-
+    // just a flag
+    this.cacheFlag = isKeepAlive
     if (!isKeepAlive) {
       this.eventTrigger(window, MERAK_EVENT.DESTROY + this.id)
       // in iframe mode, main app can decide to destroy the sub
@@ -320,8 +321,7 @@ export class Merak {
   deactive() {
     if (!this.activeFlag)
       return
-      // if sub app emit $done,cache will be removed
-    this.cacheFlag = false
+
     this.execHook(MERAK_HOOK.DESTROY)
     if (this.template)
       this.template = this.sandDocument!.innerHTML

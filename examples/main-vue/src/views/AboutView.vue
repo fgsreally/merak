@@ -1,7 +1,7 @@
 <script setup lang="ts">
-import { MerakApp, PureLoader, preloadApp } from 'merak-vue'
+import { MerakApp, PureLoader, preload } from 'merak-vue'
 
-preloadApp('vite_vue', 'http://localhost:4004', { loader: new PureLoader() })
+preload('assets', 'vite_vue', 'http://localhost:4004', { loader: new PureLoader() })
 const data = {
   data: 'data from main',
 }

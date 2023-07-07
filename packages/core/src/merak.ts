@@ -133,6 +133,7 @@ export class Merak {
     })
   }
 
+  // 所有merak实例共享的错误处理
   static errorHandler({ type, error }: { type: string; error: Error; instance?: Merak }) {
     if (__DEV__)
       console.error(error)
@@ -140,6 +141,7 @@ export class Merak {
       console.error(`[merak] ${type}:${error.message}`)
   }
 
+  // 实例自身的错误处理，默认调用共享处理
   public errorHandler({ type, error }: { type: string; error: Error }) {
     Merak.errorHandler({ type, error, instance: this })
   }

@@ -39,7 +39,7 @@ export function defineWebComponent() {
 
       if (app.mountFlag) {
         if (__DEV__)
-          console.warn(` app [${id}] has been mounted`)
+          console.warn(`[merak]: app "${id}" has been mounted`)
         // work for preload
         if (app.preloadStat) {
           await app.execPromise

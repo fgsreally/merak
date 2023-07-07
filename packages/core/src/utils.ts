@@ -1,5 +1,7 @@
 /* eslint-disable no-prototype-builtins */
 
+import { MerakMap } from './helper'
+
 export async function loadJSONFile(url: string) {
   const res = await fetch(url)
   return res.json()
@@ -19,14 +21,14 @@ export function getUrlQuery(url: string) {
   if (querys) {
     querys.split('&').forEach((item) => {
       const [key, value] = item.split('=')
-      queryMap[key] = decodeURIComponent(value)
+      queryMap[key] = MerakMap.has(key) ? decodeURIComponent(value) : value
     })
   }
   return queryMap
 }
 
 export function createQuery(queryMap: Record<string, string>) {
-  return Object.entries(queryMap).map(([k, v]) => `${k}=${encodeURIComponent(v)}`).join('&')
+  return Object.entries(queryMap).map(([k, v]) => `${k}=${MerakMap.has(k) ? encodeURIComponent(v) : v}`).join('&')
 }
 
 /**

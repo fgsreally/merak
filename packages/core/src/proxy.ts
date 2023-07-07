@@ -201,7 +201,7 @@ export function createProxyHistory(id: string) {
           const { pathname, hash } = new URL(args[2], location.origin)
           const to = pathname + hash
 
-          const queryMap = getUrlQuery(window.location.href)
+          const queryMap = getUrlQuery(location.href)
           queryMap[id] = to === '/undefined' ? '/' : to
           args[2] = `${location.hash.split('?')[0]}?${createQuery(queryMap)}`
           return history.replaceState(...args)
@@ -213,7 +213,7 @@ export function createProxyHistory(id: string) {
           const { pathname, hash } = new URL(args[2], location.origin)
 
           const to = pathname + hash
-          const queryMap = getUrlQuery(window.location.href)
+          const queryMap = getUrlQuery(location.href)
           queryMap[id] = to === '/undefined' ? '/' : to
           // work for hash
           args[2] = `${location.hash.split('?')[0]}?${createQuery(queryMap)}`

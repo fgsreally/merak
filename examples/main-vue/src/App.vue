@@ -14,7 +14,7 @@ import HelloWorld from './components/HelloWorld.vue'
         <RouterLink id="to_home" to="/">
           Home
         </RouterLink>
-        <RouterLink id="to_micro" to="/about" style="color:orange">
+        <RouterLink id="to_micro" to="/about?test=15" style="color:orange">
           to micro
         </RouterLink>
       </nav>

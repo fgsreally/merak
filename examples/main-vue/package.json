@@ -12,7 +12,7 @@
   },
   "dependencies": {
     "merak-core": "workspace:*",
-    "merak-helper": "workspace:1.0.0-rc.13",
+    "merak-helper": "workspace:1.0.0-rc.14",
     "merak-vue": "workspace:*",
     "pinia": "^2.0.28",
     "vue": "^3.2.45",

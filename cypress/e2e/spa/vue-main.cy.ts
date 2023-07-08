@@ -12,6 +12,7 @@ describe('main vue app', () => {
   })
   it('sub app should hidden and relunch/mount', () => {
     cy.get('a[href=\'/\']').click()
+    cy.wait(3000)
     cy.get('a[href=\'/about\']').click()
 
     isSymbolExist(['vite_vue', 'vite_react', 'vue_cli'])

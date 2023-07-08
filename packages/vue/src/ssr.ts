@@ -5,6 +5,7 @@ import type { Loader } from 'merak-core'
 import { shareEmits, shareProps } from './share'
 export const vueSSRLoader = new SSRLoader()
 export const MerakSSR = defineComponent({
+  inheritAttrs: false,
   props: {
     ...shareProps,
     loader: {

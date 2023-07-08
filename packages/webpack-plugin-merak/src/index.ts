@@ -55,7 +55,7 @@ export class Merak {
     })
 
     for (const plugin of compiler.options.plugins) {
-      if (plugin.constructor.name === 'HtmlWebpackPlugin')
+      if (plugin && plugin.constructor.name === 'HtmlWebpackPlugin')
         htmlPlugin = plugin.constructor as any
     }
 

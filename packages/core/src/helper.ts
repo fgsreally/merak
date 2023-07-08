@@ -41,7 +41,7 @@ export function $$jump(project: string, to: string, push = true) {
 export function $$namespace(): (typeof Merak)['namespace']
 export function $$namespace<K extends keyof (typeof Merak)['namespace']>(key: string): (typeof Merak)['namespace'][K]
 export function $$namespace(key?: string) {
-  return key ? (Merak.namespace as any)[key] : Merak.namespace as any
+  return key ? Merak.namespace[key] : Merak.namespace as any
 }
 
 export function $$emit(id: string, event: string, detail?: any) {

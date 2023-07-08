@@ -37,6 +37,9 @@ importers:
       kill-port:
         specifier: ^2.0.1
         version: 2.0.1
+      local-pkg:
+        specifier: ^0.4.3
+        version: 0.4.3
       tsup:
         specifier: ^6.5.0
         version: registry.npmmirror.com/tsup@6.5.0(typescript@4.9.4)
@@ -122,7 +125,7 @@ importers:
         specifier: workspace:*
         version: link:../../packages/core
       merak-helper:
-        specifier: workspace:1.0.0-rc.9
+        specifier: workspace:1.0.0-rc.14
         version: link:../../packages/helper
       merak-vue:
         specifier: workspace:*
@@ -402,14 +405,7 @@ importers:
         version: registry.npmmirror.com/tsup@6.5.0(typescript@4.9.4)
 
   packages/core:
-    dependencies:
-      debug:
-        specifier: ^4.3.4
-        version: 4.3.4(supports-color@8.1.1)
     devDependencies:
-      '@types/debug':
-        specifier: ^4.1.7
-        version: 4.1.7
       merak-compile:
         specifier: workspace:*
         version: link:../compile
@@ -1231,12 +1227,6 @@ packages:
       '@types/node': 18.15.11
     dev: true
 
-  /@types/debug@4.1.7:
-    resolution: {integrity: sha512-9AonUzyTjXXhEOa0DnqpzZi6VHlqKMswga9EXjpXnnqxwLtdvPPtlO8evrI5D9S6asFRCQ6v+wpiUKbw+vKqyg==}
-    dependencies:
-      '@types/ms': 0.7.31
-    dev: true
-
   /@types/eslint-scope@3.7.4:
     resolution: {integrity: sha512-9K4zoImiZc3HlIp6AVUDE4CWYx22a+lhSZMYNpbjW04+YF0KWj4pJXnEMjdnFTiQibFFmElcsasJXDbdI/EPhA==}
     dependencies:
@@ -1302,10 +1292,6 @@ packages:
 
   /@types/minimist@1.2.2:
     resolution: {integrity: sha512-jhuKLIRrhvCPLqwPcx6INqmKeiA5EWrsCOPhrlFSrbrmU4ZMPjj5Ul/oLCMDO98XRUIwVm78xICz4EPCektzeQ==}
-    dev: true
-
-  /@types/ms@0.7.31:
-    resolution: {integrity: sha512-iiUgKzV9AuaEkZqkOLDIvlQiL6ltuZd9tGcW3gwpnX8JbuiuhFlEGmmFXEXkN50Cvq7Os88IY2v0dkDqXYWVgA==}
     dev: true
 
   /@types/node@12.20.55:
@@ -2322,6 +2308,7 @@ packages:
   /consolidate@0.15.1(lodash@4.17.21):
     resolution: {integrity: sha512-DW46nrsMJgy9kqAbPt5rKaCr7uFtpo4mSUvLHIUbJEjm0vo+aY5QLwBUq3FK4tRnJr/X0Psc0C4jf/h+HtXSMw==}
     engines: {node: '>= 0.10.0'}
+    deprecated: Please upgrade to consolidate v1.0.0+ as it has been modernized with several long-awaited fixes implemented. Maintenance is supported by Forward Email at https://forwardemail.net ; follow/watch https://github.com/ladjs/consolidate for updates and release changelog
     peerDependencies:
       arc-templates: ^0.5.3
       atpl: '>=0.7.6'
@@ -4450,6 +4437,11 @@ packages:
       big.js: 5.2.2
       emojis-list: 3.0.0
       json5: 1.0.2
+    dev: true
+
+  /local-pkg@0.4.3:
+    resolution: {integrity: sha512-SFppqq5p42fe2qcZQqqEOiVRXl+WCP1MdT6k7BDEW1j++sp5fIY+/fdRQitvKgB5BrBcmrs5m/L0v2FrU5MY1g==}
+    engines: {node: '>=14'}
     dev: true
 
   /lodash.once@4.1.1:
@@ -6920,7 +6912,7 @@ packages:
       '@antfu/eslint-config-ts': registry.npmmirror.com/@antfu/eslint-config-ts@0.34.1(eslint@8.31.0)(typescript@4.9.4)
       eslint: registry.npmmirror.com/eslint@8.31.0
       eslint-plugin-vue: registry.npmmirror.com/eslint-plugin-vue@9.8.0(eslint@8.31.0)
-      local-pkg: registry.npmmirror.com/local-pkg@0.4.2
+      local-pkg: 0.4.3
     transitivePeerDependencies:
       - '@typescript-eslint/parser'
       - eslint-import-resolver-typescript
@@ -13364,13 +13356,6 @@ packages:
       json5: 2.2.3
     dev: true
 
-  registry.npmmirror.com/local-pkg@0.4.2:
-    resolution: {integrity: sha512-mlERgSPrbxU3BP4qBqAvvwlgW4MTg78iwJdGGnv7kibKjWcJksrG3t6LB5lXI93wXRDvG4NpUgJFmTG4T6rdrg==, registry: https://registry.npmjs.org/, tarball: https://registry.npmmirror.com/local-pkg/-/local-pkg-0.4.2.tgz}
-    name: local-pkg
-    version: 0.4.2
-    engines: {node: '>=14'}
-    dev: true
-
   registry.npmmirror.com/locate-path@5.0.0:
     resolution: {integrity: sha512-t7hw9pI+WvuwNJXwk5zVHpyhIqzg2qTlklJOf0mVxGSbe3Fp2VieZcduNYjaLDoy6p9uGpQEGWG87WpMKlNq8g==, registry: https://registry.npmjs.org/, tarball: https://registry.npmmirror.com/locate-path/-/locate-path-5.0.0.tgz}
     name: locate-path
@@ -16644,7 +16629,7 @@ packages:
       chai: registry.npmmirror.com/chai@4.3.7
       debug: 4.3.4(supports-color@8.1.1)
       jsdom: 21.1.1
-      local-pkg: registry.npmmirror.com/local-pkg@0.4.2
+      local-pkg: 0.4.3
       source-map: registry.npmmirror.com/source-map@0.6.1
       strip-literal: registry.npmmirror.com/strip-literal@1.0.0
       tinybench: registry.npmmirror.com/tinybench@2.3.1

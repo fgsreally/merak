@@ -153,8 +153,7 @@ export function injectGlobalToIIFE(code: string, globalVar: string, nativeVars: 
     const ast = parseSync(code, { filename: 'any' }) as any
 
     traverse(ast, {
-      // @ts-expect-error @unknown
-      ReferencedIdentifier: (path: any) => {
+      ReferencedIdentifier: (path) => {
         const name = path.node.name
         if (!path.scope.hasBinding(name, true)) {
           nativeVars.includes(name) && nativeSet.add(name)
@@ -200,8 +199,7 @@ export function injectGlobalToESM(code: string,
     const ast = parseSync(code) as any
     let lastImport
     traverse(ast, {
-      // @ts-expect-error @unknown
-      ReferencedIdentifier: (path: any) => {
+      ReferencedIdentifier: (path) => {
         const name = path.node.name
 
         if (!path.scope.hasBinding(name, true)) {

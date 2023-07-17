@@ -94,10 +94,7 @@ export default defineConfig({
               text: '快速上手',
               link: '/guide/quick-start',
             },
-            {
-              text: '默认配置',
-              link: '/guide/default',
-            },
+
             // {
             //   text: "定制Demo",
             //   link: "/guide/demo",
@@ -109,14 +106,15 @@ export default defineConfig({
           text: '指南',
           collapsible: true,
           items: [
-            // {
-            //   text: '主应用',
-            //   link: '/guide/main',
-            // },
-            // {
-            //   text: '子应用',
-            //   link: '/guide/sub',
-            // },
+
+            {
+              text: '基础功能',
+              link: '/guide/base',
+            },
+            {
+              text: '生命周期',
+              link: '/guide/lifecycle',
+            },
             {
               text: '特殊模式',
               link: '/guide/mode',
@@ -125,10 +123,7 @@ export default defineConfig({
               text: 'Vue',
               link: '/guide/vue',
             },
-            {
-              text: '生命周期',
-              link: '/guide/lifecycle',
-            },
+
             {
               text: '嵌套使用',
               link: '/guide/nest',

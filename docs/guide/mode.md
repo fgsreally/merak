@@ -9,7 +9,7 @@
 
 
 ## keep-alive
-所有dom均被存在内存中。没有释放
+生产-消耗模型，调用不同的子应用钩子
 
 
 ## iframe模式
@@ -33,7 +33,7 @@ const app = new Merak(name/** 子应用name */, url/** 子应用url */, { iframe
 
 > 包括`dom`和样式的隔离
 
-### 原生
+
 
 ```js
 const app = new Merak(name, url, { proxy: createLibProxy(name, url) })
@@ -72,8 +72,8 @@ const app = new Merak(name, url, { proxy: createLibProxy(name, url) })
 ```
 > `template` 只是模板，里面的东西既不会渲染也不会执行
 
+
 :::tip 注意
-思路来自于[cloudflare](cloudflare)
 
 请注意：它并不能“跑”在`ssr`中，毕竟，操作dom是不可回避的事情。
 

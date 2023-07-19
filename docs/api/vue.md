@@ -1,33 +1,27 @@
+# vue
 ## 共有配置
 
 ```ts
 interface ShareProps {
-  // instance id
-  id: {
+
+  name: { // 即实例id，必填
     type: String
-    required: true
   }
-  // url
-  url: {
+  url: { // 对应地址，必填
     type: String
-    required: true
   }
-  // 传入子应用的props
-  props: {
-    type: any
-    // required: true,
+  props: { // 传给子应用的数据
+    type: PropType<any>
+
   }
-  proxy: {
-    // 自定义的沙箱，也就是自实现的 createProxy()
-    type: any
+  proxy: { // 使用的沙箱
+    type: PropType<ProxyGlobals>
   }
-  keepAlive: {
-    // 是否keep-alive
+  keepAlive: { // keep-alive
     type: Boolean
-    default: true
+    default: false
   }
-  iframe: {
-    // iframe模式分配的id，默认不开启
+  iframe: { // iframeId
     type: String
   }
 }
@@ -36,9 +30,18 @@ interface ShareProps {
 ## MerakApp 的配置
 和`core`中配置一致
 ```ts
-interface MerakAppType {
-  configUrl: String
-  loader: any
+interface MerakAppProps extends ShareProps {
+  configOrUrl: {
+    type: PropType<string | MerakConfig>// Merak实例的第三个参数
+  }
+
+  loader: {
+    type: PropType<Loader>// loader，默认采用一个内置的pureloader
+  }
+  route: {
+    type: String// 跳转页面
+  }
+
 }
 ```
 

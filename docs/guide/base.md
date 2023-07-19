@@ -48,4 +48,4 @@ class YourMerak extends Merak {
 
 简而言之，至少在默认配置下，`merak`的很多表现和无界几乎一致，路由也沿袭着`query`的模式,
 
-
+如果需要路由跳转，详见[merak-helper](../api/helper.md)

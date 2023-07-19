@@ -1,6 +1,5 @@
 # merak-vue
 提供简单封装的vue组件
-> 在`vue`封装中，默认id就是项目的`id`
 
 ## spa 模式
 ```vue
@@ -24,5 +23,5 @@ import { MerakApp } from 'merak-vue'
   <MerakBlock name="id" url="远程组件url" />
 ```
 
-具体可见[example]()
-参数可见[类型定义]('../api/helper.md')
+具体可见[example](/example/main-vue)
+参数可见[类型定义](../api/vue.md)

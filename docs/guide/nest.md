@@ -16,5 +16,5 @@
 :::
 
 ## 子应用嵌套
-子应用嵌套时，`merak-core`的依赖务必使用共有依赖,主子应用的`merak-core`必须用的是同一个。[详见](/examples/main-vue/)
+子应用嵌套时，`merak-core`的依赖务必使用共有依赖,主子应用的`merak-core`必须用的是同一个。[详见](https://github.com/fgsreally/merak/tree/main/examples/main-nest/vite.config.ts)
 其次，不同应用必须要分配不同的`id`，不能重名

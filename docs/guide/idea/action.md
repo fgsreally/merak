@@ -18,7 +18,7 @@ const app = new Merak(/** .. */)
 const event = new CustomEvent('load')
 app.proxy.dispatchEvent(event)
 ```
-也可以在[更改沙箱规则]()
+也可以在[更改沙箱规则](../reform/proxy.md)
 
 ```ts
 function createProxyWindow() {

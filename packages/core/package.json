@@ -1,6 +1,6 @@
 {
   "name": "merak-core",
-  "version": "1.0.0-rc.14",
+  "version": "1.0.0",
   "description": "",
   "main": "dist/index.js",
   "module": "dist/index.mjs",
@@ -39,5 +39,4 @@
     "merak-compile": "workspace:*",
     "tsup": "^6.5.0"
   }
-
 }

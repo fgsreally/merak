@@ -9,7 +9,7 @@
 
 
 ## keep-alive
-所有dom均被存在内存中。没有释放
+详见[keep-alive](./lifecycle.md)
 
 
 ## iframe模式
@@ -20,8 +20,8 @@ const app = new Merak(name/** 子应用name */, url/** 子应用url */, { iframe
 注意 ，同一个`iframeid`的子应用会被分配到同一个`iframe`中执行`js`
 
 ::: tip 提醒
-1. 子应用可以不暴露钩子，原因[详见]()
-2. 当不打开`keep-alive`,这和无界的重建模式一致[]()
+1. 子应用可以不暴露钩子，原因详见[详见](./idea/question-from.md#难以面面俱到的隔离)
+2. 当不打开`keep-alive`,这和无界的[重建模式]()一致
 3. 不优先考虑，但如果子应用始终出现不明原因的错误，可以尝试一下不打开`keep-alive`的同时使用`iframe模式`
 4. 如果你需要同时打开子应用的两个路由页面，只需创建两个实例，保证`iframeid`不相同就好
 ::: 
@@ -29,11 +29,11 @@ const app = new Merak(name/** 子应用name */, url/** 子应用url */, { iframe
 
 ## 库模式
 
-如果执意使用模块联邦等方案（引入的是`js`文件而非`html`），天璇 提供了库模式，当挂载一个组件时（如果对象不是一个需要挂载的组件，意义较小），会给它提供一个单独的上下文进行,对其进行隔离
+如果执意使用模块联邦等方案（引入的是`js`文件而非`html`），`天璇`提供了库模式，当挂载一个组件时（如果对象只是一段普通脚本而非一个需要挂载的组件，意义较小，因为这样没有必要`dom`隔离），会给它提供一个单独的上下文进行,对其进行隔离
 
-> 包括`dom`和样式的隔离
+> 包括`dom`/`style`/`js`的隔离
 
-### 原生
+
 
 ```js
 const app = new Merak(name, url, { proxy: createLibProxy(name, url) })
@@ -72,12 +72,14 @@ const app = new Merak(name, url, { proxy: createLibProxy(name, url) })
 ```
 > `template` 只是模板，里面的东西既不会渲染也不会执行
 
+
 :::tip 注意
-思路来自于[cloudflare](cloudflare)
 
-请注意：它并不能“跑”在`ssr`中，毕竟，操作dom是不可回避的事情。
+请注意：这不是真正的`ssr`,它并不能“跑”在服务端中，毕竟，操作dom是不可回避的事情。
 
-它只是通过注入一段`template`到`html`中，在客户端渲染时，直接拿到`template`进行渲染。简而言之，对`seo`和`首屏渲染`均有助益，对`ssr`使用者应该足够有吸引力
+它只是通过注入一段`template`到`html`中，在客户端渲染时，直接拿到`template`进行渲染。
+
+简而言之，对`seo`和`首屏渲染`均有助益，对`ssr`使用者应该足够有吸引力
 :::
 
 ## 客户端

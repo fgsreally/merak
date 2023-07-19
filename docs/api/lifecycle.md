@@ -2,20 +2,16 @@
 
 ```ts
 interface LifeCycle {
-  beforeMount: () => any
-  afterMount: () => any
-  beforeUnmount: () => any
-  afterUnmount: () => any
+  beforeMount: () => any// 挂载前
+  afterMount: () => any// 挂载后
+  beforeUnmount: () => any// 卸载前
+  afterUnmount: () => any// 卸载后
   destroy: () => any
   // 执行script前
-  execScript: (params: { originScripts: HTMLScriptElement[]; scripts: HTMLScriptElement[] }) => void
+  execScript: (scripts: HTMLScriptElement[]) => void
   // 挂载document前
   tranformDocument: (ele: HTMLElement) => void
- 
+  // 渲染结果挂载前
+  prerender: (ele: HTMLElement) => void
 }
-```
-添加生命周期：
-```ts
-const app = new Merak(/** */)
-app.lifeCycle.beforeMount = () => {}
 ```

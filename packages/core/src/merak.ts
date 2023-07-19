@@ -83,9 +83,7 @@ export class Merak {
   /** 缓存事件，卸载时被释放 */
   cacheEvent: (() => void)[] = []
 
-  public url: string
-
-  constructor(public id: string, url: string, public options: {
+  constructor(public id: string, public url: string, public options: {
     loader?: PureLoader
     proxy?: ProxyGlobals
     configOrUrl?: string | MerakConfig
@@ -98,9 +96,8 @@ export class Merak {
 
       return MerakMap.get(id) as Merak
     }
-    this.url = new URL(url).origin
     MerakMap.set(id, this)
-    const { proxy = createProxy(id, this.url), configOrUrl, loader } = options
+    const { proxy = createProxy(id, url), configOrUrl, loader } = options
     this.configOrUrl = configOrUrl
     this.loader = loader
 

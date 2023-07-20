@@ -112,10 +112,3 @@ export function debug(info: string, id?: string) {
   }
 }
 
-export function getBaseUrl(url: string) {
-  const urlParts = url.split('/')
-  const baseUrlParts = urlParts.slice(0, 3) // Extract the first 3 parts (protocol, hostname, path)
-  const baseUrl = baseUrlParts.join('/')
-
-  return baseUrl
-}

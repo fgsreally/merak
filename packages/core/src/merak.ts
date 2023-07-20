@@ -3,7 +3,7 @@ import type { LoadDone, NameSpace, Props, ProxyGlobals } from './types'
 import type { CompileLoader } from './loaders'
 import { createProxy } from './proxy'
 import { MERAK_DATA_ID, MERAK_EVENT, MERAK_HOOK, MERAK_SHADE_STYLE, PERF_TIME } from './common'
-import { debug, eventTrigger, getBaseUrl, scriptPrimise } from './utils'
+import { debug, eventTrigger, scriptPrimise } from './utils'
 import { MerakMap, getBodyStyle } from './helper'
 import { LifeCycle } from './lifecycle'
 import { cloneScript } from './compile'
@@ -85,7 +85,7 @@ export class Merak {
   /** 缓存事件，卸载时被释放 */
   cacheEvent: (() => void)[] = []
 
-  constructor(public id: string, public url/**html*/: string, public options: {
+  constructor(public id: string, public url: string, public options: {
     loader?: CompileLoader
     proxy?: ProxyGlobals
     loaderOptions?: any
@@ -99,7 +99,7 @@ export class Merak {
       return MerakMap.get(id) as Merak
     }
     MerakMap.set(id, this)
-    this.baseUrl = new URL('./',url).href
+    this.baseUrl = new URL('./', url).href
     const { proxy = createProxy(id, this.baseUrl), loaderOptions, loader } = options
     this.loaderOptions = loaderOptions
     this.loader = loader

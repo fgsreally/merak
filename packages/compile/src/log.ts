@@ -25,7 +25,11 @@ export class Logger {
     if (!outputPath)
       return
     const ret = [] as any[]
-    ret.push({ h1: 'danger used like eval:' })
+    ret.push({ h1: 'Base Config:' })
+    for (const key in this.baseRecord)
+      ret.push({ h3: `${key}:${this.baseRecord[key]}` })
+
+    ret.push({ h1: 'Danger used like eval:' })
 
     for (const file in this.dangerUsedRecord) {
       ret.push({ blockquote: `file:\`${file}\`` })
@@ -37,7 +41,7 @@ export class Logger {
       }
     }
 
-    ret.push({ h1: 'unused globals:' })
+    ret.push({ h1: 'Unused globals:' })
 
     for (const file in this.unusedGlobalRecord) {
       ret.push({ blockquote: `file:\`${file}\`` })

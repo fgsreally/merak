@@ -1,4 +1,3 @@
-// export * from './plugins'
 export * from './compileLoader'
 export * from './ssrLoader'
 export * from './utils'

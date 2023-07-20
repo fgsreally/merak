@@ -1,16 +1,6 @@
 import type { AppConfig, LoadDone } from '../types'
 import { Loader } from './utils'
 export class SSRLoader extends Loader {
-  resolveHtml(html: string) {
-    let config: any
-    // <m-b> merak-base
-    html = html.replace(/<m-b>(.*)<\/m-b>/, (js, base) => {
-      config = JSON.parse(base)
-      return ''
-    })
-    return { html, config }
-  }
-
   async load(url: string, LoaderOpts?: string | AppConfig) {
     if (this.loadCache.has(url))
       return this.loadCache.get(url)

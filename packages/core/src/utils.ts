@@ -111,4 +111,3 @@ export function debug(info: string, id?: string) {
       console.debug(`[merak(${id})]:${info}`)
   }
 }
-

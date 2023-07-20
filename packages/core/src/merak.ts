@@ -99,7 +99,7 @@ export class Merak {
       return MerakMap.get(id) as Merak
     }
     MerakMap.set(id, this)
-    this.baseUrl = new URL('./', url).href
+    this.baseUrl = new URL('./', url).href.slice(0, -1)
     const { proxy = createProxy(id, this.baseUrl), loaderOptions, loader } = options
     this.loaderOptions = loaderOptions
     this.loader = loader

@@ -2,7 +2,6 @@
 
 import { MerakMap } from './helper'
 
-
 export function resolveUrl(filePath: string, baseURL: string) {
   return new URL(filePath, baseURL).href
 }
@@ -37,7 +36,6 @@ export function eventTrigger(el: HTMLElement | Window | Document, eventName: str
   }
   el.dispatchEvent(event)
 }
-
 
 export function desctructGlobal(globals: string[]) {
   return globals.join(',')
@@ -112,4 +110,12 @@ export function debug(info: string, id?: string) {
       // eslint-disable-next-line no-console
       console.debug(`[merak(${id})]:${info}`)
   }
+}
+
+export function getBaseUrl(url: string) {
+  const urlParts = url.split('/')
+  const baseUrlParts = urlParts.slice(0, 3) // Extract the first 3 parts (protocol, hostname, path)
+  const baseUrl = baseUrlParts.join('/')
+
+  return baseUrl
 }

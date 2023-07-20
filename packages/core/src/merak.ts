@@ -1,9 +1,9 @@
 import { iframeInstance } from './iframe'
-import type { LoadDone, MerakConfig, NameSpace, Props, ProxyGlobals } from './types'
-import type { DecodeLoader } from './loaders'
+import type { LoadDone, NameSpace, Props, ProxyGlobals } from './types'
+import type { CompileLoader } from './loaders'
 import { createProxy } from './proxy'
 import { MERAK_DATA_ID, MERAK_EVENT, MERAK_HOOK, MERAK_SHADE_STYLE, PERF_TIME } from './common'
-import { debug, eventTrigger, scriptPrimise } from './utils'
+import { debug, eventTrigger, getBaseUrl, scriptPrimise } from './utils'
 import { MerakMap, getBodyStyle } from './helper'
 import { LifeCycle } from './lifecycle'
 import { cloneScript } from './compile'
@@ -38,7 +38,7 @@ export class Merak {
   public template: string
 
   /** 加载器，仅spa使用 */
-  public loader: DecodeLoader | undefined
+  public loader: CompileLoader | undefined
 
   /** 挂载数据 */
   public props: Props
@@ -62,7 +62,7 @@ export class Merak {
   public fakeGlobalVar: string
 
   /** 配置文件地址，配置内联时为空 */
-  public loaderOptions?: string | MerakConfig
+  public loaderOptions?: any
 
   /** 隔离的原生全局变量 */
   public nativeVars: string[]
@@ -73,6 +73,8 @@ export class Merak {
   /** 防止重复加载 */
   private loadPromise: Promise<any>
 
+  /** 子应用的 base */
+  public baseUrl: string
   /**
    * 是否处于预加载状态
    * 'assets' 为预加载了资源
@@ -84,7 +86,7 @@ export class Merak {
   cacheEvent: (() => void)[] = []
 
   constructor(public id: string, public url: string, public options: {
-    loader?: DecodeLoader
+    loader?: CompileLoader
     proxy?: ProxyGlobals
     loaderOptions?: any
     iframe?: string
@@ -97,7 +99,8 @@ export class Merak {
       return MerakMap.get(id) as Merak
     }
     MerakMap.set(id, this)
-    const { proxy = createProxy(id, url), loaderOptions, loader } = options
+    this.baseUrl = getBaseUrl(url)
+    const { proxy = createProxy(id, this.baseUrl), loaderOptions, loader } = options
     this.loaderOptions = loaderOptions
     this.loader = loader
 

@@ -1,6 +1,6 @@
-import { DecodeLoader, Merak } from 'merak-core'
+import { CompileLoader, Merak } from 'merak-core'
 
-const loader = new DecodeLoader()
+const loader = new CompileLoader()
 
 const data = {
   data: 'data from main',

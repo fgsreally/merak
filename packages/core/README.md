@@ -4,10 +4,10 @@ merak runtime in browser
 1. create Merak Instance
 spa example
 ```ts
-import { DecodeLoader } from 'merak-core/loader'
+import { CompileLoader } from 'merak-core/loader'
 import { Merak } from 'merak-core'
 
-const loader = new DecodeLoader()//
+const loader = new CompileLoader()//
 const instance = new Merak(id, url, { loader })
 ```
 ```ts

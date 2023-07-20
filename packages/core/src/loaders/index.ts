@@ -1,5 +1,5 @@
 // export * from './plugins'
-export * from './pureLoader'
+export * from './decodeLoader'
 export * from './ssrLoader'
-export * from './base'
+export * from './utils'
 export * from './dynamicLoader'

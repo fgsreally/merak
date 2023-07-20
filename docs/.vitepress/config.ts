@@ -1,9 +1,7 @@
 import { defineConfig } from 'vitepress'
 const ogDescription = '基于编译，剑走偏锋的微前端方案'
-// const ogImage = 'https://wujie-micro.github.io/doc/wujie.png'
-// const ogTitle = '无界'
-// const ogUrl = 'https://wujie-micro.github.io/doc/'
-const base = process.env.NODE_ENV === 'production' ? '/doc/' : ''
+
+const base = process.env.NODE_ENV === 'production' ? '.' : ''
 
 export default defineConfig({
   title: '天璇',
@@ -17,26 +15,18 @@ export default defineConfig({
     // ["meta", { property: "og:url", content: ogUrl }],
   ],
 
-  vue: {
-    reactivityTransform: true,
-  },
+  // vue: {
+  //   reactivityTransform: true,
+  // },
   lastUpdated: true,
   themeConfig: {
-    logo: '/wujie.svg',
+    logo: './merak.png',
     editLink: {
       pattern: 'https://github.com/Tencent/wujie/tree/master/docs/:path',
       text: '编辑本页',
     },
     lastUpdatedText: '最近更新时间',
     socialLinks: [{ icon: 'github', link: 'https://github.com/Tencent/wujie' }],
-    // algolia: {
-    //   appId: "",
-    //   apiKey: "",
-    //   indexName: "wujie",
-    //   searchParameters: {
-    //     facetFilters: ["tags:en"],
-    //   },
-    // },
 
     footer: {
       message: 'Released the MIT License.',

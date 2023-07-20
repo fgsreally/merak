@@ -1,7 +1,7 @@
 import type { LoadDone, MerakConfig } from '../types'
 import { resolveHtmlConfig } from '../utils'
-import { loadConfig } from './pureLoader'
-import { Loader } from './base'
+import { loadConfig } from './decodeLoader'
+import { Loader } from './utils'
 export class SSRLoader extends Loader {
   async load(url: string, configOrUrl?: string | MerakConfig) {
     if (this.loadCache.has(url))

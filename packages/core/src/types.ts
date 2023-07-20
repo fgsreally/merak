@@ -1,4 +1,4 @@
-export interface MerakConfig {
+export interface JsonLoaderOpts {
   _n: string[]
   _c: string[]
   _f: string

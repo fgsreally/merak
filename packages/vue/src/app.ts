@@ -1,9 +1,9 @@
 import type { Loader, MerakConfig } from 'merak-core'
-import { $$jump, MERAK_DATA_ID, MERAK_KEEP_ALIVE, Merak, PureLoader, getInstance } from 'merak-core'
+import { $$jump, DecodeLoader, MERAK_DATA_ID, MERAK_KEEP_ALIVE, Merak, getInstance } from 'merak-core'
 import type { PropType } from 'vue'
 import { defineComponent, h, watch } from 'vue'
 import { shareEmits, shareProps } from './share'
-export const vueLoader = new PureLoader()
+export const vueLoader = new DecodeLoader()
 export const MerakApp = defineComponent({
   inheritAttrs: false,
   props: {

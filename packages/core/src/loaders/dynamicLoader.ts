@@ -1,7 +1,7 @@
 import { loadTextFile, resolveHtmlConfig, resolveUrl } from '../utils'
 import type { LoadDone, MerakConfig } from '../types'
-import { Loader } from './base'
-import { loadConfig } from './pureLoader'
+import { Loader } from './utils'
+import { loadConfig } from './decodeLoader'
 
 export class DynamicLoader extends Loader {
   re: RegExp[] = [/<script\b.*?(?:\bsrc\s?=\s?([^>]*))?>(.*?)<\/script>/ig, /(?<=<link.*href=")([^"]*)(?=")/g]

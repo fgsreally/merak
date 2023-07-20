@@ -29,6 +29,7 @@
   "dependencies": {
     "@babel/core": "^7.20.12",
     "cac": "^6.7.14",
+    "chalk": "^5.2.0",
     "fast-glob": "^3.2.12",
     "fs-extra": "^11.1.0",
     "html5parser": "^2.0.2",

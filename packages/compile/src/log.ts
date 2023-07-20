@@ -1,5 +1,6 @@
 import json2md from 'json2md'
 import fse from 'fs-extra'
+import chalk from 'chalk';
 export class Logger {
   // work for DANGER_IDENTIFIERS
   dangerUsedRecord: Record<string, Record<string, { times: number; loc: [number, number] }>> = {}
@@ -19,6 +20,11 @@ export class Logger {
 
   collectAction(value: string) {
     this.actionRecord.push(value)
+  }
+
+  log(info:string){
+        // eslint-disable-next-line no-console
+      console.log(`${chalk.cyan('[MERAK]')} ${info}`)
   }
 
   output(outputPath?: string) {
@@ -47,8 +53,7 @@ export class Logger {
       ret.push({ blockquote: `file:\`${file}\`` })
       ret.push({ ol: this.unusedGlobalRecord[file] })
     }
-    // eslint-disable-next-line no-console
-    console.log(`[MERAK] generate analyse file at ${outputPath}`)
+    this.log(`generate analyse file at ${outputPath}`)
     fse.outputFileSync(outputPath, json2md(ret))
   }
 }

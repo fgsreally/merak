@@ -11,7 +11,7 @@ describe('analyse file', () => {
     function getPath(str: string, start: number, end: number) {
       return str.slice(start, end)
     }
-    for (const [start, end] of ret)
+    for (const { loc: [start, end] } of ret)
       expect(getPath(content, start, end)).toMatchSnapshot()
   })
 

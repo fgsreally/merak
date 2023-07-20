@@ -7,15 +7,12 @@ export abstract class Loader {
     return loadJSONFile(url)
   }
 
-  constructor(public decode = false) {
-  }
-
   resolveHtml(html: string) {
     let config: any
     // <m-b> merak-base
 
-    html = html.replace(/<m-b>(.*)<\/m-b>/, (js, base) => {
-      config = JSON.parse(this.decode ? decodeURIComponent(base) : base)
+    html = html.replace(/<m-b[^>]+config=['"](.*)['"][\s>]<\/m-b>/, (js, conf) => {
+      config = JSON.parse(decodeURIComponent(conf))
       return ''
     })
     return { html, config }

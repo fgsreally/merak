@@ -159,13 +159,13 @@ export function $instance() {
 export function $props(): Props
 export function $props<K extends keyof Props>(key: string): Props[K]
 export function $props(key?: string) {
-  return key ? $instance().props[key] : $instance().props as any
+  return key ? $instance()?.props[key] : $instance().props as any
 }
 
 export function $namespace(): NameSpace
 export function $namespace<K extends keyof NameSpace>(key: string): NameSpace[K]
 export function $namespace(key?: string) {
-  return key ? $instance().namespace[key] : $instance().namespace as any
+  return key ? $instance()?.namespace[key] : $instance().namespace as any
 }
 
 export function $perf() {

@@ -4,7 +4,7 @@ export class Logger {
   // work for DANGER_IDENTIFIERS
   dangerUsedRecord: Record<string, Record<string, { times: number; loc: [number, number] }>> = {}
   unusedGlobalRecord: Record<string, string[]> = {}
-  baseRecord: Record<string, string> = {}
+  actionRecord: string[] = []
   collectDangerUsed(file: string, message: string, loc: [number, number]) {
     if (!this.dangerUsedRecord[file])
       this.dangerUsedRecord[file] = {}
@@ -17,17 +17,17 @@ export class Logger {
     this.unusedGlobalRecord[file] = globals
   }
 
-  collectBase(key: string, value: string) {
-    this.baseRecord[key] = value
+  collectAction(value: string) {
+    this.actionRecord.push(value)
   }
 
   output(outputPath?: string) {
     if (!outputPath)
       return
     const ret = [] as any[]
-    ret.push({ h1: 'Base Config:' })
-    for (const key in this.baseRecord)
-      ret.push({ h3: `${key}:${this.baseRecord[key]}` })
+
+    ret.push({ h1: 'Action Info:' })
+    ret.push({ ol: this.actionRecord })
 
     ret.push({ h1: 'Danger used like eval:' })
 

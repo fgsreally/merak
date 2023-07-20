@@ -1,6 +1,6 @@
 import json2md from 'json2md'
 import fse from 'fs-extra'
-import chalk from 'chalk';
+import pc from 'picocolors'
 export class Logger {
   // work for DANGER_IDENTIFIERS
   dangerUsedRecord: Record<string, Record<string, { times: number; loc: [number, number] }>> = {}
@@ -22,9 +22,9 @@ export class Logger {
     this.actionRecord.push(value)
   }
 
-  log(info:string){
-        // eslint-disable-next-line no-console
-      console.log(`${chalk.cyan('[MERAK]')} ${info}`)
+  log(info: string) {
+    // eslint-disable-next-line no-console
+    console.log(`${pc.cyan('[MERAK]')} ${info}`)
   }
 
   output(outputPath?: string) {

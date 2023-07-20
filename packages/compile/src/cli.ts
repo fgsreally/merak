@@ -35,7 +35,10 @@ cli.command('', 'parse all file to merak-format')
     fse.ensureDir(resolve(root, outDir))
     const entries = await fg(includes, { cwd, ignore: exclude })
     nativeVars = [...new Set([...DEFAULT_INJECT_GLOBALS, ...nativeVars])]
+    logger.log('compile files:')
     console.table(entries)
+    logger.log('native vars:')
+
     console.table(nativeVars)
     for (const entry of entries) {
       const filePath = resolve(root, outDir, entry)

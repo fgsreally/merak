@@ -1,6 +1,6 @@
 import { iframeInstance } from './iframe'
 import type { LoadDone, NameSpace, Props, ProxyGlobals } from './types'
-import type { CompileLoader } from './loaders'
+import type { Loader } from './loaders'
 import { createProxy } from './proxy'
 import { MERAK_DATA_ID, MERAK_EVENT, MERAK_HOOK, MERAK_SHADE_STYLE, PERF_TIME } from './common'
 import { debug, eventTrigger, scriptPrimise } from './utils'
@@ -9,7 +9,7 @@ import { LifeCycle } from './lifecycle'
 import { cloneScript } from './compile'
 import { Perf } from './perf'
 
-export class Merak {
+export class Merak<L extends Loader = Loader> {
   /** 所有子应用共享 */
   static namespace: NameSpace = {}
   /** 生命周期 */
@@ -38,7 +38,7 @@ export class Merak {
   public template: string
 
   /** 加载器，仅spa使用 */
-  public loader: CompileLoader | undefined
+  public loader: L | undefined
 
   /** 挂载数据 */
   public props: Props
@@ -86,7 +86,7 @@ export class Merak {
   cacheEvent: (() => void)[] = []
 
   constructor(public id: string, public url: string, public options: {
-    loader?: CompileLoader
+    loader?: L
     proxy?: ProxyGlobals
     loaderOptions?: any
     iframe?: string
@@ -96,7 +96,7 @@ export class Merak {
       if (__DEV__)
         console.warn(`[merak]: "${id}" already exists`)
 
-      return MerakMap.get(id) as Merak
+      return MerakMap.get(id) as Merak<L>
     }
     MerakMap.set(id, this)
     this.baseUrl = new URL('./', url).href.slice(0, -1)

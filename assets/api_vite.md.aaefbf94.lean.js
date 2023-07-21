@@ -1,0 +1,1 @@
+import{_ as s,o as n,c as a,a as l}from"./app.7dce77db.js";const A=JSON.parse('{"title":"","description":"","frontmatter":{},"headers":[],"relativePath":"api/vite.md","lastUpdated":1689911517000}'),p={name:"api/vite.md"},o=l("",1),e=[o];function t(c,r,y,i,D,C){return n(),a("div",null,e)}const _=s(p,[["render",t]]);export{A as __pageData,_ as default};

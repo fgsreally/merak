@@ -53,7 +53,7 @@ export class Logger {
       ret.push({ blockquote: `file:\`${file}\`` })
       ret.push({ ol: this.unusedGlobalRecord[file] })
     }
-    this.log(`generate analyse file at ${outputPath}`)
+    this.log(`generate log file at ${outputPath}`)
     fse.outputFileSync(outputPath, json2md(ret))
   }
 }

@@ -112,7 +112,6 @@ export function createProxyDocument(id: string, url: string) {
               el.setAttribute = (key: string, v: any) => {
                 if (key === 'src')
                   v = new URL(v, url).href
-                console.log(v)
                 setAttribute.call(el, key, v)
               }
               Object.defineProperty(el, 'src', {

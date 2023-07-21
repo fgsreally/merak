@@ -61,7 +61,7 @@ export async function createServer(root = process.cwd(), isProd = isProduction) 
       }
 
       const [strOrStream, links] = await render(url, manifest)
-      const appurl = 'http://127.0.0.1:4004'
+      const appurl = 'http://127.0.0.1:4004/index.html'
       const { data } = await axios.get(appurl)
       const { config } = resolveHtmlConfig(data)
       const html = template

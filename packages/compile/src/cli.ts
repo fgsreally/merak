@@ -26,7 +26,7 @@ cli.command('', 'parse all file to merak-format')
 
   .action(async (options) => {
     let {
-      dir = '', nativeVars = [], customVars = [], fakeGlobalVar, format = 'esm', isinLine = true, outDir = 'dist', includes = ['index.html', '**/*.js', '*.js', '**/*.css'], exclude = ['node_modules/**/*'], logPath,
+      dir = '', nativeVars = [], customVars = [], fakeGlobalVar, format = 'esm', isinLine = true, outDir = 'dist', includes = ['index.html', '**/*.js', '*.js', '**/*.css', '*.css'], exclude = ['node_modules/**/*'], logPath,
     } = getConfig(options.config)
     if (!isVarName(fakeGlobalVar))
       throw new Error(`${fakeGlobalVar} is not a valid var`)
@@ -40,6 +40,13 @@ cli.command('', 'parse all file to merak-format')
     logger.log('native vars:')
 
     console.table(nativeVars)
+
+    if (customVars.length) {
+      logger.log('custom vars:')
+
+      console.table(customVars)
+    }
+
     for (const entry of entries) {
       const filePath = resolve(root, outDir, entry)
       const raw = await fse.readFile(resolve(cwd, entry), 'utf-8')
@@ -57,12 +64,15 @@ cli.command('', 'parse all file to merak-format')
 
           await fse.outputFile(filePath, code)
         }
+
+        logger.log(`output file "${filePath}"`)
+
         if (logPath) {
           const unUsedGlobals = analyseJSGlobals(raw, [...nativeVars, ...customVars])
           unUsedGlobals.length > 0 && logger.collectUnusedGlobals(entry, unUsedGlobals)
         }
 
-        return
+        continue
       }
 
       if (entry.endsWith('.html')) {
@@ -70,16 +80,22 @@ cli.command('', 'parse all file to merak-format')
           _f: fakeGlobalVar, _n: nativeVars, _c: customVars,
         } as any
         let html = raw.replace('</head>', `</head><script merak-ignore>const ${fakeGlobalVar}=window.${fakeGlobalVar}||window</script>`)
-        merakConfig._l = analyseHTML(html)
+        merakConfig._l = analyseHTML(html).map((item) => {
+          logger.collectAction(`replace url "${item.src}"`)
+          return item.loc
+        })
+
         if (isinLine)
-          html = html.replace('</body>', `<m-b config="${JSON.stringify(merakConfig)}"></m-b></body>`)
+          html = html.replace('</body>', `<m-b config="${encodeURIComponent(JSON.stringify(merakConfig))}"></m-b></body>`)
         else await fse.outputFile(resolve(filePath, '../merak.json'), JSON.stringify(merakConfig), 'utf-8')
+        logger.log(`output file "${filePath}"`)
 
         await fse.outputFile(filePath, html, 'utf-8')
-        return
+        continue
       }
       await fse.copyFile(resolve(cwd, entry), filePath)
     }
+
     logPath && logger.output(resolve(root, logPath))
   })
 
@@ -91,7 +107,7 @@ function getConfig(configPath: string) {
    *  "fakeGlobalVar":'..'
    *  "dir":'..',
    *  "isInline":true/false,
-   *  "format":esm/iife
+   *  "format":esm/iife,
    * }
    */
   return require(resolve(root, configPath))

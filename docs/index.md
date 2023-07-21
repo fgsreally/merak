@@ -15,16 +15,8 @@ hero:
   actions:
     - theme: brand
       text: 快速开始
-      link: /guide/start.html
-    - theme: alt
-      text: Vue示例
-      link: https://wujie-micro.github.io/demo-main-vue/home
-    - theme: alt
-      text: React示例
-      link: https://wujie-micro.github.io/demo-main-react/
-    - theme: brand
-      text: 在线体验
-      link: /wujie/
+      link: /guide/quick-start.html
+
 
 features:
 

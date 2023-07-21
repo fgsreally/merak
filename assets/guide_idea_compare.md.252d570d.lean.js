@@ -1,1 +1,0 @@
-import{_ as e,o,c,a as d}from"./app.59ef58dc.js";const k=JSON.parse('{"title":"比较","description":"","frontmatter":{},"headers":[],"relativePath":"guide/idea/compare.md","lastUpdated":1689754953000}'),t={name:"guide/idea/compare.md"},r=d("",17),a=[r];function l(s,p,i,n,u,_){return o(),c("div",null,a)}const b=e(t,[["render",l]]);export{k as __pageData,b as default};

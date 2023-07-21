@@ -1,17 +1,4 @@
-import { createCustomVarProxy, desctructGlobal, resolveUrl } from './utils'
-
-export function compileHTML(code: string, baseUrl: string, loc: [number, number][]) {
-  const originStr = code
-  let index = 0
-  code = ''
-  loc.forEach(([start, end]) => {
-    code += originStr.slice(index, start)
-    code += resolveUrl(originStr.slice(start, end), baseUrl)
-    index = end
-  })
-  code += originStr.slice(index)
-  return code
-}
+import { createCustomVarProxy, desctructGlobal } from './utils'
 
 export function cloneScript(script: HTMLScriptElement, fakeGlobalVar: string, nativeVars: string[], customVars: string[]) {
   const { src, async, defer, type, innerHTML } = script

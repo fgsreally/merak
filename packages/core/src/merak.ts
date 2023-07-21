@@ -1,6 +1,6 @@
 import { iframeInstance } from './iframe'
-import type { LoadDone, MerakConfig, NameSpace, Props, ProxyGlobals } from './types'
-import type { PureLoader } from './loaders'
+import type { LoadDone, NameSpace, Props, ProxyGlobals } from './types'
+import type { CompileLoader } from './loaders'
 import { createProxy } from './proxy'
 import { MERAK_DATA_ID, MERAK_EVENT, MERAK_HOOK, MERAK_SHADE_STYLE, PERF_TIME } from './common'
 import { debug, eventTrigger, scriptPrimise } from './utils'
@@ -38,7 +38,7 @@ export class Merak {
   public template: string
 
   /** 加载器，仅spa使用 */
-  public loader: PureLoader | undefined
+  public loader: CompileLoader | undefined
 
   /** 挂载数据 */
   public props: Props
@@ -62,7 +62,7 @@ export class Merak {
   public fakeGlobalVar: string
 
   /** 配置文件地址，配置内联时为空 */
-  public configOrUrl?: string | MerakConfig
+  public loaderOptions?: any
 
   /** 隔离的原生全局变量 */
   public nativeVars: string[]
@@ -73,6 +73,8 @@ export class Merak {
   /** 防止重复加载 */
   private loadPromise: Promise<any>
 
+  /** 子应用的 base */
+  public baseUrl: string
   /**
    * 是否处于预加载状态
    * 'assets' 为预加载了资源
@@ -84,9 +86,9 @@ export class Merak {
   cacheEvent: (() => void)[] = []
 
   constructor(public id: string, public url: string, public options: {
-    loader?: PureLoader
+    loader?: CompileLoader
     proxy?: ProxyGlobals
-    configOrUrl?: string | MerakConfig
+    loaderOptions?: any
     iframe?: string
   } = {},
   ) {
@@ -97,8 +99,9 @@ export class Merak {
       return MerakMap.get(id) as Merak
     }
     MerakMap.set(id, this)
-    const { proxy = createProxy(id, url), configOrUrl, loader } = options
-    this.configOrUrl = configOrUrl
+    this.baseUrl = new URL('./', url).href.slice(0, -1)
+    const { proxy = createProxy(id, this.baseUrl), loaderOptions, loader } = options
+    this.loaderOptions = loaderOptions
     this.loader = loader
 
     for (const i in proxy)
@@ -188,9 +191,9 @@ export class Merak {
       return
     if (this.loadPromise)
       return this.loadPromise
-    const { url, configOrUrl } = this
+    const { url, loaderOptions } = this
     this.perf.record(PERF_TIME.LOAD)
-    return this.loadPromise = (this.loader!.load(url, configOrUrl) as Promise<LoadDone>).then((loadRes) => {
+    return this.loadPromise = (this.loader!.load(url, loaderOptions) as Promise<LoadDone>).then((loadRes) => {
       if (loadRes instanceof Error) {
         this.errorHandler?.({ type: 'loadError', error: loadRes as Error })
       }

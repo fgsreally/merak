@@ -2,15 +2,6 @@
 
 import { MerakMap } from './helper'
 
-export async function loadJSONFile(url: string) {
-  const res = await fetch(url)
-  return res.json()
-}
-export async function loadTextFile(url: string) {
-  const res = await fetch(url)
-  return res.text()
-}
-
 export function resolveUrl(filePath: string, baseURL: string) {
   return new URL(filePath, baseURL).href
 }
@@ -44,16 +35,6 @@ export function eventTrigger(el: HTMLElement | Window | Document, eventName: str
     event.initCustomEvent(eventName, true, false, detail)
   }
   el.dispatchEvent(event)
-}
-
-export function resolveHtmlConfig(html: string) {
-  let config
-
-  html = html.replace(/<m-b[^>]+config=['"](.*)['"][\s>]<\/m-b>/, (js, conf) => {
-    config = JSON.parse(decodeURIComponent(conf))
-    return ''
-  })
-  return { html, config }
 }
 
 export function desctructGlobal(globals: string[]) {

@@ -4,5 +4,6 @@
   "fakeGlobalVar": "vanilla",
   "exclude":["node_modules/**/*","dist/**/*"],
   "format": "esm",
+  "logPath":"./name.md",
   "isinLine": true
 }

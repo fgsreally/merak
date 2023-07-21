@@ -1,6 +1,6 @@
-import { Merak, PureLoader } from 'merak-core'
+import { CompileLoader, Merak } from 'merak-core'
 
-const loader = new PureLoader()
+const loader = new CompileLoader()
 
 const data = {
   data: 'data from main',

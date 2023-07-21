@@ -16,12 +16,12 @@ function createFillStr(length: number) {
 
 export * from './lib'
 
-export function Merak(fakeGlobalVar: string, opts: { isinLine?: boolean; includes?: FilterPattern; exclude?: FilterPattern; logPath?: string; force?: boolean; nativeVars?: string[]; customVars?: string[] } = {}): PluginOption {
+export function Merak(fakeGlobalVar: string, opts: { isinLine?: boolean; includes?: FilterPattern; exclude?: FilterPattern; logPath?: string; force?: boolean; nativeVars?: string[]; customVars?: string[];compileHtml?: boolean } = {}): PluginOption {
   if (!isVarName(fakeGlobalVar))
     throw new Error(`${fakeGlobalVar} is not a valid var`)
 
   // const globalVars = [...new Set(globals)] as string[]
-  const { nativeVars = [], customVars = [], includes = /\.(vue|ts|js|tsx|jsx|mjs)/, exclude = /\.(css|scss|sass|less)$/, logPath, force, isinLine = true } = opts
+  const { nativeVars = [], customVars = [], includes = /\.(vue|ts|js|tsx|jsx|mjs)/, exclude = /\.(css|scss|sass|less)$/, logPath, force, isinLine = true, compileHtml = true } = opts
   const merakConfig = { _f: fakeGlobalVar, _n: nativeVars, _c: customVars } as any
 
   nativeVars.push(...DEFAULT_INJECT_GLOBALS)
@@ -48,7 +48,12 @@ export function Merak(fakeGlobalVar: string, opts: { isinLine?: boolean; include
 
       async transformIndexHtml(html) {
         html = html.replace('<head>', `<head><script merak-ignore>${injectScript}</script>`)
-        merakConfig._l = analyseHTML(html)
+        if (compileHtml) {
+          merakConfig._l = analyseHTML(html).map((item) => {
+            logger.collectAction(`replace url "${item.src}"`)
+            return item.loc
+          })
+        }
         html = html.replace('</body>', `<m-b config='${encodeURIComponent(JSON.stringify(merakConfig))}'></m-b></body>`)
         return html
       },
@@ -113,7 +118,12 @@ export function Merak(fakeGlobalVar: string, opts: { isinLine?: boolean; include
             if (chunk.type === 'asset' && typeof chunk.source === 'string') {
               if (chunk.fileName.endsWith('.html')) {
                 chunk.source = chunk.source.replaceAll(base, './')
-                merakConfig._l = analyseHTML(chunk.source)
+                if (compileHtml) {
+                  merakConfig._l = analyseHTML(chunk.source).map((item) => {
+                    logger.collectAction(`replace url "${item.src}"`)
+                    return item.loc
+                  })
+                }
 
                 if (!isinLine) {
                   this.emitFile({

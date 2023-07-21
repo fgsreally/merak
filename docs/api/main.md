@@ -8,7 +8,7 @@ declare class Merak {
   url: string
   options: {
     /** 加载器，spa专用 */
-    loader?: PureLoader
+    loader?: CompileLoader
     /** 沙箱 */
     proxy?: ProxyGlobals
     /** 配置，默认配置在html中。但也可以单独维护一个json */
@@ -34,7 +34,7 @@ declare class Merak {
   /** 子应用的html */
   template: string
   /** 加载器，仅spa使用 */
-  loader: PureLoader | undefined
+  loader: CompileLoader | undefined
   /** 挂载数据 */
   props: any
   /** 生命周期 */
@@ -60,7 +60,7 @@ declare class Merak {
     id: string,
     url: string,
     options?: {
-      loader?: PureLoader
+      loader?: CompileLoader
       proxy?: ProxyGlobals
       configUrl?: string
       iframe?: string

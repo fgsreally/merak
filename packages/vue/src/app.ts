@@ -1,15 +1,15 @@
-import type { Loader, MerakConfig } from 'merak-core'
-import { $$jump, MERAK_DATA_ID, MERAK_KEEP_ALIVE, Merak, PureLoader, getInstance } from 'merak-core'
+import type { Loader } from 'merak-core'
+import { $$jump, CompileLoader, MERAK_DATA_ID, MERAK_KEEP_ALIVE, Merak, getInstance } from 'merak-core'
 import type { PropType } from 'vue'
 import { defineComponent, h, watch } from 'vue'
 import { shareEmits, shareProps } from './share'
-export const vueLoader = new PureLoader()
+export const vueLoader = new CompileLoader()
 export const MerakApp = defineComponent({
   inheritAttrs: false,
   props: {
     ...shareProps,
-    configOrUrl: {
-      type: Object as PropType<string | MerakConfig>,
+    loaderOptions: {
+      type: Object as PropType<any>,
     },
 
     loader: {
@@ -23,8 +23,8 @@ export const MerakApp = defineComponent({
   },
   emits: shareEmits,
   setup(props, { emit, expose }) {
-    const { url, proxy, loader, configOrUrl, props: MerakProps, iframe, name, route } = props
-    const app = getInstance(name) || new Merak(name, url, { loader, configOrUrl, proxy, iframe })
+    const { url, proxy, loader, loaderOptions, props: MerakProps, iframe, name, route } = props
+    const app = getInstance(name) || new Merak(name, url, { loader, loaderOptions, proxy, iframe })
     if (MerakProps)
       app.props = MerakProps
     for (const ev in shareEmits) {

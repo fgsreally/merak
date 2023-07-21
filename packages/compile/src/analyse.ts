@@ -7,9 +7,15 @@ import { parse, walk } from 'html5parser'
 import MagicString from 'magic-string'
 import type { MerakJSFile } from './types'
 import { checkIsDanger, desctructGlobal, isCdn, relativePath } from './utils'
+
+interface AnalyseTagRes {
+  loc: [number, number]
+  src: string
+}
+
 export const analyseHTML = (code: string) => {
   const ast = parse(code)
-  const ret = [] as [number, number][]
+  const res = [] as AnalyseTagRes[]
 
   walk(ast, {
     enter: (node) => {
@@ -23,8 +29,12 @@ export const analyseHTML = (code: string) => {
           // recording external script node to replace them in browser
           if (outScriptNode) {
             const { start, end, value } = node.attributes.find(item => item.name.value === 'src')?.value!
-            if (!isCdn(value))
-              ret.push([start + 1, end - 1])
+            if (!isCdn(value)) {
+              res.push({
+                loc: [start + 1, end - 1],
+                src: value,
+              })
+            }
             // ret._s.push({ _f: merakSrc || value, _tl: [start, end], _a: merakAttrs, _t: 'outline' })
           }
           else {
@@ -33,8 +43,11 @@ export const analyseHTML = (code: string) => {
 
             const source = code.slice(end, start)
 
-            const { _l } = analyseInlineESM(source)
-            _l.forEach(item => ret.push([end + item[0] + 1, end + item[1] - 1]))
+            const inlineRes = analyseInlineESM(source)
+            inlineRes.forEach(item => res.push({
+              loc: [end + item.loc[0] + 1, end + item.loc[1] - 1],
+              src: item.src,
+            }))
           }
         }
 
@@ -43,13 +56,17 @@ export const analyseHTML = (code: string) => {
         if (node.name === 'link' && node.attributes.some(item => item.name.value === 'href')) {
           const outLinkNode = node.attributes.find(item => item.name.value === 'href')
           const { value: { start, end, value } } = outLinkNode as any
-          if (!isCdn(value))
-            ret.push([start + 1, end - 1])
+          if (!isCdn(value)) {
+            res.push({
+              loc: [start + 1, end - 1],
+              src: value,
+            })
+          }
         }
       }
     },
   })
-  return ret
+  return res
 }
 
 export const analyseJSGlobals = (code: string, globalVars: string[]) => {
@@ -71,7 +88,7 @@ export const analyseJSGlobals = (code: string, globalVars: string[]) => {
 }
 
 export function analyseInlineESM(code: string) {
-  const importLoc = [] as [number, number][]
+  const res = [] as AnalyseTagRes[]
   const ast = parseSync(code) as any
 
   traverse(ast, {
@@ -80,18 +97,26 @@ export function analyseInlineESM(code: string) {
       const { node } = path
 
       const { value, start, end } = node.source as any
-      if (!isCdn(value))
-        importLoc.push([start, end])
+      if (!isCdn(value)) {
+        res.push({
+          loc: [start, end],
+          src: value,
+        })
+      }
     },
     // dynamic import
     Import(path) {
       const { value, start, end } = (path.parent as any).arguments[0]
-      if (!isCdn(value))
-        importLoc.push([start, end])
+      if (!isCdn(value)) {
+        res.push({
+          loc: [start, end],
+          src: value,
+        })
+      }
     },
 
   })
-  return { _l: importLoc }
+  return res
 }
 
 /**

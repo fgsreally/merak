@@ -1,22 +1,21 @@
-import { loadTextFile, resolveHtmlConfig, resolveUrl } from '../utils'
-import type { LoadDone, MerakConfig } from '../types'
-import { Loader } from './base'
-import { loadConfig } from './pureLoader'
-
-export class DynamicLoader extends Loader {
+import type { AppConfig, LoadDone } from '../types'
+import { resolveUrl } from '../utils'
+import { Loader, loadTextFile } from './utils'
+export class RuntimeLoader extends Loader {
   re: RegExp[] = [/<script\b.*?(?:\bsrc\s?=\s?([^>]*))?>(.*?)<\/script>/ig, /(?<=<link.*href=")([^"]*)(?=")/g]
-  async load(sourceUrl: string, configOrUrl?: string | MerakConfig) {
+
+  async load(sourceUrl: string, configOrUrl?: string | AppConfig) {
     if (this.loadCache.has(sourceUrl))
       return this.loadCache.get(sourceUrl)
     try {
-      let config = {} as unknown as MerakConfig
+      let config = {} as unknown as AppConfig
       let htmlStr = await loadTextFile(sourceUrl)
 
       if (configOrUrl) { // independent config file
-        config = typeof configOrUrl === 'string' ? (await loadConfig(configOrUrl)) : configOrUrl
+        config = typeof configOrUrl === 'string' ? (await this.loadJSON(configOrUrl)) : configOrUrl
       }
       else { // inline config
-        config = resolveHtmlConfig(htmlStr).config as any
+        config = this.resolveHtml(htmlStr).config as any
       }
       function replaceSrc(str: string, re: RegExp) {
         return str.replace(re, (_, url) => resolveUrl(url, sourceUrl))

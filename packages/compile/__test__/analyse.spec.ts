@@ -1,7 +1,7 @@
 import fs from 'fs'
 import { resolve } from 'path'
 import { describe, expect, it } from 'vitest'
-import { analyseHTML, injectGlobalToESM, injectGlobalToIIFE } from '../src'
+import { analyseHTML, analyseJSGlobals, injectGlobalToESM, injectGlobalToIIFE } from '../src'
 describe('analyse file', () => {
   it('analyse html file', async () => {
     const content = await fs.promises.readFile(resolve(__dirname, './fixtures/index.html'), 'utf-8')
@@ -13,6 +13,10 @@ describe('analyse file', () => {
     }
     for (const { loc: [start, end] } of ret)
       expect(getPath(content, start, end)).toMatchSnapshot()
+  })
+
+  it('analyese js globals', async () => {
+    expect(analyseJSGlobals('const a=document.createElement(\'div\')', [])).toMatchSnapshot()
   })
 
   it('compile esm js', async () => {

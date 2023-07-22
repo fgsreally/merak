@@ -1,5 +1,11 @@
 // Vitest Snapshot v1, https://vitest.dev/guide/snapshot.html
 
+exports[`analyse file > analyese js globals 1`] = `
+[
+  "document",
+]
+`;
+
 exports[`analyse file > analyse html file 1`] = `"/favicon.ico"`;
 
 exports[`analyse file > analyse html file 2`] = `"/assets/index-28fadf32.css"`;

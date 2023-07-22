@@ -34,7 +34,7 @@ export function compileHTML(code: string, baseUrl: string, loc: [number, number]
   code = ''
   loc.forEach(([start, end]) => {
     code += originStr.slice(index, start)
-    code += resolveUrl(originStr.slice(start, end), baseUrl)
+    code += resolveUrl(originStr.slice(start, end), `${baseUrl}/`)
     index = end
   })
   code += originStr.slice(index)

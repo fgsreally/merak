@@ -1,7 +1,10 @@
 import { relative } from 'path'
 import { DANGER_IDENTIFIERS } from './common'
 export function isCdn(str: string) {
-  return !['.', '/'].includes(str.slice(0, 1))
+  return str.startsWith('http://') || str.startsWith('https://')
+}
+export function isRelativeReferences(str: string) {
+  return str.startsWith('./') || str.startsWith('../') || str.startsWith('/')
 }
 
 export function relativePath(from: string, to: string) {

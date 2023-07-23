@@ -18,10 +18,6 @@ export function isSymbolExist(ids: (keyof typeof SUBAPP_CONTENT)[]) {
   })
 }
 
-// export function checkModalColor() {
-//   for (const id of SUBAPP_NAME) {
-//     cy.get(getShadowSelector(id)).shadow().find('a[href=\'/about\']').click({ force: true })
-//     cy.get(getShadowSelector(id)).shadow().find(getModalBtn()).click({ force: true })
-//     cy.get(getShadowSelector(id)).shadow().find(getModal()).should('have.css', 'background-color', SUBAPP_BG_STYLE[id])
-//   }
-// }
+export function isImgExist(id: string, src: string) {
+  cy.get(getShadowSelector(id as string)).shadow().find('img').should('have.attr', 'src', src)
+}

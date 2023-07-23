@@ -6,7 +6,7 @@ import type { IText } from 'html5parser'
 import { parse, walk } from 'html5parser'
 import MagicString from 'magic-string'
 import type { MerakJSFile } from './types'
-import { checkIsDanger, desctructGlobal, isCdn, relativePath } from './utils'
+import { checkIsDanger, desctructGlobal, isCdn, isRelativeReferences, relativePath } from './utils'
 
 interface AnalyseTagRes {
   loc: [number, number]
@@ -74,12 +74,12 @@ export const analyseJSGlobals = (code: string, globalVars: string[]) => {
   const ast = parseSync(code, { filename: 'any' }) as any
   traverse(ast, {
     // record all global variable
-    Identifier(path) {
-      const { scope } = path
-      Object.keys((scope as any).globalVars || {}).forEach((item) => {
-        (!globalVars.includes(item)) && unUsedGlobalSet.add(item)
-      })
+    ReferencedIdentifier: (path) => {
+      const name = path.node.name
+      if (!path.scope.hasBinding(name, true))
+        (!globalVars.includes(name)) && unUsedGlobalSet.add(name)
     },
+
     // static import
     //  relative path
   })
@@ -97,7 +97,7 @@ export function analyseInlineESM(code: string) {
       const { node } = path
 
       const { value, start, end } = node.source as any
-      if (!isCdn(value)) {
+      if (isRelativeReferences(value)) {
         res.push({
           loc: [start, end],
           src: value,
@@ -107,7 +107,7 @@ export function analyseInlineESM(code: string) {
     // dynamic import
     Import(path) {
       const { value, start, end } = (path.parent as any).arguments[0]
-      if (!isCdn(value)) {
+      if (isRelativeReferences(value)) {
         res.push({
           loc: [start, end],
           src: value,
@@ -144,7 +144,7 @@ export const analyseJS = (code: string, filePath: string, rootPath: string, glob
       const { node } = path
 
       const { value, start, end } = node.source as any
-      if (isCdn(value))
+      if (isRelativeReferences(value))
         ret.imports.push({ filePath: '', loc: [start, end] })
 
       else
@@ -233,7 +233,6 @@ export function injectGlobalToESM(code: string,
             const { start } = path.node || {}
             start && s.appendLeft(start, `${globalVar}.`)
           }
-
           checkIsDanger(path.node, warning)
         }
       },

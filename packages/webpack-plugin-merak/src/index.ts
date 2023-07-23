@@ -49,7 +49,6 @@ export class Merak {
               }
             })
           })
-          isDebug && logger.output(resolve(process.cwd(), this.options.logPath!))
         },
       )
     })
@@ -95,6 +94,7 @@ export class Merak {
         else {
           data.html = data.html.replace('</body>', `<m-b config='${encodeURIComponent(JSON.stringify(merakConfig))}'></m-b></body>`)
         }
+        isDebug && logger.output(resolve(process.cwd(), this.options.logPath!))
 
         return data
       })

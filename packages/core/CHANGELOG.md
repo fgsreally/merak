@@ -1,5 +1,11 @@
 # merak-core
 
+## 1.0.2
+
+### Patch Changes
+
+- 62efd4d: compileHtml should handle baseUrl
+
 ## 1.0.1
 
 ### Patch Changes

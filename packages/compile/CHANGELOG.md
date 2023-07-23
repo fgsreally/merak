@@ -1,5 +1,12 @@
 # merak-compile
 
+## 1.0.2
+
+### Patch Changes
+
+- 62efd4d: fix analyseJSGlobals
+- 62efd4d: hadnle absolute/relative path correctly
+
 ## 1.0.1
 
 ### Patch Changes

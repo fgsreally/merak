@@ -1,5 +1,13 @@
 # merak-vue
 
+## 1.0.2
+
+### Patch Changes
+
+- Updated dependencies [62efd4d]
+  - merak-core@1.0.2
+  - merak-helper@1.0.1
+
 ## 1.0.1
 
 ### Patch Changes

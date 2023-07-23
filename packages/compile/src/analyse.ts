@@ -233,7 +233,6 @@ export function injectGlobalToESM(code: string,
             const { start } = path.node || {}
             start && s.appendLeft(start, `${globalVar}.`)
           }
-
           checkIsDanger(path.node, warning)
         }
       },

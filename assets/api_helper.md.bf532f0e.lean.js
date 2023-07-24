@@ -1,0 +1,1 @@
+import{_ as s,o as n,c as a,a as l}from"./app.eabc61a9.js";const i=JSON.parse('{"title":"helper","description":"","frontmatter":{},"headers":[],"relativePath":"api/helper.md","lastUpdated":1690211188000}'),o={name:"api/helper.md"},p=l("",5),e=[p];function t(c,r,y,A,C,D){return n(),a("div",null,e)}const d=s(o,[["render",t]]);export{i as __pageData,d as default};

@@ -171,7 +171,7 @@ export function createProxyDocument(id: string, url: string) {
       }
 
       if (p === 'documentElement' || p === 'scrollingElement')
-        return instance.sandDocument
+        return instance.sandDocument /** get shade in wujie */
       if (p === 'forms')
         return instance.sandDocument!.querySelectorAll('form')
       if (p === 'images')

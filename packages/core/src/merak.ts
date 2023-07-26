@@ -218,10 +218,10 @@ export class Merak<L extends Loader = Loader> {
      
       }
       if (this.mountIndex === 0) {
+        // maybe shade is meaningless
         const shade = document.createElement('div')
         shade.setAttribute('style', MERAK_SHADE_STYLE)
         shade.setAttribute('id', 'merak-shade')
-
         const body = this.sandDocument.querySelector('body')!
         body.appendChild(shade)
       }

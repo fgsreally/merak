@@ -1,5 +1,14 @@
 # webpack-plugin-merak
 
+## 1.0.3
+
+### Patch Changes
+
+- 3fb68ce: logger should output before html emit
+- Updated dependencies [3fb68ce]
+- Updated dependencies [3fb68ce]
+  - merak-compile@1.0.3
+
 ## 1.0.2
 
 ### Patch Changes

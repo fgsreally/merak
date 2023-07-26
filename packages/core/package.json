@@ -13,8 +13,9 @@
     "./loader": {
       "import": "./dist/loaders/index.mjs",
       "require": "./dist/loaders/index.js"
-    }
-  },
+    },
+    "./*": "./*"
+   },
   "typesVersions": {
     "*": {
       "loader": [

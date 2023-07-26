@@ -16,9 +16,12 @@ export function addWindowVar(variable: string) {
 }
 
 if (__DEV__) {
+  // work for react
   addWindowVar('$RefreshSig$')
   addWindowVar('$RefreshReg$')
+  // work for vue
   addWindowVar('__VUE_HMR_RUNTIME__')
+  addWindowVar('__VUE_OPTIONS_API__')
 }
 
 export function getBindFn(target: any, p: any) {
@@ -168,7 +171,7 @@ export function createProxyDocument(id: string, url: string) {
       }
 
       if (p === 'documentElement' || p === 'scrollingElement')
-        return instance.sandDocument!.firstElementChild
+        return instance.sandDocument
       if (p === 'forms')
         return instance.sandDocument!.querySelectorAll('form')
       if (p === 'images')

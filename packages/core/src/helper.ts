@@ -19,16 +19,6 @@ export function getUrl(id: string) {
   return (getInstance(id)?.proxyMap.location as Location)?.href
 }
 
-let MERAK_BODY_STYLE = 'position:relative;'
-
-export function setBodyStyle(style: string) {
-  MERAK_BODY_STYLE = style
-}
-
-export function getBodyStyle() {
-  return MERAK_BODY_STYLE
-}
-
 export function $$jump(project: string, to: string, push = true) {
   const instance = getInstance(project)
   if (instance) {

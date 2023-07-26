@@ -4,7 +4,7 @@ import type { Loader } from './loaders'
 import { createProxy } from './proxy'
 import { MERAK_DATA_ID, MERAK_EVENT, MERAK_HOOK, MERAK_SHADE_STYLE, PERF_TIME } from './common'
 import { debug, eventTrigger, scriptPrimise } from './utils'
-import { MerakMap, getBodyStyle } from './helper'
+import { MerakMap } from './helper'
 import { LifeCycle } from './lifecycle'
 import { cloneScript } from './compile'
 import { Perf } from './perf'
@@ -215,15 +215,14 @@ export class Merak<L extends Loader = Loader> {
         this.sandDocument = document.importNode(window.document.implementation.createHTMLDocument('').documentElement, true)
         if (this.template) // template
           this.sandDocument.innerHTML = this.template
+     
       }
-
       if (this.mountIndex === 0) {
+        // maybe shade is meaningless
         const shade = document.createElement('div')
         shade.setAttribute('style', MERAK_SHADE_STYLE)
         shade.setAttribute('id', 'merak-shade')
-
         const body = this.sandDocument.querySelector('body')!
-        body.setAttribute('style', getBodyStyle())
         body.appendChild(shade)
       }
 

@@ -31,29 +31,41 @@ export const MerakImport = defineComponent({
       required: false as const,
       default: $location().origin,
     },
+    head: {
+      type: String,
+    },
     source: {
       type: String,
       required: true as const,
+    },
+    deactive: {
+      type: Boolean,
+      default: true,
     },
     globals: {
       type: Array as PropType<string[]>,
     },
   },
   setup(props, { slots }) {
-    const { fakeGlobalVar, name, url, props: MerakProps, proxy, iframe, nativeVars = shareNativeVars, customVars = [], source } = props
+    const { fakeGlobalVar, deactive, head, name, url, props: MerakProps, proxy, iframe, nativeVars = shareNativeVars, customVars = [], source } = props
     const app = getInstance(name) || new Merak(name, url, { proxy: proxy || createLibProxy(name, url), iframe })
+
     app.setGlobalVars(fakeGlobalVar, nativeVars, customVars)
 
     let vnode: VNode
 
     onMounted(async () => {
-      const { default: Comp } = await import(source)
+      await nextTick()
+      if (head)
+        app.sandDocument!.querySelector('head')!.innerHTML = head
+      const { default: Comp } = await import(/* @vite-ignore */source)
       vnode = h(Comp, { ...MerakProps }, slots)
       render(vnode, app.sandDocument!.querySelector('body')!)
     })
 
     onBeforeUnmount(() => {
       render(null, app.sandDocument!.querySelector('body')!)
+      deactive && app.deactive()
     })
 
     return () => h('merak-app', { [MERAK_DATA_ID]: props.name, [MERAK_KEEP_ALIVE]: props.keepAlive })
@@ -72,6 +84,13 @@ export const MerakScope = defineComponent({
       required: false as const,
       default: $location().origin,
     },
+    head: {
+      type: String,
+    },
+    deactive: {
+      type: Boolean,
+      default: true,
+    },
     fakeGlobalVar: {
       type: String,
       required: true as const,
@@ -80,7 +99,7 @@ export const MerakScope = defineComponent({
   },
   // emits: shareEmits,
   setup(props, { slots }) {
-    const { fakeGlobalVar, name, proxy, iframe, url, nativeVars = shareNativeVars, customVars = [] } = props
+    const { fakeGlobalVar, deactive, head, name, proxy, iframe, url, nativeVars = shareNativeVars, customVars = [] } = props
 
     const app = getInstance(name) || new Merak(name, url, { proxy: proxy || createLibProxy(name, url), iframe })
 
@@ -88,11 +107,15 @@ export const MerakScope = defineComponent({
 
     onMounted(async () => {
       await nextTick()
+      if (head)
+        app.sandDocument!.querySelector('head')!.innerHTML = head
+
       render(slots.default!()[0], app.sandDocument!.querySelector('body')!)
     })
 
     onBeforeUnmount(() => {
       render(null, app.sandDocument!.querySelector('body')!)
+      deactive && app.deactive()
     })
 
     return () => h('merak-app', { [MERAK_DATA_ID]: props.name, [MERAK_KEEP_ALIVE]: props.keepAlive })

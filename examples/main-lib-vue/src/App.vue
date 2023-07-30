@@ -16,7 +16,7 @@ const isShow = ref(false)
     {{ isShow ? 'delete' : 'append' }} component
   </button>
 
-  <MerakImport v-if="isShow" name="UUID" fake-global-var="vue_lib" source="/lib.js" />
+  <MerakImport v-if="isShow" name="UUID" fake-global-var="vue_lib" source="http://localhost:5000/lib.js" />
   <!-- <MerakScope v-if="isShow" name="UUID" fake-global-var="vue_lib">
     <Lib v-bind="{ type: 'lib' }" />
   </MerakScope> -->

@@ -46,10 +46,10 @@ export function getBindFn(target: any, p: any) {
 }
 
 export function createProxyWindow(id: string, url: string) {
-  const instance = getInstance(id)!
-
   return {
     get(target: any, p: string) {
+      const instance = getInstance(id)!
+
       debug(`get [${p}] from window`, id)
       // if you want to rewrite proxy logic,don't remove this part
       /** start  */
@@ -75,6 +75,8 @@ export function createProxyWindow(id: string, url: string) {
     },
 
     set(target: any, p: string, v: any) {
+      const instance = getInstance(id)!
+
       debug(`set [${p}] to window`, id)
 
       if (WINDOW_VAR_SET.has(p)) {
@@ -95,9 +97,10 @@ export function createProxyWindow(id: string, url: string) {
 }
 
 export function createProxyDocument(id: string, url: string) {
-  const instance = getInstance(id)!
   return {
     get(target: any, p: string) {
+      const instance = getInstance(id)!
+
       debug(`get [${p}] from document`, id)
 
       if (p === 'rawDocument')

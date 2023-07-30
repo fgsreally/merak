@@ -1,5 +1,17 @@
 # merak-vue
 
+## 1.0.4
+
+### Patch Changes
+
+- 748d2e5: add head to block component
+- Updated dependencies [1768700]
+- Updated dependencies [ff0d801]
+- Updated dependencies [ff0d801]
+- Updated dependencies [748d2e5]
+  - merak-core@1.0.4
+  - merak-helper@1.0.1
+
 ## 1.0.3
 
 ### Patch Changes

@@ -1,5 +1,29 @@
 # vite-plugin-merak
 
+## 1.0.3
+
+### Patch Changes
+
+- Updated dependencies [3fb68ce]
+- Updated dependencies [3fb68ce]
+  - merak-compile@1.0.3
+
+## 1.0.2
+
+### Patch Changes
+
+- Updated dependencies [62efd4d]
+- Updated dependencies [62efd4d]
+  - merak-compile@1.0.2
+
+## 1.0.1
+
+### Patch Changes
+
+- 6c567af: add baseUrl and refactor loader
+- Updated dependencies [6c567af]
+  - merak-compile@1.0.1
+
 ## 1.0.0
 
 ### Major Changes

@@ -1,5 +1,32 @@
 # merak-vue
 
+## 1.0.3
+
+### Patch Changes
+
+- Updated dependencies [3fb68ce]
+- Updated dependencies [3fb68ce]
+- Updated dependencies [3fb68ce]
+  - merak-core@1.0.3
+  - merak-helper@1.0.1
+
+## 1.0.2
+
+### Patch Changes
+
+- Updated dependencies [62efd4d]
+  - merak-core@1.0.2
+  - merak-helper@1.0.1
+
+## 1.0.1
+
+### Patch Changes
+
+- 6c567af: add baseUrl and refactor loader
+- Updated dependencies [6c567af]
+  - merak-helper@1.0.1
+  - merak-core@1.0.1
+
 ## 1.0.0
 
 ### Major Changes

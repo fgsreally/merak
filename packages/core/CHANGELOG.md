@@ -1,5 +1,14 @@
 # merak-core
 
+## 1.0.4
+
+### Patch Changes
+
+- 1768700: compileHtml should handle baseUrl
+- ff0d801: add **VUE_OPTIONS_API**
+- ff0d801: remove default body style
+- 748d2e5: should getInstance after instance create when using proxy
+
 ## 1.0.3
 
 ### Patch Changes

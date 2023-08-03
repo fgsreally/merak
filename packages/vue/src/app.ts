@@ -1,7 +1,7 @@
 import type { Loader } from 'merak-core'
 import { $$jump, CompileLoader, MERAK_DATA_ID, MERAK_KEEP_ALIVE, Merak, getInstance } from 'merak-core'
 import type { PropType } from 'vue'
-import { defineComponent, h, watch } from 'vue'
+import { defineComponent, h, onBeforeUnmount, watch } from 'vue'
 import { shareEmits, shareProps } from './share'
 export const vueLoader = new CompileLoader()
 export const MerakApp = defineComponent({
@@ -28,9 +28,16 @@ export const MerakApp = defineComponent({
     if (MerakProps)
       app.props = MerakProps
     for (const ev in shareEmits) {
-      if (!app.lifeCycle[ev])
-        app.lifeCycle[ev] = (arg: any) => emit(ev as any, arg)
+      const task = app.lifeCycle[ev]
+      app.lifeCycle[ev] = (arg: any) => {
+        task?.(arg)
+        emit(ev as any, arg)
+      }
+      onBeforeUnmount(() => {
+        app.lifeCycle[ev] = task
+      })
     }
+
     expose({ app })
     if (route)
       $$jump(props.name, route, false)

@@ -1,5 +1,11 @@
 # merak-vue
 
+## 1.0.5
+
+### Patch Changes
+
+- 31ba561: vue component will overwrite lifecycle at now
+
 ## 1.0.4
 
 ### Patch Changes

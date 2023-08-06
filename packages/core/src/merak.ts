@@ -50,7 +50,7 @@ export class Merak<L extends Loader = Loader> {
   public mountIndex = 0
 
   /** 子应用JS运行标志 */
-  public execPromise: Promise<void> | false = false
+  public execPromise: Promise<void> | boolean = false
 
   /** 子应用mount标志 */
   public mountFlag = false
@@ -246,7 +246,7 @@ export class Merak<L extends Loader = Loader> {
             }).finally(() => {
               this.perf.record(PERF_TIME.BOOTSTRAP)
               r()
-
+              this.execPromise = true
               this.eventTrigger(window, MERAK_EVENT.MOUNT + this.id)
               this.execHook(MERAK_HOOK.AFTER_MOUNT)
             });
@@ -266,8 +266,8 @@ export class Merak<L extends Loader = Loader> {
 
     this.execHook(MERAK_HOOK.TRANSFORM_DOCUMENT, { ele: this.sandDocument! })
     this.shadowRoot.appendChild(this.sandDocument!)
-    // execPromise  will be false if it is the first time to mount
-    if (this.execPromise) {
+    // execPromise is not ture if it is the first time to mount
+    if (this.execPromise === true) {
       this.eventTrigger(window, MERAK_EVENT.MOUNT + this.id)
       this.execHook(MERAK_HOOK.AFTER_MOUNT)
     }

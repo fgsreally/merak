@@ -7,6 +7,6 @@ describe('analyse file', () => {
   it('compileHTML', async () => {
     const content = await fs.promises.readFile(resolve(__dirname, './fixtures/index.html'), 'utf-8')
     const ret = analyseHTML(content)
-    expect(compileHTML(content, 'http://localhost:5002/base', ret.map(item => item.loc))).toMatchSnapshot()
+    expect(compileHTML(content, 'http://localhost:5002/base/index.html', ret.map(item => item.loc))).toMatchSnapshot()
   })
 })

@@ -1,5 +1,22 @@
 # merak-vue
 
+## 1.0.6
+
+### Patch Changes
+
+- a52fd22: replace onBeforeUnmount with onUnmounted ,make sure that resume lifecycle after unmount lifecycle emit
+- a52fd22: vue component will overwrite lifecycle at now
+- Updated dependencies [a52fd22]
+- Updated dependencies [a52fd22]
+  - merak-core@1.0.5
+  - merak-helper@1.0.1
+
+## 1.0.5
+
+### Patch Changes
+
+- 31ba561: vue component will overwrite lifecycle at now
+
 ## 1.0.4
 
 ### Patch Changes

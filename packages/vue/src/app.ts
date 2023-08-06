@@ -1,7 +1,7 @@
 import type { Loader } from 'merak-core'
 import { $$jump, CompileLoader, MERAK_DATA_ID, MERAK_KEEP_ALIVE, Merak, getInstance } from 'merak-core'
 import type { PropType } from 'vue'
-import { defineComponent, h, onBeforeUnmount, watch } from 'vue'
+import { defineComponent, h, onUnmounted, watch } from 'vue'
 import { shareEmits, shareProps } from './share'
 export const vueLoader = new CompileLoader()
 export const MerakApp = defineComponent({
@@ -33,7 +33,7 @@ export const MerakApp = defineComponent({
         task?.(arg)
         emit(ev as any, arg)
       }
-      onBeforeUnmount(() => {
+      onUnmounted(() => {
         app.lifeCycle[ev] = task
       })
     }

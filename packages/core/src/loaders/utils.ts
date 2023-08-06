@@ -28,13 +28,13 @@ export async function loadTextFile(url: string) {
   return res.text()
 }
 
-export function compileHTML(code: string, baseUrl: string, loc: [number, number][]) {
+export function compileHTML(code: string, htmlUrl: string, loc: [number, number][]) {
   const originStr = code
   let index = 0
   code = ''
   loc.forEach(([start, end]) => {
     code += originStr.slice(index, start)
-    code += resolveUrl(originStr.slice(start, end), `${baseUrl}/`)
+    code += resolveUrl(originStr.slice(start, end), htmlUrl)
     index = end
   })
   code += originStr.slice(index)

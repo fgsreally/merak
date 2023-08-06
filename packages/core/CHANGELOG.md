@@ -1,5 +1,12 @@
 # merak-core
 
+## 1.0.5
+
+### Patch Changes
+
+- a52fd22: compileLoader use html url (not baseUrl) when compileHtml
+- a52fd22: should turn execPromise to true after all scripts loaded ,to make sure afterMount will emit once
+
 ## 1.0.4
 
 ### Patch Changes

@@ -49,8 +49,8 @@ export const MerakImport = defineComponent({
   setup(props, { slots }) {
     const { fakeGlobalVar, deactive, head, name, url, props: MerakProps, proxy, iframe, nativeVars = shareNativeVars, customVars = [], source } = props
     const app = getInstance(name) || new Merak(name, url, { proxy: proxy || createLibProxy(name, url), iframe })
-
-    app.setGlobalVars(fakeGlobalVar, nativeVars, customVars)
+    if (!app.fakeGlobalVar)
+      app.setGlobalVars(fakeGlobalVar, nativeVars, customVars)
 
     let vnode: VNode
 
@@ -103,7 +103,8 @@ export const MerakScope = defineComponent({
 
     const app = getInstance(name) || new Merak(name, url, { proxy: proxy || createLibProxy(name, url), iframe })
 
-    app.setGlobalVars(fakeGlobalVar, nativeVars, customVars)
+    if (!app.fakeGlobalVar)
+      app.setGlobalVars(fakeGlobalVar, nativeVars, customVars)
 
     onMounted(async () => {
       await nextTick()

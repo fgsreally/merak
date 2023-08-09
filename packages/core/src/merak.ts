@@ -12,6 +12,9 @@ import { Perf } from './perf'
 export class Merak<L extends Loader = Loader> {
   /** 所有子应用共享 */
   static namespace: NameSpace = {}
+
+  static fakeGlobalVars = new Set<string>()
+
   /** 生命周期 */
   public lifeCycle = new LifeCycle()
 
@@ -169,6 +172,12 @@ export class Merak<L extends Loader = Loader> {
   }
 
   setGlobalVars(fakeGlobalVar: string, nativeVars: string[], customVars: string[]) {
+    if (Merak.fakeGlobalVars.has(fakeGlobalVar)) {
+      Merak.errorHandler({ type: 'duplicateName', error: new Error(`fakeglobalVar '${fakeGlobalVar}' has been defined`) })
+      return
+    }
+    Merak.fakeGlobalVars.add(fakeGlobalVar)
+
     this.fakeGlobalVar = fakeGlobalVar
     this.nativeVars = nativeVars
     this.customVars = customVars
@@ -189,22 +198,22 @@ export class Merak<L extends Loader = Loader> {
   async load() {
     if (!this.loader)
       return
-    if (this.loadPromise)
-      return this.loadPromise
-    const { url, loaderOptions } = this
-    this.perf.record(PERF_TIME.LOAD)
-    return this.loadPromise = (this.loader!.load(url, loaderOptions) as Promise<LoadDone>).then((loadRes) => {
-      if (loadRes instanceof Error) {
-        this.errorHandler?.({ type: 'loadError', error: loadRes as Error })
-      }
-      else {
-        this.perf.record(PERF_TIME.LOAD)
-        const { template, fakeGlobalVar, nativeVars, customVars } = this.execHook(MERAK_HOOK.LOAD, loadRes) || loadRes
+    if (!this.loadPromise) {
+      const { url, loaderOptions } = this
+      this.perf.record(PERF_TIME.LOAD)
+      this.loadPromise = (this.loader!.load(url, loaderOptions) as Promise<LoadDone>).then((loadRes) => {
+        if (loadRes instanceof Error) {
+          this.errorHandler?.({ type: 'loadError', error: loadRes as Error })
+        }
+        else {
+          this.perf.record(PERF_TIME.LOAD)
+          const { template, fakeGlobalVar, nativeVars, customVars } = this.execHook(MERAK_HOOK.LOAD, loadRes) || loadRes
 
-        this.template = template
-        this.setGlobalVars(fakeGlobalVar, nativeVars, customVars)
-      }
-    })
+          this.template = template
+          this.setGlobalVars(fakeGlobalVar, nativeVars, customVars)
+        }
+      })
+    }
   }
 
   private mountTemplateAndScript() {

@@ -2,6 +2,7 @@ import type { Loader } from 'merak-core'
 import { $$jump, CompileLoader, MERAK_DATA_ID, MERAK_KEEP_ALIVE, Merak, getInstance } from 'merak-core'
 import type { PropType } from 'vue'
 import { defineComponent, h, onUnmounted, watch } from 'vue'
+
 import { shareEmits, shareProps } from './share'
 export const vueLoader = new CompileLoader()
 export const MerakApp = defineComponent({

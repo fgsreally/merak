@@ -7,7 +7,7 @@
 } */
 import { Fragment as _Fragment, createElementBlock as _createElementBlock, createElementVNode as _createElementVNode, openBlock as _openBlock, toDisplayString as _toDisplayString, vModelText as _vModelText, withDirectives as _withDirectives, onUnmounted } from 'https://cdnjs.cloudflare.com/ajax/libs/vue/3.3.1/vue.esm-browser.prod.min.js'
 
-import { ref } from 'https://cdnjs.cloudflare.com/ajax/libs/vue/3.3.1/vue.esm-browser.prod.min.js'
+import { ref } from 'http://localhost:5000/vue.js'
 
 /** compile ret */
 const { document } = vue_lib

@@ -6,7 +6,7 @@ export default defineConfig({
   plugins: [vue()],
   resolve: {
     alias: {
-      vue: 'https://cdnjs.cloudflare.com/ajax/libs/vue/3.3.1/vue.esm-browser.prod.min.js',
+      vue: 'http://localhost:5000/vue.js',
     },
   },
   server: {

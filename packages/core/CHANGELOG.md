@@ -1,5 +1,13 @@
 # merak-core
 
+## 1.0.6
+
+### Patch Changes
+
+- 87ef5df: compileLoader use html url (not baseUrl) when compileHtml
+- 87ef5df: should turn execPromise to true after all scripts loaded ,to make sure afterMount will emit once
+- 87ef5df: add dubplicateName Error when setting global vars
+
 ## 1.0.5
 
 ### Patch Changes

@@ -1,5 +1,12 @@
 # merak-core
 
+## 1.0.7
+
+### Patch Changes
+
+- 707f509: fix debug when output symbol key
+- 707f509: add dubplicateName Error when setting global vars
+
 ## 1.0.6
 
 ### Patch Changes

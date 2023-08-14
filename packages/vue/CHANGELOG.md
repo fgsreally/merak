@@ -1,5 +1,15 @@
 # merak-vue
 
+## 1.0.8
+
+### Patch Changes
+
+- 707f509: only setGlobalVars for the first time in block component
+- Updated dependencies [707f509]
+- Updated dependencies [707f509]
+  - merak-core@1.0.7
+  - merak-helper@1.0.1
+
 ## 1.0.7
 
 ### Patch Changes

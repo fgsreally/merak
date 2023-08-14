@@ -9,7 +9,7 @@ export const cacheBindFn = new WeakMap()
 
 // export const GLOBAL_VAR_SET = new Set()
 // export const GLOBAL_VAR_MAP = new Map()
-export const WINDOW_VAR_SET = new Set<string>()
+export const WINDOW_VAR_SET = new Set<PropertyKey>()
 
 export function addWindowVar(variable: string) {
   WINDOW_VAR_SET.add(variable)
@@ -47,10 +47,10 @@ export function getBindFn(target: any, p: any) {
 
 export function createProxyWindow(id: string, url: string) {
   return {
-    get(target: any, p: string) {
+    get(target: any, p: PropertyKey) {
       const instance = getInstance(id)!
 
-      debug(`get [${p}] from window`, id)
+      debug(`get [${typeof p === 'symbol' ? p.toString() : p}] from window`, id)
       // if you want to rewrite proxy logic,don't remove this part
       /** start  */
       if (p === 'isMerak')
@@ -64,20 +64,20 @@ export function createProxyWindow(id: string, url: string) {
       if (p === 'rawWindow')
         return window
 
-      if (['self', 'window', 'globalThis'].includes(p))
+      if (['self', 'window', 'globalThis'].includes(p as string))
         return instance.proxy
 
       if (p in instance.proxyMap)
-        return instance.proxyMap[p]
+        return instance.proxyMap[p as string]
       /** end  */
 
       return getBindFn(p in target ? target : window, p)
     },
 
-    set(target: any, p: string, v: any) {
+    set(target: any, p: PropertyKey, v: any) {
       const instance = getInstance(id)!
 
-      debug(`set [${p}] to window`, id)
+      debug(`set [${typeof p === 'symbol' ? p.toString() : p}] to window`, id)
 
       if (WINDOW_VAR_SET.has(p)) {
         const iframe = instance.iframe
@@ -98,10 +98,10 @@ export function createProxyWindow(id: string, url: string) {
 
 export function createProxyDocument(id: string, url: string) {
   return {
-    get(target: any, p: string) {
+    get(target: any, p: PropertyKey) {
       const instance = getInstance(id)!
 
-      debug(`get [${p}] from document`, id)
+      debug(`get [${typeof p === 'symbol' ? p.toString() : p}] from document`, id)
 
       if (p === 'rawDocument')
         return document
@@ -198,8 +198,8 @@ export function createProxyDocument(id: string, url: string) {
 
 export function createProxyHistory(id: string) {
   return {
-    get(target: any, p: string) {
-      debug(`get [${p}] from history`, id)
+    get(target: any, p: PropertyKey) {
+      debug(`get [${typeof p === 'symbol' ? p.toString() : p}] from history`, id)
 
       if (p === 'replaceState') {
         function replace(...args: [any, any, any]) {
@@ -240,8 +240,8 @@ export function createProxyHistory(id: string) {
 export function createProxyLocation(id: string) {
   return {
 
-    get(target: any, p: string) {
-      debug(`get [${p}] from location`, id)
+    get(target: any, p: PropertyKey) {
+      debug(`get [${typeof p === 'symbol' ? p.toString() : p}] from location`, id)
 
       const { href } = window.location
       const queryMap = getUrlQuery(href)

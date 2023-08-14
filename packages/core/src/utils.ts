@@ -107,7 +107,7 @@ export function createCustomVarProxy(globalVar: string, customVars: string[]) {
 export function debug(info: string, id?: string) {
   if (__DEV__) {
     if (window.MERAK_DEBUG)
-      // eslint-disable-next-line no-console
+    // eslint-disable-next-line no-console
       console.debug(`[merak(${id})]:${info}`)
   }
 }

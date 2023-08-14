@@ -119,7 +119,7 @@ export class Merak<L extends Loader = Loader> {
 
     this.proxyMap.__m_p__ = (k: string) => new Proxy(() => { }, {
       get(_, p) {
-        debug(`get [${p as string}] from ${k}`, id)
+        debug(`get [${typeof p === 'symbol' ? p.toString() : p}] from ${k}`, id)
         const v = windowProxy[k][p]
         return typeof v === 'function' ? v.bind(windowProxy) : v
       },

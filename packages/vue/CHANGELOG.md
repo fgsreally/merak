@@ -1,5 +1,18 @@
 # merak-vue
 
+## 1.0.7
+
+### Patch Changes
+
+- 87ef5df: replace onBeforeUnmount with onUnmounted ,make sure that resume lifecycle after unmount lifecycle emit
+- 87ef5df: only setGlobalVars for the first time in block component
+- 87ef5df: vue component will overwrite lifecycle at now
+- Updated dependencies [87ef5df]
+- Updated dependencies [87ef5df]
+- Updated dependencies [87ef5df]
+  - merak-core@1.0.6
+  - merak-helper@1.0.1
+
 ## 1.0.6
 
 ### Patch Changes

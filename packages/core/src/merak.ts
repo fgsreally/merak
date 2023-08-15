@@ -203,12 +203,13 @@ export class Merak<L extends Loader = Loader> {
     if (!this.loadPromise) {
       const { url, loaderOptions } = this
       this.perf.record(PERF_TIME.LOAD)
-      this.loadPromise = (this.loader!.load(url, loaderOptions) as Promise<LoadDone>).then((loadRes) => {
+      return this.loadPromise = (this.loader!.load(url, loaderOptions) as Promise<LoadDone>).then((loadRes) => {
         if (loadRes instanceof Error) {
-          this.errorHandler?.({ type: 'loadError', error: loadRes as Error })
+          this.errorHandler({ type: 'loadError', error: loadRes as Error })
         }
         else {
           this.perf.record(PERF_TIME.LOAD)
+
           const { template, fakeGlobalVar, nativeVars, customVars } = this.execHook(MERAK_HOOK.LOAD, loadRes) || loadRes
 
           this.template = template
@@ -221,7 +222,7 @@ export class Merak<L extends Loader = Loader> {
   private mountTemplateAndScript() {
     this.execHook(MERAK_HOOK.BEFORE_MOUNT)
     this.active()
-    console.log(this.cacheFlag, this.sandDocument, this.template)
+
     if (!this.cacheFlag) {
       if (!this.sandDocument) {
         this.sandDocument = document.importNode(window.document.implementation.createHTMLDocument('').documentElement, true)
@@ -290,9 +291,7 @@ export class Merak<L extends Loader = Loader> {
       return
 
     if (this.options.iframe && !this.iframe) {
-      console.log('mount')
       iframeInstance.add(this.options.iframe).then((el) => {
-        console.log('then')
         this.iframe = el
         this.mountTemplateAndScript()
       })

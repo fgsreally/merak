@@ -1,6 +1,6 @@
 import { $$jump, MERAK_DATA_ID, MERAK_KEEP_ALIVE, Merak, SSRLoader, getInstance } from 'merak-core'
 import type { PropType } from 'vue'
-import { defineComponent, h, onBeforeUnmount, watch } from 'vue'
+import { defineComponent, h, onMounted, onUnmounted, watch } from 'vue'
 import type { Loader } from 'merak-core'
 import { shareEmits, shareProps } from './share'
 export const vueSSRLoader = new SSRLoader()
@@ -25,15 +25,18 @@ export const MerakSSR = defineComponent({
 
     for (const ev in shareEmits) {
       const task = app.lifeCycle[ev]
-      app.lifeCycle[ev] = (arg: any) => {
+      const hook = (arg: any) => {
         task?.(arg)
         emit(ev as any, arg)
       }
-      onBeforeUnmount(() => {
-        app.lifeCycle[ev] = task
+      onMounted(() => {
+        app.lifeCycle[ev] = hook
+      })
+      onUnmounted(() => {
+        if (app.lifeCycle[ev] === hook)
+          app.lifeCycle[ev] = task
       })
     }
-
     if (route)
       $$jump(props.name, route, false)
 

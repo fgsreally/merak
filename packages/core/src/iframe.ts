@@ -14,7 +14,6 @@ export class IframePool {
     const iframeEl = document.createElement('iframe')
     iframeEl.setAttribute(MERAK_DATA_ID, id)
     iframeEl.style.display = 'none'
-    document.body.appendChild(iframeEl)
     this.pool.set(id, {
       el: iframeEl,
       count: 1,
@@ -22,6 +21,7 @@ export class IframePool {
     return new Promise((resolve, reject) => {
       iframeEl.onload = () => resolve(iframeEl)
       iframeEl.onerror = reject
+      document.body.appendChild(iframeEl)
     })
   }
 

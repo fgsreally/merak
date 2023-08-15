@@ -1,5 +1,5 @@
 /* eslint-disable no-prototype-builtins */
-
+// @internal
 import { MerakMap } from './helper'
 
 export function resolveUrl(filePath: string, baseURL: string) {

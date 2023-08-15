@@ -172,11 +172,13 @@ export class Merak<L extends Loader = Loader> {
   }
 
   setGlobalVars(fakeGlobalVar: string, nativeVars: string[], customVars: string[]) {
-    if (Merak.fakeGlobalVars.has(fakeGlobalVar)) {
-      Merak.errorHandler({ type: 'duplicateName', error: new Error(`fakeglobalVar '${fakeGlobalVar}' has been defined`) })
-      return
+    if (!this.options.iframe) {
+      if (Merak.fakeGlobalVars.has(fakeGlobalVar)) {
+        Merak.errorHandler({ type: 'duplicateName', error: new Error(`fakeglobalVar '${fakeGlobalVar}' has been defined`) })
+        return
+      }
+      Merak.fakeGlobalVars.add(fakeGlobalVar)
     }
-    Merak.fakeGlobalVars.add(fakeGlobalVar)
 
     this.fakeGlobalVar = fakeGlobalVar
     this.nativeVars = nativeVars
@@ -219,6 +221,7 @@ export class Merak<L extends Loader = Loader> {
   private mountTemplateAndScript() {
     this.execHook(MERAK_HOOK.BEFORE_MOUNT)
     this.active()
+    console.log(this.cacheFlag, this.sandDocument, this.template)
     if (!this.cacheFlag) {
       if (!this.sandDocument) {
         this.sandDocument = document.importNode(window.document.implementation.createHTMLDocument('').documentElement, true)
@@ -287,7 +290,9 @@ export class Merak<L extends Loader = Loader> {
       return
 
     if (this.options.iframe && !this.iframe) {
+      console.log('mount')
       iframeInstance.add(this.options.iframe).then((el) => {
+        console.log('then')
         this.iframe = el
         this.mountTemplateAndScript()
       })

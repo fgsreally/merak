@@ -17,6 +17,9 @@ import HelloWorld from './components/HelloWorld.vue'
         <RouterLink id="to_micro" to="/about" style="color:orange">
           to micro
         </RouterLink>
+        <RouterLink id="to_iframe" to="/iframe" style="color:blue">
+          to iframe
+        </RouterLink>
       </nav>
     </div>
   </header>

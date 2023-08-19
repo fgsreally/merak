@@ -30,7 +30,7 @@ export enum SUBAPP_ID {
 
 export enum SUBAPP_URL {
   vite_react = 'http://localhost:4003',
-  vite_vue = 'http://127.0.0.1:4004',
+  vite_vue = 'http://localhost:4004',
   vue_cli = 'http://localhost:4005',
 }
 

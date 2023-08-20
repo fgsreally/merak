@@ -1,5 +1,13 @@
 # merak-core
 
+## 1.0.8
+
+### Patch Changes
+
+- 0527d62: fix debug when output symbol key
+- 0527d62: fix iframe mode
+- 0527d62: add dubplicateName Error when setting global vars
+
 ## 1.0.7
 
 ### Patch Changes

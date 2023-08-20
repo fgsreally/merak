@@ -185,6 +185,7 @@ export function $stopBubble(isPass = false) {
 }
 /**
  * Tell the host application that it's time to uninstall,
+ * only invoke inside $onDestroy
  */
 export function $done() {
   $instance()?.deactive()

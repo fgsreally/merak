@@ -5,6 +5,7 @@ import { isSymbolExist } from '../utils'
 describe('vanilla app', () => {
   beforeEach(() => {
     cy.visit(`${MAINAPP_URL.VANILLA}`)
+    cy.wait(2000)
   })
 
   // it('should preload right', () => {
@@ -15,7 +16,6 @@ describe('vanilla app', () => {
 
   it('should mount successfully', () => {
     cy.get('[data-testid="btn"]').first().click()
-    cy.wait(1000)
     isSymbolExist(['vite_vue', 'vite_react', 'vue_cli'])
   })
 })

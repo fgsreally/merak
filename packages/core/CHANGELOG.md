@@ -1,5 +1,16 @@
 # merak-core
 
+## 1.0.9
+
+### Patch Changes
+
+- 66a9004: fix debug when output symbol key
+- 66a9004: init props with an empty object({})
+- 66a9004: fix iframe mode
+- 66a9004: add dubplicateName Error when setting global vars
+- 66a9004: will remove merak listener when using iframe
+- 66a9004: add more debug
+
 ## 1.0.8
 
 ### Patch Changes

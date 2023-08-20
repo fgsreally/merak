@@ -67,7 +67,7 @@ export async function createServer(root = process.cwd(), isProd = isProduction) 
       const html = template
         .replace('<!--preload-links-->', links)
         .replace('<!--app-html-->', strOrStream)
-        .replace('</body>', `${wrap(compileHTML(data, appurl, config._l), 'http://127.0.0.1:4004')}</body>`)
+        .replace('</body>', `${wrap(compileHTML(data, appurl, config._l), 'http://localhost:4004')}</body>`)
 
       res.status(200).set({ 'Content-Type': 'text/html' }).end(html)
     }

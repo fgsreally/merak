@@ -44,7 +44,7 @@ export class Merak<L extends Loader = Loader> {
   public loader: L | undefined
 
   /** 挂载数据 */
-  public props: Props
+  public props: Props = {}
 
   /** 子应用激活标志 */
   public activeFlag = false
@@ -86,6 +86,7 @@ export class Merak<L extends Loader = Loader> {
   public preloadStat: false | 'assets' | 'script' = false
 
   /** 缓存事件，卸载时被释放 */
+  // @todo
   cacheEvent: (() => void)[] = []
 
   constructor(public id: string, public url: string, public options: {
@@ -96,8 +97,7 @@ export class Merak<L extends Loader = Loader> {
   } = {},
   ) {
     if (MerakMap.has(id)) {
-      if (__DEV__)
-        console.warn(`[merak]: "${id}" already exists`)
+      debug('already exists', id)
 
       return MerakMap.get(id) as Merak<L>
     }
@@ -155,7 +155,7 @@ export class Merak<L extends Loader = Loader> {
 
   protected execHook<Stage extends keyof LifeCycle>(stage: Stage, params?: Omit<Parameters<LifeCycle[Stage]>[0], 'instance'>) {
     const args = { ...params }
-
+    debug(`execHook '${stage}'`, this.id)
     // @ts-expect-error lifecycle work
     return this.lifeCycle[stage]?.(args)
   }
@@ -179,7 +179,7 @@ export class Merak<L extends Loader = Loader> {
       }
       Merak.fakeGlobalVars.add(fakeGlobalVar)
     }
-
+    debug(`set fakerGlobalVar '${fakeGlobalVar}'`, this.id)
     this.fakeGlobalVar = fakeGlobalVar
     this.nativeVars = nativeVars
     this.customVars = customVars

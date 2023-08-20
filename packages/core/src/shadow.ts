@@ -1,6 +1,7 @@
 import { MERAK_DATA_ID, MERAK_KEEP_ALIVE } from './common'
 import { Merak } from './merak'
 import { getInstance } from './helper'
+import { debug } from './utils'
 
 export function defineWebComponent() {
   class MerakApp extends HTMLElement {
@@ -29,6 +30,7 @@ export function defineWebComponent() {
         Merak.errorHandler({ type: 'missProperty', error: new Error(`set ${MERAK_DATA_ID} to merak-app`) })
         return
       }
+      debug('connected', id)
       const app = getInstance(id) as Merak
       if (!app) {
         Merak.errorHandler({ type: 'missInstance', error: new Error(`can't find app [${id}] `) })
@@ -38,8 +40,7 @@ export function defineWebComponent() {
       await app.load()
 
       if (app.mountFlag) {
-        if (__DEV__)
-          console.warn(`[merak]: app "${id}" has been mounted`)
+        debug('has been mounted', id)
         // work for preload
         if (app.preloadStat) {
           await app.execPromise
@@ -59,6 +60,8 @@ export function defineWebComponent() {
 
     disconnectedCallback() {
       const id = this.getAttribute(MERAK_DATA_ID)!
+      debug('disconnected', id)
+
       const app = getInstance(id)!
       app.unmount(this.hasAttribute(MERAK_KEEP_ALIVE) && this.getAttribute(MERAK_KEEP_ALIVE) !== 'false')
     }

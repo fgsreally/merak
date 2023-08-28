@@ -228,8 +228,8 @@ export class Merak<L extends Loader = Loader> {
       if (!this.sandHtml) {
         this.sandHtml = document.createElement('html')
         // this.sandHtml = document.importNode(window.document.implementation.createHTMLDocument('').documentElement, true)
-        if (this.template) // template
-          this.sandHtml.innerHTML = this.template
+
+        this.sandHtml.innerHTML = this.template || '<head></head><body></body>'
       }
       if (this.mountIndex === 0) {
         // maybe shade is meaningless

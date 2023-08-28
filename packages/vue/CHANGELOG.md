@@ -1,5 +1,22 @@
 # merak-vue
 
+## 1.0.11
+
+### Patch Changes
+
+- 381661b: only setGlobalVars for the first time in block component
+- 381661b: add lifecycle in mounted hook and revert if the lifecyle is not changed
+- Updated dependencies [381661b]
+- Updated dependencies [381661b]
+- Updated dependencies [381661b]
+- Updated dependencies [381661b]
+- Updated dependencies [381661b]
+- Updated dependencies [381661b]
+- Updated dependencies [381661b]
+- Updated dependencies [381661b]
+  - merak-core@1.0.10
+  - merak-helper@1.0.1
+
 ## 1.0.10
 
 ### Patch Changes

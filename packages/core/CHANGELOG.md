@@ -1,5 +1,18 @@
 # merak-core
 
+## 1.0.10
+
+### Patch Changes
+
+- 381661b: replace sandDocument with sandHtml(instead createHTMLDocument with htmlElement)
+- 381661b: fix debug when output symbol key
+- 381661b: init props with an empty object({})
+- 381661b: fix iframe mode
+- 381661b: add dubplicateName Error when setting global vars
+- 381661b: will remove merak listener when using iframe
+- 381661b: add more debug
+- 381661b: query should sort before hash
+
 ## 1.0.9
 
 ### Patch Changes

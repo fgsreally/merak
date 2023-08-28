@@ -57,14 +57,14 @@ export const MerakImport = defineComponent({
     onMounted(async () => {
       await nextTick()
       if (head)
-        app.sandDocument!.querySelector('head')!.innerHTML = head
+        app.sandHtml!.querySelector('head')!.innerHTML = head
       const { default: Comp } = await import(/* @vite-ignore */source)
       vnode = h(Comp, { ...MerakProps }, slots)
-      render(vnode, app.sandDocument!.querySelector('body')!)
+      render(vnode, app.sandHtml!.querySelector('body')!)
     })
 
     onBeforeUnmount(() => {
-      render(null, app.sandDocument!.querySelector('body')!)
+      render(null, app.sandHtml!.querySelector('body')!)
       deactive && app.deactive()
     })
 
@@ -109,13 +109,13 @@ export const MerakScope = defineComponent({
     onMounted(async () => {
       await nextTick()
       if (head)
-        app.sandDocument!.querySelector('head')!.innerHTML = head
+        app.sandHtml!.querySelector('head')!.innerHTML = head
 
-      render(slots.default!()[0], app.sandDocument!.querySelector('body')!)
+      render(slots.default!()[0], app.sandHtml!.querySelector('body')!)
     })
 
     onBeforeUnmount(() => {
-      render(null, app.sandDocument!.querySelector('body')!)
+      render(null, app.sandHtml!.querySelector('body')!)
       deactive && app.deactive()
     })
 

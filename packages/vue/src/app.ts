@@ -14,7 +14,7 @@ export const MerakApp = defineComponent({
     },
 
     loader: {
-      type: Object as PropType<Loader>,
+      type: Object as PropType< Loader>,
       default: vueLoader,
     },
     route: {

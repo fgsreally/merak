@@ -4,7 +4,6 @@
 
 ### Patch Changes
 
-- 0527d62: fix debug when output symbol key
 - 0527d62: fix iframe mode
 - 0527d62: add dubplicateName Error when setting global vars
 
@@ -13,14 +12,11 @@
 ### Patch Changes
 
 - 707f509: fix debug when output symbol key
-- 707f509: add dubplicateName Error when setting global vars
 
 ## 1.0.6
 
 ### Patch Changes
 
-- 87ef5df: compileLoader use html url (not baseUrl) when compileHtml
-- 87ef5df: should turn execPromise to true after all scripts loaded ,to make sure afterMount will emit once
 - 87ef5df: add dubplicateName Error when setting global vars
 
 ## 1.0.5

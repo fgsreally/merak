@@ -4,7 +4,6 @@
 
 ### Patch Changes
 
-- 0527d62: only setGlobalVars for the first time in block component
 - 0527d62: add lifecycle in mounted hook and revert if the lifecyle is not changed
 - Updated dependencies [0527d62]
 - Updated dependencies [0527d62]
@@ -16,8 +15,6 @@
 
 ### Patch Changes
 
-- 707f509: only setGlobalVars for the first time in block component
-- Updated dependencies [707f509]
 - Updated dependencies [707f509]
   - merak-core@1.0.7
   - merak-helper@1.0.1
@@ -26,11 +23,7 @@
 
 ### Patch Changes
 
-- 87ef5df: replace onBeforeUnmount with onUnmounted ,make sure that resume lifecycle after unmount lifecycle emit
 - 87ef5df: only setGlobalVars for the first time in block component
-- 87ef5df: vue component will overwrite lifecycle at now
-- Updated dependencies [87ef5df]
-- Updated dependencies [87ef5df]
 - Updated dependencies [87ef5df]
   - merak-core@1.0.6
   - merak-helper@1.0.1
@@ -40,8 +33,6 @@
 ### Patch Changes
 
 - a52fd22: replace onBeforeUnmount with onUnmounted ,make sure that resume lifecycle after unmount lifecycle emit
-- a52fd22: vue component will overwrite lifecycle at now
-- Updated dependencies [a52fd22]
 - Updated dependencies [a52fd22]
   - merak-core@1.0.5
   - merak-helper@1.0.1

@@ -3,7 +3,7 @@ import type { LoadDone, NameSpace, Props, ProxyGlobals } from './types'
 import type { Loader } from './loaders'
 import { createProxy } from './proxy'
 import { MERAK_DATA_ID, MERAK_EVENT, MERAK_HOOK, MERAK_SHADE_STYLE, PERF_TIME } from './common'
-import { debug, eventTrigger, scriptPrimise } from './utils'
+import { debug, elementPromise, eventTrigger } from './utils'
 import { MerakMap } from './helper'
 import { LifeCycle } from './lifecycle'
 import { cloneScript } from './compile'
@@ -23,7 +23,7 @@ export class Merak<L extends Loader = Loader> {
   public shadowRoot: ShadowRoot
   /** shadowroot 下的 document */
 
-  public sandDocument: HTMLElement | null
+  public sandHtml: HTMLHtmlElement | null
 
   /** iframe 容器 */
   public iframe: HTMLIFrameElement | null
@@ -222,19 +222,21 @@ export class Merak<L extends Loader = Loader> {
   private mountTemplateAndScript() {
     this.execHook(MERAK_HOOK.BEFORE_MOUNT)
     this.active()
+    // work for style flicker
 
     if (!this.cacheFlag) {
-      if (!this.sandDocument) {
-        this.sandDocument = document.importNode(window.document.implementation.createHTMLDocument('').documentElement, true)
-        if (this.template) // template
-          this.sandDocument.innerHTML = this.template
+      if (!this.sandHtml) {
+        this.sandHtml = document.createElement('html')
+        // this.sandHtml = document.importNode(window.document.implementation.createHTMLDocument('').documentElement, true)
+
+        this.sandHtml.innerHTML = this.template || '<head></head><body></body>'
       }
       if (this.mountIndex === 0) {
         // maybe shade is meaningless
         const shade = document.createElement('div')
         shade.setAttribute('style', MERAK_SHADE_STYLE)
         shade.setAttribute('id', 'merak-shade')
-        const body = this.sandDocument.querySelector('body')!
+        const body = this.sandHtml.querySelector('body')!
         body.appendChild(shade)
       }
 
@@ -242,7 +244,7 @@ export class Merak<L extends Loader = Loader> {
         // mount script on body or iframe
         if (!this.execPromise) {
           if (this.preloadStat !== 'assets') {
-            const originScripts = Array.from(this.sandDocument.querySelectorAll('script'))
+            const originScripts = Array.from(this.sandHtml.querySelectorAll('script'))
             const scripts = originScripts.filter((script) => {
               !this.iframe && script.remove()
               return !script.hasAttribute('merak-ignore') && script.type !== 'importmap'
@@ -254,7 +256,7 @@ export class Merak<L extends Loader = Loader> {
               r = resolve
             })
             // only invoke mount event after all scripts load/fail
-            Promise.all(scripts.map(scriptPrimise)).catch((e) => {
+            Promise.all(scripts.map(elementPromise)).catch((e) => {
               return this.errorHandler?.({ type: 'scriptError', error: e })
             }).finally(() => {
               this.perf.record(PERF_TIME.BOOTSTRAP)
@@ -264,7 +266,7 @@ export class Merak<L extends Loader = Loader> {
               this.execHook(MERAK_HOOK.AFTER_MOUNT)
             });
             // TODO JS queue
-            (this.iframe?.contentDocument || this.sandDocument).querySelector('body')?.append(...scripts)
+            (this.iframe?.contentDocument || this.sandHtml).querySelector('body')?.append(...scripts)
             this.perf.record(PERF_TIME.BOOTSTRAP)
           }
         }
@@ -277,8 +279,19 @@ export class Merak<L extends Loader = Loader> {
       this.eventTrigger(window, MERAK_EVENT.SHOW + this.id)
     }
 
-    this.execHook(MERAK_HOOK.TRANSFORM_DOCUMENT, { ele: this.sandDocument! })
-    this.shadowRoot.appendChild(this.sandDocument!)
+    this.execHook(MERAK_HOOK.TRANSFORM_DOCUMENT, { ele: this.sandHtml! })
+
+    // Promise.all(Array.from(this.sandHtml!.querySelectorAll('link[rel="stylesheet"]')).map(elementPromise)).finally(() => {
+
+    // })
+    this.shadowRoot.appendChild(this.sandHtml!)
+
+    // this.sandHtml!.style.visibility = 'hidden'
+
+    // setTimeout(() => {
+    //   if (this.sandHtml)
+    //     this.sandHtml.style.visibility = 'visible'
+    // }, 200)
     // execPromise is not ture if it is the first time to mount
     if (this.execPromise === true) {
       this.eventTrigger(window, MERAK_EVENT.MOUNT + this.id)
@@ -337,7 +350,7 @@ export class Merak<L extends Loader = Loader> {
 
     this.execHook(MERAK_HOOK.DESTROY)
     if (this.template)
-      this.template = this.sandDocument!.innerHTML
+      this.template = this.sandHtml!.innerHTML
     this.activeFlag = false
     if (this.iframe) {
       const isIframeDestroy = iframeInstance.remove(this.options.iframe as string)
@@ -348,7 +361,7 @@ export class Merak<L extends Loader = Loader> {
     else {
       delete window[this.fakeGlobalVar]
     }
-    this.sandDocument = null
+    this.sandHtml = null
     this.cleanEvents()
   }
 }

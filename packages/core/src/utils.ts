@@ -6,8 +6,8 @@ export function resolveUrl(filePath: string, baseURL: string) {
   return new URL(filePath, baseURL).href
 }
 
-export function getUrlQuery(url: string) {
-  const querys = url.split('?')[1]
+export function getMerakQuerys() {
+  const querys = location.search.slice(1)
   const queryMap: Record<string, string> = {}
   if (querys) {
     querys.split('&').forEach((item) => {
@@ -89,14 +89,14 @@ export const isCallable = (fn: any) => {
   return callable
 }
 
-export function scriptPrimise(script: HTMLScriptElement) {
+export function elementPromise(ele: Element) {
   return new Promise<any>((resolve, reject) => {
-    if (!script.src) {
-      resolve(true)
-      return
-    }
-    script.addEventListener('load', resolve)
-    script.addEventListener('error', reject)
+    // if (!script.src) {
+    //   resolve(true)
+    //   return
+    // }
+    ele.addEventListener('load', resolve)
+    ele.addEventListener('error', reject)
   })
 }
 

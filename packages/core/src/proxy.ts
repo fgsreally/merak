@@ -1,6 +1,6 @@
 /* eslint-disable no-prototype-builtins */
 import { MERAK_EVENT } from './common'
-import { createQuery, debug, getUrlQuery, isBoundedFunction, isCallable, isConstructable } from './utils'
+import { createQuery, debug, getMerakQuerys, isBoundedFunction, isCallable, isConstructable } from './utils'
 import { getInstance } from './helper'
 import { patchTimer } from './patch/timer'
 import { patchListener } from './patch/listener'
@@ -136,20 +136,20 @@ export function createProxyDocument(id: string, url: string) {
         }
       }
       if (p === 'activeElement')
-        return instance!.sandDocument?.querySelector('body')
+        return instance!.sandHtml?.querySelector('body')
 
       if (p === 'documentURI' || p === 'URL')
         return (instance.proxyMap.location as Location).href
 
       if (p === 'querySelector')
-        return instance.sandDocument!.querySelector.bind((instance.sandDocument as HTMLElement))
+        return instance.sandHtml!.querySelector.bind((instance.sandHtml as HTMLElement))
 
       if (
         p === 'getElementsByTagName'
         || p === 'getElementsByClassName'
         || p === 'getElementsByName' || p === 'getElementById'
       ) {
-        return new Proxy(instance.sandDocument!.querySelectorAll, {
+        return new Proxy(instance.sandHtml!.querySelectorAll, {
           apply(_, _ctx, args) {
             let arg = args[0] as string
             if (_ctx !== instance.proxyMap.document)
@@ -166,23 +166,23 @@ export function createProxyDocument(id: string, url: string) {
 
             if (p === 'getElementById') {
               arg = `#${arg}`
-              return instance.sandDocument!.querySelector(arg)
+              return instance.sandHtml!.querySelector(arg)
             }
-            return instance.sandDocument!.querySelectorAll(arg)
+            return instance.sandHtml!.querySelectorAll(arg)
           },
         })
       }
 
       if (p === 'documentElement' || p === 'scrollingElement')
-        return instance.sandDocument /** get shade in wujie */
+        return instance.sandHtml /** get shade in wujie */
       if (p === 'forms')
-        return instance.sandDocument!.querySelectorAll('form')
+        return instance.sandHtml!.querySelectorAll('form')
       if (p === 'images')
-        return instance.sandDocument!.querySelectorAll('img')
+        return instance.sandHtml!.querySelectorAll('img')
       if (p === 'links')
-        return instance.sandDocument!.querySelectorAll('a')
+        return instance.sandHtml!.querySelectorAll('a')
       if (p === 'body' || p === 'head')
-        return instance.sandDocument!.querySelector(p)
+        return instance.sandHtml!.querySelector(p)
 
       return getBindFn(p in target ? target : document, p)
     },
@@ -205,10 +205,10 @@ export function createProxyHistory(id: string) {
         function replace(...args: [any, any, any]) {
           const { pathname, hash } = new URL(args[2], location.origin)
           const to = pathname + hash
-
-          const queryMap = getUrlQuery(location.href)
+          const queryMap = getMerakQuerys()
           queryMap[id] = to === '/undefined' ? '/' : to
-          args[2] = `${location.hash.split('?')[0]}?${createQuery(queryMap)}`
+          args[2] = `?${createQuery(queryMap)}${location.hash}`
+
           return history.replaceState(...args)
         }
         return replace
@@ -218,10 +218,13 @@ export function createProxyHistory(id: string) {
           const { pathname, hash } = new URL(args[2], location.origin)
 
           const to = pathname + hash
-          const queryMap = getUrlQuery(location.href)
+          const queryMap = getMerakQuerys()
           queryMap[id] = to === '/undefined' ? '/' : to
           // work for hash
-          args[2] = `${location.hash.split('?')[0]}?${createQuery(queryMap)}`
+          // args[2] = `${location.hash.split('?')[0]}?${createQuery(queryMap)}`
+
+          args[2] = `?${createQuery(queryMap)}${location.hash}`
+
           return history.pushState(...args)
         }
         return push
@@ -243,8 +246,7 @@ export function createProxyLocation(id: string) {
     get(target: any, p: PropertyKey) {
       debug(`get [${typeof p === 'symbol' ? p.toString() : p}] from location`, id)
 
-      const { href } = window.location
-      const queryMap = getUrlQuery(href)
+      const queryMap = getMerakQuerys()
       const appUrl = new URL((queryMap[id] === '/undefined' ? '/' : queryMap[id]) || '/', location.origin)
 
       if (

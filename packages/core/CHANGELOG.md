@@ -1,5 +1,21 @@
 # merak-core
 
+## 1.0.11
+
+### Patch Changes
+
+- 41bb6f7: replace sandDocument with sandHtml(instead createHTMLDocument with htmlElement)
+- 41bb6f7: add timer to avoid repeating hooks when switching page quickly
+- 41bb6f7: fix debug when output symbol key
+- 41bb6f7: init props with an empty object({})
+- 41bb6f7: fix iframe mode
+- 41bb6f7: preload can work at now
+- 41bb6f7: add dubplicateName Error when setting global vars
+- 41bb6f7: Merak.load must return a promise!!
+- 41bb6f7: will remove merak listener when using iframe
+- 41bb6f7: add more debug
+- 41bb6f7: query should sort before hash
+
 ## 1.0.10
 
 ### Patch Changes

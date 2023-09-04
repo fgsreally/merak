@@ -3,7 +3,7 @@ import { createPinia } from 'pinia'
 import ElementPlus from 'element-plus'
 import 'element-plus/dist/index.css'
 import type { App as AppType } from 'vue'
-import { $done, $onDestroy, $onExec, $stopBubble } from 'merak-helper'
+import { $done, $onMount, $onUnmount, $stopBubble } from 'merak-helper'
 import App from './App.vue'
 import router from './router'
 import './assets/main.css'
@@ -16,13 +16,13 @@ function render() {
   app.use(router)
   app.mount(document.querySelector('#app'))
 }
-$onExec(render)
+$onMount(render)
 $stopBubble(true)
 // $onUnmount(() => {
 //   // $done()
 // })
 
-$onDestroy(() => {
+$onUnmount(() => {
   app.unmount()
 
   $done()

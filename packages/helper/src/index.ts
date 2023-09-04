@@ -116,7 +116,8 @@ export function $onUnmount(cb: () => any) {
 
 export function $onExec(cb: () => any) {
   cb()
-  return isMerak() ? $on('relunch', cb) : () => {}
+  if (isMerak())
+    $on('relunch', cb)
 }
 
 // export function $onExec(cb: () => any) {

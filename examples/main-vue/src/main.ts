@@ -7,6 +7,7 @@ import App from './App.vue'
 import router from './router'
 import './assets/main.css'
 preload('assets', 'vite_vue', 'http://localhost:4004', { loader: new CompileLoader() })
+
 const app = createApp(App)
 app.use(createPinia())
 

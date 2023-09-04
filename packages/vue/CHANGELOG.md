@@ -4,18 +4,6 @@
 
 ### Patch Changes
 
-- 41bb6f7: only setGlobalVars for the first time in block component
-- 41bb6f7: add lifecycle in mounted hook and revert if the lifecyle is not changed
-- Updated dependencies [41bb6f7]
-- Updated dependencies [41bb6f7]
-- Updated dependencies [41bb6f7]
-- Updated dependencies [41bb6f7]
-- Updated dependencies [41bb6f7]
-- Updated dependencies [41bb6f7]
-- Updated dependencies [41bb6f7]
-- Updated dependencies [41bb6f7]
-- Updated dependencies [41bb6f7]
-- Updated dependencies [41bb6f7]
 - Updated dependencies [41bb6f7]
   - merak-core@1.0.11
   - merak-helper@1.0.1
@@ -24,15 +12,6 @@
 
 ### Patch Changes
 
-- 381661b: only setGlobalVars for the first time in block component
-- 381661b: add lifecycle in mounted hook and revert if the lifecyle is not changed
-- Updated dependencies [381661b]
-- Updated dependencies [381661b]
-- Updated dependencies [381661b]
-- Updated dependencies [381661b]
-- Updated dependencies [381661b]
-- Updated dependencies [381661b]
-- Updated dependencies [381661b]
 - Updated dependencies [381661b]
   - merak-core@1.0.10
   - merak-helper@1.0.1
@@ -42,12 +21,6 @@
 ### Patch Changes
 
 - 66a9004: only setGlobalVars for the first time in block component
-- 66a9004: add lifecycle in mounted hook and revert if the lifecyle is not changed
-- Updated dependencies [66a9004]
-- Updated dependencies [66a9004]
-- Updated dependencies [66a9004]
-- Updated dependencies [66a9004]
-- Updated dependencies [66a9004]
 - Updated dependencies [66a9004]
   - merak-core@1.0.9
   - merak-helper@1.0.1
@@ -57,8 +30,6 @@
 ### Patch Changes
 
 - 0527d62: add lifecycle in mounted hook and revert if the lifecyle is not changed
-- Updated dependencies [0527d62]
-- Updated dependencies [0527d62]
 - Updated dependencies [0527d62]
   - merak-core@1.0.8
   - merak-helper@1.0.1
@@ -102,7 +73,6 @@
 - 748d2e5: add head to block component
 - Updated dependencies [1768700]
 - Updated dependencies [ff0d801]
-- Updated dependencies [ff0d801]
 - Updated dependencies [748d2e5]
   - merak-core@1.0.4
   - merak-helper@1.0.1
@@ -111,8 +81,6 @@
 
 ### Patch Changes
 
-- Updated dependencies [3fb68ce]
-- Updated dependencies [3fb68ce]
 - Updated dependencies [3fb68ce]
   - merak-core@1.0.3
   - merak-helper@1.0.1

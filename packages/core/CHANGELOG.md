@@ -4,29 +4,14 @@
 
 ### Patch Changes
 
-- 41bb6f7: replace sandDocument with sandHtml(instead createHTMLDocument with htmlElement)
 - 41bb6f7: add timer to avoid repeating hooks when switching page quickly
-- 41bb6f7: fix debug when output symbol key
-- 41bb6f7: init props with an empty object({})
-- 41bb6f7: fix iframe mode
-- 41bb6f7: preload can work at now
-- 41bb6f7: add dubplicateName Error when setting global vars
-- 41bb6f7: Merak.load must return a promise!!
-- 41bb6f7: will remove merak listener when using iframe
-- 41bb6f7: add more debug
-- 41bb6f7: query should sort before hash
+
 
 ## 1.0.10
 
 ### Patch Changes
 
 - 381661b: replace sandDocument with sandHtml(instead createHTMLDocument with htmlElement)
-- 381661b: fix debug when output symbol key
-- 381661b: init props with an empty object({})
-- 381661b: fix iframe mode
-- 381661b: add dubplicateName Error when setting global vars
-- 381661b: will remove merak listener when using iframe
-- 381661b: add more debug
 - 381661b: query should sort before hash
 
 ## 1.0.9
@@ -35,8 +20,6 @@
 
 - 66a9004: fix debug when output symbol key
 - 66a9004: init props with an empty object({})
-- 66a9004: fix iframe mode
-- 66a9004: add dubplicateName Error when setting global vars
 - 66a9004: will remove merak listener when using iframe
 - 66a9004: add more debug
 
@@ -45,7 +28,6 @@
 ### Patch Changes
 
 - 0527d62: fix iframe mode
-- 0527d62: add dubplicateName Error when setting global vars
 
 ## 1.0.7
 

@@ -4,15 +4,13 @@
 
 ### Patch Changes
 
-- 1768700: fix analyseJSGlobals
-- 1768700: hadnle absolute/relative path correctly
+
 
 ## 1.0.3
 
 ### Patch Changes
 
-- 3fb68ce: fix analyseJSGlobals
-- 3fb68ce: hadnle absolute/relative path correctly
+
 
 ## 1.0.2
 

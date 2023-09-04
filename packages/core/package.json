@@ -15,7 +15,8 @@
       "require": "./dist/loaders/index.js"
     },
     "./*": "./*"
-  },
+   },
+
   "typesVersions": {
     "*": {
       "loader": [

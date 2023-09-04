@@ -24,6 +24,9 @@ export enum MERAK_HOOK {
 
 export const MERAK_SHADE_STYLE = 'position: fixed; z-index: 111111111; visibility: hidden; inset: 0px; backface-visibility: hidden;'
 
+export const UNMOUNT_EVENTS = [MERAK_EVENT.UNMOUNT, MERAK_EVENT.DESTROY, MERAK_EVENT.HIDDEN]
+export const MOUNT_EVENTS = [MERAK_EVENT.MOUNT, MERAK_EVENT.SHOW, MERAK_EVENT.RELUNCH]
+
 export enum PERF_TIME {
   LOAD = 'load',
   BOOTSTRAP = 'bootstrap',

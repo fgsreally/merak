@@ -94,6 +94,7 @@ export class Merak<L extends Loader = Loader> {
   // @todo
   sideEffects: (() => void)[] = []
 
+
   constructor(public id: string, public url: string, public options: {
     loader?: L
     proxy?: ProxyGlobals
@@ -319,6 +320,7 @@ export class Merak<L extends Loader = Loader> {
 
     this.shadowRoot.appendChild(this.sandHtml!)
 
+
     // execPromise is not ture if it is the first time to mount
     if (this.execPromise === true) {
       this.eventTrigger(window, MERAK_EVENT.MOUNT)
@@ -391,6 +393,7 @@ export class Merak<L extends Loader = Loader> {
     }
     this.sandHtml = null
     this.cleanSideEffect()
+
   }
 }
 

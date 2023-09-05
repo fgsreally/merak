@@ -9,16 +9,23 @@ const data = {
 function hook(msg: string) {
   console.log(msg)
 }
+function addRelativeToBody({ ele }: { ele: HTMLElement }) {
+  ele.querySelector('body')!.style.position = 'relative'
+}
 </script>
 
 <template>
   <div class="about">
     <p>from vue_cli</p>
-    <MerakApp name="vue_cli" url="http://localhost:4005" keep-alive class="micro" route="/#/about" :props="data" />
+    <MerakApp
+      name="vue_cli" url="http://localhost:4005" keep-alive class="micro" route="/#/about" :props="data"
+      @tranform-document="addRelativeToBody"
+    />
     <p>from vite-vue</p>
     <MerakApp
       name="vite_vue" url="http://localhost:4004" class="micro" route="/about" :props="data"
       keep-alive
+      @tranform-document="addRelativeToBody"
       @after-mount="hook('aftermount')"
       @before-mount="hook('beforemount')"
       @before-unmount="hook('beforeunmount')"

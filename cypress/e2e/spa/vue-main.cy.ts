@@ -5,8 +5,8 @@ import { isSymbolExist } from '../utils'
 describe('main vue app', () => {
   beforeEach(() => {
     cy.visit(`${MAINAPP_URL.VUE}`)
-    cy.get('a[href=\'/about\']').click()
     cy.wait(2000)
+    cy.get('a[href=\'/about\']').click()
   })
   it('should work', () => {
     isSymbolExist(['vite_react', 'vue_cli', 'vite_vue'])

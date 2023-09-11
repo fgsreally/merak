@@ -47,8 +47,8 @@ export const MerakImport = defineComponent({
     },
   },
   setup(props, { slots }) {
-    const { fakeGlobalVar, deactive, head, name, url, props: MerakProps, proxy, iframe, nativeVars = shareNativeVars, customVars = [], source } = props
-    const app = getInstance(name) || new Merak(name, url, { proxy: proxy || createLibProxy(name, url), iframe })
+    const { fakeGlobalVar, deactive, head, name, url, props: MerakProps, proxy, iframe, nativeVars = shareNativeVars, customVars = [], source, timeout } = props
+    const app = getInstance(name) || new Merak(name, url, { proxy: proxy || createLibProxy(name, url), iframe, timeout })
     if (!app.fakeGlobalVar)
       app.setGlobalVars(fakeGlobalVar, nativeVars, customVars)
 
@@ -99,9 +99,9 @@ export const MerakScope = defineComponent({
   },
   // emits: shareEmits,
   setup(props, { slots }) {
-    const { fakeGlobalVar, deactive, head, name, proxy, iframe, url, nativeVars = shareNativeVars, customVars = [] } = props
+    const { fakeGlobalVar, deactive, head, name, proxy, iframe, url, nativeVars = shareNativeVars, customVars = [], timeout } = props
 
-    const app = getInstance(name) || new Merak(name, url, { proxy: proxy || createLibProxy(name, url), iframe })
+    const app = getInstance(name) || new Merak(name, url, { proxy: proxy || createLibProxy(name, url), iframe, timeout })
 
     if (!app.fakeGlobalVar)
       app.setGlobalVars(fakeGlobalVar, nativeVars, customVars)

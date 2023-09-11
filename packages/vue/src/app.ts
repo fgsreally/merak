@@ -24,8 +24,8 @@ export const MerakApp = defineComponent({
   },
   emits: shareEmits,
   setup(props, { emit, expose }) {
-    const { url, proxy, loader, loaderOptions, props: MerakProps, iframe, name, route } = props
-    const app = getInstance(name) || new Merak(name, url, { loader, loaderOptions, proxy, iframe })
+    const { url, proxy, loader, loaderOptions, props: MerakProps, iframe, name, route, timeout } = props
+    const app = getInstance(name) || new Merak(name, url, { loader, loaderOptions, proxy, iframe, timeout })
     if (MerakProps)
       app.props = MerakProps
     for (const ev in shareEmits) {

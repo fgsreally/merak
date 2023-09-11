@@ -62,7 +62,7 @@ export class Merak<L extends Loader = Loader> {
   /** 子应用中的虚拟变量名 */
   public fakeGlobalVar: string
 
-  /** 配置文件地址，配置内联时为空 */
+  /** 传给loader的options */
   public loaderOptions?: any
 
   /** 隔离的原生全局变量 */
@@ -71,7 +71,8 @@ export class Merak<L extends Loader = Loader> {
   /** 隔离的自定义全局变量 */
   public customVars: string[]
 
-  /** 快速切换页面时，当卸载->挂载时间小于这个数，不会触发子应用钩子 */
+  /** 快速切换页面时，当卸载->挂载时间小于这个数，不会触发子应用钩子.timeout为0时，则不走定时器，直接调用 */
+
   public timeout: number
 
   /** 延后事件 */
@@ -111,7 +112,7 @@ export class Merak<L extends Loader = Loader> {
     }
     MerakMap.set(id, this)
     this.baseUrl = new URL('./', url).href.slice(0, -1)
-    const { proxy = createProxy(id, this.baseUrl), loaderOptions, loader, timeout = 300 } = options
+    const { proxy = createProxy(id, this.baseUrl), loaderOptions, loader, timeout = 0 } = options
     this.timeout = timeout
     this.loaderOptions = loaderOptions
     this.loader = loader
@@ -162,9 +163,9 @@ export class Merak<L extends Loader = Loader> {
     return Merak.namespace
   }
 
-  protected execHook<Stage extends keyof LifeCycle>(stage: Stage, params?: Omit<Parameters<LifeCycle[Stage]>[0], 'instance'>) {
+  protected execCycle<Stage extends keyof LifeCycle>(stage: Stage, params?: Omit<Parameters<LifeCycle[Stage]>[0], 'instance'>) {
     const args = { ...params }
-    debug(`execHook '${stage}'`, this.id)
+    debug(`execCycle '${stage}'`, this.id)
     // @ts-expect-error lifecycle work
     return this.lifeCycle[stage]?.(args)
   }
@@ -177,11 +178,17 @@ export class Merak<L extends Loader = Loader> {
   // Preloading does not fire an event, but it does fire a hook
   protected eventTrigger(el: HTMLElement | Window | Document, eventName: string) {
     if (!this.preloadStat) {
+      if (this.timeout) {
+        eventTrigger(el, eventName + this.id, this)
+
+        return
+      }
       if (UNMOUNT_EVENTS.includes(eventName as any)) {
         if (!this.timer) {
           this.timer = setTimeout(() => {
             this.delayEvents.forEach(event => eventTrigger(el, event + this.id, this),
             )
+
             this.delayEvents = []
             this.timer = null
           }, this.timeout)
@@ -198,7 +205,9 @@ export class Merak<L extends Loader = Loader> {
           this.delayEvents.pop()
         }
 
-        else { eventTrigger(el, eventName + this.id, this) }
+        else {
+          eventTrigger(el, eventName + this.id, this)
+        }
       }
     }
   }
@@ -242,7 +251,7 @@ export class Merak<L extends Loader = Loader> {
         else {
           this.perf.record(PERF_TIME.LOAD)
 
-          const { template, fakeGlobalVar, nativeVars, customVars } = this.execHook(MERAK_HOOK.LOAD, loadRes) || loadRes
+          const { template, fakeGlobalVar, nativeVars, customVars } = this.execCycle(MERAK_HOOK.LOAD, loadRes) || loadRes
           this.template = template
           this.setGlobalVars(fakeGlobalVar, nativeVars, customVars)
         }
@@ -252,7 +261,7 @@ export class Merak<L extends Loader = Loader> {
   }
 
   private mountTemplateAndScript() {
-    this.execHook(MERAK_HOOK.BEFORE_MOUNT)
+    this.execCycle(MERAK_HOOK.BEFORE_MOUNT)
     this.active()
     // work for style flicker
 
@@ -282,7 +291,7 @@ export class Merak<L extends Loader = Loader> {
               return !script.hasAttribute('merak-ignore') && script.type !== 'importmap'
             }).map(script => cloneScript(script, this.fakeGlobalVar, this.nativeVars, this.customVars))
 
-            this.execHook(MERAK_HOOK.TRANSFORM_SCRIPT, { originScripts, scripts })
+            this.execCycle(MERAK_HOOK.TRANSFORM_SCRIPT, { originScripts, scripts })
             let r: () => void
             this.execPromise = new Promise((resolve) => {
               r = resolve
@@ -295,7 +304,7 @@ export class Merak<L extends Loader = Loader> {
               r()
               this.execPromise = true
               this.eventTrigger(window, MERAK_EVENT.MOUNT)
-              this.execHook(MERAK_HOOK.AFTER_MOUNT)
+              this.execCycle(MERAK_HOOK.AFTER_MOUNT)
             });
             // TODO JS queue
             (this.iframe?.contentDocument || this.sandHtml).querySelector('body')?.append(...scripts)
@@ -311,7 +320,7 @@ export class Merak<L extends Loader = Loader> {
       this.eventTrigger(window, MERAK_EVENT.SHOW)
     }
 
-    this.execHook(MERAK_HOOK.TRANSFORM_DOCUMENT, { ele: this.sandHtml! })
+    this.execCycle(MERAK_HOOK.TRANSFORM_DOCUMENT, { ele: this.sandHtml! })
 
     // Promise.all(Array.from(this.sandHtml!.querySelectorAll('link[rel="stylesheet"]')).map(elementPromise)).finally(() => {
 
@@ -322,7 +331,7 @@ export class Merak<L extends Loader = Loader> {
     // execPromise is not ture if it is the first time to mount
     if (this.execPromise === true) {
       this.eventTrigger(window, MERAK_EVENT.MOUNT)
-      this.execHook(MERAK_HOOK.AFTER_MOUNT)
+      this.execCycle(MERAK_HOOK.AFTER_MOUNT)
     }
   }
 
@@ -348,7 +357,7 @@ export class Merak<L extends Loader = Loader> {
     if (!this.mountFlag)
       return
 
-    this.execHook(MERAK_HOOK.BEFORE_UNMOUNT)
+    this.execCycle(MERAK_HOOK.BEFORE_UNMOUNT)
     this.mountFlag = false
     // just a flag
     this.cacheFlag = isKeepAlive
@@ -367,7 +376,7 @@ export class Merak<L extends Loader = Loader> {
       this.el = null
     }
 
-    this.execHook(MERAK_HOOK.AFTER_UNMOUNT)
+    this.execCycle(MERAK_HOOK.AFTER_UNMOUNT)
   }
 
   // Called by the subapplication
@@ -376,7 +385,7 @@ export class Merak<L extends Loader = Loader> {
       return
     // make sure
     this.cacheFlag = false
-    this.execHook(MERAK_HOOK.DESTROY)
+    this.execCycle(MERAK_HOOK.DESTROY)
     if (this.template)
       this.template = this.sandHtml!.innerHTML
     this.activeFlag = false

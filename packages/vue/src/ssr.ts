@@ -12,14 +12,17 @@ export const MerakSSR = defineComponent({
       type: Object as PropType<Loader>,
       default: vueSSRLoader,
     },
+    loaderOptions: {
+      type: Object as PropType<any>,
+    },
     route: {
       type: String,
     },
   },
   emits: shareEmits,
   setup(props, { expose, emit }) {
-    const { proxy, iframe, props: MerakProps, name, loader, url, route } = props
-    const app = getInstance(name) || new Merak(name, url, { proxy, iframe, loader })
+    const { proxy, iframe, props: MerakProps, name, loader, url, route, timeout, loaderOptions } = props
+    const app = getInstance(name) || new Merak(name, url, { proxy, iframe, loader, timeout, loaderOptions })
     if (MerakProps)
       app.props = MerakProps
 

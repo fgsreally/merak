@@ -1,11 +1,17 @@
 # merak-core
 
+## 1.0.12
+
+### Patch Changes
+
+- 83fa2f1: set timeout default to 0 (it won't debounce)
+- 83fa2f1: rename execHook to execCycle
+
 ## 1.0.11
 
 ### Patch Changes
 
 - 41bb6f7: add timer to avoid repeating hooks when switching page quickly
-
 
 ## 1.0.10
 

@@ -1,5 +1,16 @@
 # merak-vue
 
+## 1.0.13
+
+### Patch Changes
+
+- 83fa2f1: add loaderOptions to app/ssr, add timeout to all components
+- 664aa47: inheritAttrs should be true
+- Updated dependencies [83fa2f1]
+- Updated dependencies [83fa2f1]
+  - merak-core@1.0.12
+  - merak-helper@1.0.1
+
 ## 1.0.12
 
 ### Patch Changes

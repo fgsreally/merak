@@ -40,4 +40,7 @@ export const shareProps = {
   iframe: {
     type: String,
   },
+  timeout: {
+    type: Number,
+  },
 }

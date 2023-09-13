@@ -33,9 +33,9 @@ export const shareProps = {
   proxy: {
     type: Object as PropType<ProxyGlobals>,
   },
-  keepAlive: {
-    type: Boolean,
-    default: false,
+  flag: {
+    type: String,
+    default: 'destroy',
   },
   iframe: {
     type: String,

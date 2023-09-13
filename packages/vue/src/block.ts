@@ -1,7 +1,7 @@
 /* eslint-disable vue/one-component-per-file */
 import type { PropType, VNode } from 'vue'
 import { defineComponent, h, nextTick, onBeforeUnmount, onMounted, render } from 'vue'
-import { MERAK_DATA_ID, MERAK_KEEP_ALIVE, Merak, createLibProxy, getInstance } from 'merak-core'
+import { MERAK_DATA_ID, MERAK_FLAG, Merak, createLibProxy, getInstance } from 'merak-core'
 import { $location } from 'merak-helper'
 import { shareProps } from './share'
 
@@ -68,7 +68,7 @@ export const MerakImport = defineComponent({
       deactive && app.deactive()
     })
 
-    return () => h('merak-app', { [MERAK_DATA_ID]: props.name, [MERAK_KEEP_ALIVE]: props.keepAlive })
+    return () => h('merak-app', { [MERAK_DATA_ID]: props.name, [MERAK_FLAG]: props.flag })
   },
 })
 
@@ -119,6 +119,6 @@ export const MerakScope = defineComponent({
       deactive && app.deactive()
     })
 
-    return () => h('merak-app', { [MERAK_DATA_ID]: props.name, [MERAK_KEEP_ALIVE]: props.keepAlive })
+    return () => h('merak-app', { [MERAK_DATA_ID]: props.name, [MERAK_FLAG]: props.flag })
   },
 })

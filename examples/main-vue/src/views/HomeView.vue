@@ -8,7 +8,7 @@ import TheWelcome from '../components/TheWelcome.vue'
     <MerakApp
       name="vite_vue" url="http://localhost:4004" class="micro"
       route="/"
-      keep-alive
+      flag="hidden"
     />
     <TheWelcome />
   </main>

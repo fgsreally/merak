@@ -2,7 +2,7 @@ import { iframeInstance } from './iframe'
 import type { LoadDone, NameSpace, Props, ProxyGlobals } from './types'
 import type { Loader } from './loaders'
 import { createProxy } from './proxy'
-import { MERAK_CYCLE, MERAK_DATA_ID, MERAK_EVENT, MERAK_SHADE_STYLE, MOUNT_EVENTS, PERF_TIME, UNMOUNT_EVENTS } from './common'
+import { MERAK_CYCLE, MERAK_DATA_ID, MERAK_EVENT, MERAK_SHADE_STYLE, PERF_TIME } from './common'
 import { debug, elementPromise, eventTrigger } from './utils'
 import { MerakMap } from './helper'
 import { LifeCycle } from './lifecycle'
@@ -176,37 +176,30 @@ export class Merak<L extends Loader = Loader> {
   }
 
   // Preloading does not fire an event, but it does fire a hook
-  protected eventTrigger(el: HTMLElement | Window | Document, eventName: string) {
+  protected eventTrigger(el: HTMLElement | Window | Document, eventName: string, detail?: string) {
     if (!this.preloadStat) {
       if (this.timeout) {
-        eventTrigger(el, eventName + this.id, this)
+        eventTrigger(el, eventName + this.id, detail)
 
         return
       }
-      if (UNMOUNT_EVENTS.includes(eventName as any)) {
+      if (eventName === MERAK_EVENT.UNMOUNT) {
         if (!this.timer) {
           this.timer = setTimeout(() => {
-            this.delayEvents.forEach(event => eventTrigger(el, event + this.id, this),
-            )
-
-            this.delayEvents = []
+            eventTrigger(el, eventName + this.id, detail)
             this.timer = null
           }, this.timeout)
         }
         this.delayEvents.push(eventName)
         return
       }
-      if (MOUNT_EVENTS.includes(eventName as any)) {
-        if (this.delayEvents.length > 0) {
-          if (this.timer) {
-            clearTimeout(this.timer!)
-            this.timer = null
-          }
-          this.delayEvents.pop()
+      if (eventName === MERAK_EVENT.MOUNT) {
+        if (this.timer) {
+          clearTimeout(this.timer!)
+          this.timer = null
         }
-
         else {
-          eventTrigger(el, eventName + this.id, this)
+          eventTrigger(el, eventName + this.id, detail)
         }
       }
     }
@@ -303,7 +296,7 @@ export class Merak<L extends Loader = Loader> {
               this.perf.record(PERF_TIME.BOOTSTRAP)
               r()
               this.execPromise = true
-              this.eventTrigger(window, MERAK_EVENT.MOUNT)
+              this.eventTrigger(window, MERAK_EVENT.MOUNT, 'init')
               this.execCycle(MERAK_CYCLE.AFTER_MOUNT)
             });
             // TODO JS queue
@@ -312,12 +305,12 @@ export class Merak<L extends Loader = Loader> {
           }
         }
         else {
-          this.eventTrigger(window, MERAK_EVENT.RELUNCH)
+          this.eventTrigger(window, MERAK_EVENT.MOUNT, 'relunch')
         }
       }
     }
     else {
-      this.eventTrigger(window, MERAK_EVENT.SHOW)
+      this.eventTrigger(window, MERAK_EVENT.MOUNT, 'show')
     }
 
     this.execCycle(MERAK_CYCLE.TRANSFORM_DOCUMENT, { ele: this.sandHtml! })
@@ -326,7 +319,7 @@ export class Merak<L extends Loader = Loader> {
 
     // execPromise is not ture if it is the first time to mount
     if (this.execPromise === true) {
-      this.eventTrigger(window, MERAK_EVENT.MOUNT)
+      // this.eventTrigger(window, MERAK_EVENT.MOUNT)
       this.execCycle(MERAK_CYCLE.AFTER_MOUNT)
     }
   }
@@ -349,23 +342,20 @@ export class Merak<L extends Loader = Loader> {
   }
 
   // called directly by shadow
-  unmount(isKeepAlive: boolean) {
+  unmount(flag: string) {
     if (!this.mountFlag)
       return
 
     this.execCycle(MERAK_CYCLE.BEFORE_UNMOUNT)
+    this.eventTrigger(window, MERAK_EVENT.UNMOUNT, flag)
+
     this.mountFlag = false
     // just a flag
+    const isKeepAlive = flag === 'destroy'
     this.cacheFlag = isKeepAlive
-    if (!isKeepAlive) {
-      this.eventTrigger(window, MERAK_EVENT.DESTROY)
-      // in iframe mode, main app can decide to destroy the sub
-      if (this.iframe)
-        this.deactive()
-    }
-    else { this.eventTrigger(window, MERAK_EVENT.HIDDEN) }
 
-    this.eventTrigger(window, MERAK_EVENT.UNMOUNT)
+    if (!isKeepAlive && this.iframe)
+      this.deactive()
 
     if (this.el) {
       this.el.remove()
@@ -381,6 +371,7 @@ export class Merak<L extends Loader = Loader> {
     if (!this.activeFlag)
       return
     // make sure
+    this.cleanSideEffect()
     this.cacheFlag = false
     this.execCycle(MERAK_CYCLE.DEACTIVE)
     if (this.template)
@@ -397,16 +388,17 @@ export class Merak<L extends Loader = Loader> {
     }
 
     this.sandHtml = null
-    this.cleanSideEffect()
   }
 
   destroy() {
     if (this.mountFlag) {
-      debug('must destroy after instance unmount')
+      debug('must destroy after instance unount')
       return
     }
     if (this.timer)
       clearTimeout(this.timer)
+    this.cleanSideEffect()
+
     if (this.options.iframe)
       Merak.fakeGlobalVars.delete(this.fakeGlobalVar)
     // @ts-expect-error to gc

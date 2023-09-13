@@ -11,7 +11,7 @@ export function getInstance(id: string) {
 
 // 获得子应用对应的shadowroot 的host，可往其上插样式
 export function getHost(id: string) {
-  return getInstance(id)?.shadowRoot.host
+  return getInstance(id)?.shadowRoot?.host
 }
 
 // 获得子应用对应的url

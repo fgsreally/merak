@@ -22,8 +22,6 @@ export function defineWebComponent() {
     }
 
     async connectedCallback() {
-      // if (this.shadowRoot)
-      //   return
       const id = this.getAttribute(MERAK_DATA_ID) as string
 
       if (!id) {

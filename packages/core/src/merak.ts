@@ -17,10 +17,10 @@ export class Merak<L extends Loader = Loader> {
 
   /** 生命周期 */
   public lifeCycle = new LifeCycle()
-
+  /** work for preload */
   public el: HTMLElement | null
   /** css隔离容器 */
-  public shadowRoot: ShadowRoot
+  public shadowRoot: ShadowRoot | null
   /** shadowroot 下的 document */
 
   public sandHtml: HTMLHtmlElement | null
@@ -322,11 +322,7 @@ export class Merak<L extends Loader = Loader> {
 
     this.execCycle(MERAK_HOOK.TRANSFORM_DOCUMENT, { ele: this.sandHtml! })
 
-    // Promise.all(Array.from(this.sandHtml!.querySelectorAll('link[rel="stylesheet"]')).map(elementPromise)).finally(() => {
-
-    // })
-
-    this.shadowRoot.appendChild(this.sandHtml!)
+    this.shadowRoot!.appendChild(this.sandHtml!)
 
     // execPromise is not ture if it is the first time to mount
     if (this.execPromise === true) {
@@ -375,6 +371,7 @@ export class Merak<L extends Loader = Loader> {
       this.el.remove()
       this.el = null
     }
+    this.shadowRoot = null
 
     this.execCycle(MERAK_HOOK.AFTER_UNMOUNT)
   }
@@ -398,8 +395,23 @@ export class Merak<L extends Loader = Loader> {
     else {
       delete window[this.fakeGlobalVar]
     }
+
     this.sandHtml = null
     this.cleanSideEffect()
+  }
+
+  destroy() {
+    if (this.mountFlag) {
+      debug('must destroy after instance unmount')
+      return
+    }
+    if (this.timer)
+      clearTimeout(this.timer)
+    if (this.options.iframe)
+      Merak.fakeGlobalVars.delete(this.fakeGlobalVar)
+    // @ts-expect-error to gc
+    this.proxy = this.proxyMap = this.delayEvents = this.sandHtml = this.props = this.sideEffects = this.loader = this.nativeVars = this.customVars = this.perf = this.lifeCycle = null
+    MerakMap.delete(this.id)
   }
 }
 

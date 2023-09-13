@@ -191,3 +191,7 @@ export function $stopBubble(isPass = false) {
 export function $done() {
   $instance()?.deactive()
 }
+
+export function $destroy() {
+  $instance()?.destroy()
+}

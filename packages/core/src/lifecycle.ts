@@ -1,13 +1,14 @@
 import type { LoadDone } from './types'
+import type { Merak } from './merak'
 export class LifeCycle {
-  beforeMount: () => any
-  afterMount: () => any
-  beforeUnmount: () => any
-  afterUnmount: () => any
-  load: (params: LoadDone) => LoadDone | void
-  destroy: () => any
+  beforeMount: (param: { instance: Merak }) => any
+  afterMount: (param: { instance: Merak }) => any
+  beforeUnmount: (param: { instance: Merak }) => any
+  afterUnmount: (param: { instance: Merak }) => any
+  load: (param: LoadDone & { instance: Merak }) => LoadDone | void
+  deactive: (param: { instance: Merak }) => any
   // 执行script前
-  transformScript: (params: { originScripts: HTMLScriptElement[]; scripts: HTMLScriptElement[] }) => void
+  transformScript: (param: { originScripts: HTMLScriptElement[]; scripts: HTMLScriptElement[];instance: Merak }) => void
   // 挂载document前
-  tranformDocument: (params: { ele: HTMLElement }) => void
+  tranformDocument: (param: { ele: HTMLElement; instance: Merak }) => void
 }

@@ -2,7 +2,7 @@ import { iframeInstance } from './iframe'
 import type { LoadDone, NameSpace, Props, ProxyGlobals } from './types'
 import type { Loader } from './loaders'
 import { createProxy } from './proxy'
-import { MERAK_DATA_ID, MERAK_EVENT, MERAK_HOOK, MERAK_SHADE_STYLE, MOUNT_EVENTS, PERF_TIME, UNMOUNT_EVENTS } from './common'
+import { MERAK_CYCLE, MERAK_DATA_ID, MERAK_EVENT, MERAK_SHADE_STYLE, MOUNT_EVENTS, PERF_TIME, UNMOUNT_EVENTS } from './common'
 import { debug, elementPromise, eventTrigger } from './utils'
 import { MerakMap } from './helper'
 import { LifeCycle } from './lifecycle'
@@ -163,8 +163,8 @@ export class Merak<L extends Loader = Loader> {
     return Merak.namespace
   }
 
-  protected execCycle<Stage extends keyof LifeCycle>(stage: Stage, params?: Omit<Parameters<LifeCycle[Stage]>[0], 'instance'>) {
-    const args = { ...params }
+  protected execCycle<Stage extends keyof LifeCycle>(stage: Stage, param?: Omit<Parameters<LifeCycle[Stage]>[0], 'instance'>) {
+    const args = { ...(param || {}), instance: this }
     debug(`execCycle '${stage}'`, this.id)
     // @ts-expect-error lifecycle work
     return this.lifeCycle[stage]?.(args)
@@ -251,7 +251,7 @@ export class Merak<L extends Loader = Loader> {
         else {
           this.perf.record(PERF_TIME.LOAD)
 
-          const { template, fakeGlobalVar, nativeVars, customVars } = this.execCycle(MERAK_HOOK.LOAD, loadRes) || loadRes
+          const { template, fakeGlobalVar, nativeVars, customVars } = this.execCycle(MERAK_CYCLE.LOAD, loadRes) || loadRes
           this.template = template
           this.setGlobalVars(fakeGlobalVar, nativeVars, customVars)
         }
@@ -261,7 +261,7 @@ export class Merak<L extends Loader = Loader> {
   }
 
   private mountTemplateAndScript() {
-    this.execCycle(MERAK_HOOK.BEFORE_MOUNT)
+    this.execCycle(MERAK_CYCLE.BEFORE_MOUNT)
     this.active()
     // work for style flicker
 
@@ -291,7 +291,7 @@ export class Merak<L extends Loader = Loader> {
               return !script.hasAttribute('merak-ignore') && script.type !== 'importmap'
             }).map(script => cloneScript(script, this.fakeGlobalVar, this.nativeVars, this.customVars))
 
-            this.execCycle(MERAK_HOOK.TRANSFORM_SCRIPT, { originScripts, scripts })
+            this.execCycle(MERAK_CYCLE.TRANSFORM_SCRIPT, { originScripts, scripts })
             let r: () => void
             this.execPromise = new Promise((resolve) => {
               r = resolve
@@ -304,7 +304,7 @@ export class Merak<L extends Loader = Loader> {
               r()
               this.execPromise = true
               this.eventTrigger(window, MERAK_EVENT.MOUNT)
-              this.execCycle(MERAK_HOOK.AFTER_MOUNT)
+              this.execCycle(MERAK_CYCLE.AFTER_MOUNT)
             });
             // TODO JS queue
             (this.iframe?.contentDocument || this.sandHtml).querySelector('body')?.append(...scripts)
@@ -320,14 +320,14 @@ export class Merak<L extends Loader = Loader> {
       this.eventTrigger(window, MERAK_EVENT.SHOW)
     }
 
-    this.execCycle(MERAK_HOOK.TRANSFORM_DOCUMENT, { ele: this.sandHtml! })
+    this.execCycle(MERAK_CYCLE.TRANSFORM_DOCUMENT, { ele: this.sandHtml! })
 
     this.shadowRoot!.appendChild(this.sandHtml!)
 
     // execPromise is not ture if it is the first time to mount
     if (this.execPromise === true) {
       this.eventTrigger(window, MERAK_EVENT.MOUNT)
-      this.execCycle(MERAK_HOOK.AFTER_MOUNT)
+      this.execCycle(MERAK_CYCLE.AFTER_MOUNT)
     }
   }
 
@@ -353,7 +353,7 @@ export class Merak<L extends Loader = Loader> {
     if (!this.mountFlag)
       return
 
-    this.execCycle(MERAK_HOOK.BEFORE_UNMOUNT)
+    this.execCycle(MERAK_CYCLE.BEFORE_UNMOUNT)
     this.mountFlag = false
     // just a flag
     this.cacheFlag = isKeepAlive
@@ -373,7 +373,7 @@ export class Merak<L extends Loader = Loader> {
     }
     this.shadowRoot = null
 
-    this.execCycle(MERAK_HOOK.AFTER_UNMOUNT)
+    this.execCycle(MERAK_CYCLE.AFTER_UNMOUNT)
   }
 
   // Called by the subapplication
@@ -382,7 +382,7 @@ export class Merak<L extends Loader = Loader> {
       return
     // make sure
     this.cacheFlag = false
-    this.execCycle(MERAK_HOOK.DESTROY)
+    this.execCycle(MERAK_CYCLE.DEACTIVE)
     if (this.template)
       this.template = this.sandHtml!.innerHTML
     this.activeFlag = false

@@ -11,14 +11,14 @@ export enum MERAK_EVENT {
   UNMOUNT = 'merak_unmount',
 }
 
-export enum MERAK_HOOK {
+export enum MERAK_CYCLE {
   LOAD = 'load',
   BEFORE_MOUNT = 'beforeMount',
   AFTER_MOUNT = 'afterMount',
   TRANSFORM_DOCUMENT = 'tranformDocument',
   BEFORE_UNMOUNT = 'beforeUnmount',
   AFTER_UNMOUNT = 'afterUnmount',
-  DESTROY = 'destroy',
+  DEACTIVE = 'deactive',
   TRANSFORM_SCRIPT = 'transformScript',
 }
 

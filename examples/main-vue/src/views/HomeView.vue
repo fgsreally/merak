@@ -5,11 +5,11 @@ import TheWelcome from '../components/TheWelcome.vue'
 
 <template>
   <main>
-    <MerakApp
+    <!-- <MerakApp
       name="vite_vue" url="http://localhost:4004" class="micro"
       route="/"
       flag="hidden"
-    />
+    /> -->
     <TheWelcome />
   </main>
 </template>

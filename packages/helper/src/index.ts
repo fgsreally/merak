@@ -169,6 +169,9 @@ export function $deactive() {
   $instance()?.deactive()
 }
 
+/**
+ * @danger
+ */
 export function $destroy() {
   $instance()?.destroy()
 }

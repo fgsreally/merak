@@ -3,7 +3,7 @@ import type { LoadDone, NameSpace, Props, ProxyGlobals } from './types'
 import type { Loader } from './loaders'
 import { createProxy } from './proxy'
 import { MERAK_CYCLE, MERAK_DATA_ID, MERAK_EVENT, MERAK_SHADE_STYLE, PERF_TIME } from './common'
-import { debug, elementPromise, eventTrigger } from './utils'
+import { debug, eventTrigger, scriptPromise } from './utils'
 import { MerakMap } from './helper'
 import { LifeCycle } from './lifecycle'
 import { cloneScript } from './compile'
@@ -75,8 +75,8 @@ export class Merak<L extends Loader = Loader> {
 
   public timeout: number
 
-  /** 延后事件 */
-  protected delayEvents = [] as string[]
+  // /** 延后事件 */
+  // protected delayEvents = [] as string[]
 
   protected timer: NodeJS.Timeout | null
   /** 防止重复加载 */
@@ -178,7 +178,7 @@ export class Merak<L extends Loader = Loader> {
   // Preloading does not fire an event, but it does fire a hook
   protected eventTrigger(el: HTMLElement | Window | Document, eventName: string, detail?: string) {
     if (!this.preloadStat) {
-      if (this.timeout) {
+      if (!this.timeout) {
         eventTrigger(el, eventName + this.id, detail)
 
         return
@@ -190,7 +190,6 @@ export class Merak<L extends Loader = Loader> {
             this.timer = null
           }, this.timeout)
         }
-        this.delayEvents.push(eventName)
         return
       }
       if (eventName === MERAK_EVENT.MOUNT) {
@@ -257,14 +256,12 @@ export class Merak<L extends Loader = Loader> {
     this.execCycle(MERAK_CYCLE.BEFORE_MOUNT)
     this.active()
     // work for style flicker
+    if (!this.sandHtml) {
+      this.sandHtml = document.createElement('html')
 
+      this.sandHtml.innerHTML = this.template || '<head></head><body></body>'
+    }
     if (!this.cacheFlag) {
-      if (!this.sandHtml) {
-        this.sandHtml = document.createElement('html')
-        // this.sandHtml = document.importNode(window.document.implementation.createHTMLDocument('').documentElement, true)
-
-        this.sandHtml.innerHTML = this.template || '<head></head><body></body>'
-      }
       if (this.mountIndex === 0) {
         // maybe shade is meaningless
         const shade = document.createElement('div')
@@ -283,14 +280,14 @@ export class Merak<L extends Loader = Loader> {
               !this.iframe && script.remove()
               return !script.hasAttribute('merak-ignore') && script.type !== 'importmap'
             }).map(script => cloneScript(script, this.fakeGlobalVar, this.nativeVars, this.customVars))
-
             this.execCycle(MERAK_CYCLE.TRANSFORM_SCRIPT, { originScripts, scripts })
             let r: () => void
             this.execPromise = new Promise((resolve) => {
               r = resolve
             })
+
             // only invoke mount event after all scripts load/fail
-            Promise.all(scripts.map(elementPromise)).catch((e) => {
+            Promise.all(scripts.map(scriptPromise)).catch((e) => {
               return this.errorHandler?.({ type: 'scriptError', error: e })
             }).finally(() => {
               this.perf.record(PERF_TIME.BOOTSTRAP)
@@ -371,11 +368,12 @@ export class Merak<L extends Loader = Loader> {
     if (!this.activeFlag)
       return
     // make sure
+    if (this.template)
+      this.template = this.sandHtml!.innerHTML
     this.cleanSideEffect()
     this.cacheFlag = false
     this.execCycle(MERAK_CYCLE.DEACTIVE)
-    if (this.template)
-      this.template = this.sandHtml!.innerHTML
+
     this.activeFlag = false
     if (this.iframe) {
       const isIframeDestroy = iframeInstance.remove(this.options.iframe as string)

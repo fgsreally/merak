@@ -10,9 +10,7 @@ import './assets/main.css'
 
 let app: AppType
 
-function render(key: string) {
-  console.log('key', key)
-
+function render() {
   app = createApp(App)
   app.use(createPinia()).use(ElementPlus)
   app.use(router)

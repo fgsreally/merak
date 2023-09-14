@@ -1,5 +1,22 @@
 # merak-vue
 
+## 2.0.0-alpha.0
+
+### Major Changes
+
+- 81c8105: break change: only leave mount and unmount event ,replace keep-alive with flag
+
+### Patch Changes
+
+- 6cfc7be: add loaderOptions to app/ssr, add timeout to all components
+- 059498e: add destroy method to destroy merak instance
+- e41326f: add instance param in lifecycle
+- Updated dependencies [059498e]
+- Updated dependencies [81c8105]
+- Updated dependencies [e41326f]
+  - merak-core@2.0.0-alpha.0
+  - merak-helper@2.0.0-alpha.0
+
 ## 1.0.13
 
 ### Patch Changes

@@ -18,5 +18,10 @@
     "merak-vue": "1.0.13",
     "webpack-plugin-merak": "1.0.4"
   },
-  "changesets": []
+  "changesets": [
+    "clean-crabs-yawn",
+    "thick-cars-breathe",
+    "tricky-jokes-invite",
+    "twelve-poets-search"
+  ]
 }

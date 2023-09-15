@@ -19,6 +19,7 @@
     "webpack-plugin-merak": "1.0.4"
   },
   "changesets": [
+    "chatty-rocks-peel",
     "clean-crabs-yawn",
     "thick-cars-breathe",
     "tricky-jokes-invite",

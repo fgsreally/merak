@@ -1,5 +1,11 @@
 # merak-helper
 
+## 2.0.0-alpha.1
+
+### Patch Changes
+
+- 70316cb: export isMerak
+
 ## 2.0.0-alpha.0
 
 ### Major Changes

@@ -4,7 +4,7 @@ export { Merak, Props, NameSpace }
 
 export type MerakEvent = 'mount' | 'destroy' | 'hidden' | 'unmount' | 'relunch' | 'show'
 
-const isMerak = !!window.isMerak
+export const isMerak = !!window.isMerak
 
 // get real window
 export function $window(): Window {

@@ -18,7 +18,7 @@
   "dependencies": {
     "merak-core": "workspace:*",
     "merak-helper": "workspace:*",
-    "vue": "^3.2.47"
+    "vue": "^3.0.0"
   },
   "devDependencies": {
     "tsup": "^6.5.0"

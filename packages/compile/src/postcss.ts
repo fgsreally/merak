@@ -10,17 +10,19 @@ export function merakPostCss() {
       })
       root.walk((node: any) => {
         if (node.selector) {
-          node.selector = node.selectors
-            .map((selector: any) => {
-              if (/:root/g.test(selector) && !/:host/g.test(selector))
-                return selector.replace(/:root/g, ':root,:host')
+          if (node.selectors.includes(':root') && !node.selectors.includes(':host'))
+            node.selector = node.selector.replace(':root', ':root,:host')
 
-              return selector
-            })
-            .join(', ')
+          // node.selector = node.selectors
+          //   .map((selector: any) => {
+          //     if (/:root/g.test(selector) && !/:host/g.test(selector))
+          //       return selector.replace(/:root/g, ':root,:host')
+
+          //     return selector
+          //   })
+          //   .join(', ')
         }
       })
-      logger.output()
     },
   }
 }

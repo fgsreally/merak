@@ -89,12 +89,11 @@ export const isCallable = (fn: any) => {
   return callable
 }
 
-export function elementPromise(ele: Element) {
+export function scriptPromise(ele: HTMLScriptElement) {
   return new Promise<any>((resolve, reject) => {
-    // if (!script.src) {
-    //   resolve(true)
-    //   return
-    // }
+    if (!ele.src)
+      resolve(true)
+
     ele.addEventListener('load', resolve)
     ele.addEventListener('error', reject)
   })

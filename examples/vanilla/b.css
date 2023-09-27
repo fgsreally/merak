@@ -1,0 +1,10 @@
+:root {
+    width:100px
+}
+
+@font-face {
+    font-family: "Open Sans";
+    src:
+      url("/fonts/OpenSans-Regular-webfont.woff2") format("woff2"),
+      url("/fonts/OpenSans-Regular-webfont.woff") format("woff");
+  }

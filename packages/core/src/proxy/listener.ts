@@ -1,7 +1,7 @@
-import { MERAK_EVENT, MERAK_EVENT_PREFIX } from '../common'
+import { MERAK_EVENT_PREFIX } from '../common'
 import { getInstance } from '../helper'
 
-export function patchListener(id: string) {
+export function createProxyListener(id: string) {
   // work for merak custom event
   // prefer to keep it if you don't want to make break change
   return (...params: Parameters<typeof addEventListener>) => {
@@ -10,16 +10,11 @@ export function patchListener(id: string) {
 
     if (eventName.startsWith(MERAK_EVENT_PREFIX)) {
       params[0] = eventName + id
-      if (instance.options.iframe) {
-        addEventListener(MERAK_EVENT.DESTROY + id, () => {
-          removeEventListener(...params)
-        }, { once: true })
-      }
+      if (instance.options.iframe)
+        instance.sideEffects.push(() => removeEventListener(...params))
     }
     else {
-      addEventListener(MERAK_EVENT.DESTROY + id, () => {
-        removeEventListener(...params)
-      }, { once: true })
+      instance.sideEffects.push(() => removeEventListener(...params))
     }
     addEventListener(...params)
   }

@@ -80,8 +80,4 @@ const options = [
 :root {
   --host-color: #0239d0;
 }
-@font-face {
-  font-family: 'Times New Roman', Times, serif;
-  src: url();
-}
 </style>

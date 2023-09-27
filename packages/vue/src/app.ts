@@ -1,5 +1,5 @@
 import type { Loader } from 'merak-core'
-import { $$jump, CompileLoader, MERAK_DATA_ID, MERAK_KEEP_ALIVE, Merak, getInstance } from 'merak-core'
+import { $$jump, CompileLoader, MERAK_DATA_ID, MERAK_FLAG, Merak, getInstance } from 'merak-core'
 import type { PropType } from 'vue'
 import { defineComponent, h, onMounted, onUnmounted, watch } from 'vue'
 
@@ -14,7 +14,7 @@ export const MerakApp = defineComponent({
     },
 
     loader: {
-      type: Object as PropType< Loader>,
+      type: Object as PropType<Loader>,
       default: vueLoader,
     },
     route: {
@@ -50,6 +50,6 @@ export const MerakApp = defineComponent({
     watch(() => props.route, (n) => {
       n && $$jump(props.name, n)
     })
-    return () => h('merak-app', { [MERAK_DATA_ID]: props.name, [MERAK_KEEP_ALIVE]: props.keepAlive })
+    return () => h('merak-app', { [MERAK_DATA_ID]: props.name, [MERAK_FLAG]: props.flag })
   },
 })

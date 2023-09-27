@@ -1,19 +1,19 @@
 /* eslint-disable @typescript-eslint/no-unused-vars */
-import type { LoadDone, ProxyGlobals } from 'merak-core'
+import type { LoadDone, Merak, ProxyGlobals } from 'merak-core'
 import type { PropType } from 'vue'
 
 export const shareEmits = {
 
-  beforeMount: () => true,
-  afterMount: () => true,
-  beforeUnmount: () => true,
-  afterUnmount: () => true,
-  load: (params: LoadDone) => true,
+  beforeMount: (param: { instance: Merak }) => true,
+  afterMount: (param: { instance: Merak }) => true,
+  beforeUnmount: (param: { instance: Merak }) => true,
+  afterUnmount: (param: { instance: Merak }) => true,
+  load: (param: LoadDone & { instance: Merak }) => true,
 
   // 执行script前
-  transformScript: (params: { originScripts: HTMLScriptElement[]; scripts: HTMLScriptElement[] }) => true,
+  transformScript: (param: { originScripts: HTMLScriptElement[]; scripts: HTMLScriptElement[]; instance: Merak }) => true,
   // 挂载document前
-  tranformDocument: (params: { ele: HTMLElement }) => true,
+  tranformDocument: (param: { ele: HTMLElement; instance: Merak }) => true,
 }
 
 export const shareProps = {
@@ -33,9 +33,9 @@ export const shareProps = {
   proxy: {
     type: Object as PropType<ProxyGlobals>,
   },
-  keepAlive: {
-    type: Boolean,
-    default: false,
+  flag: {
+    type: String,
+    default: 'destroy',
   },
   iframe: {
     type: String,

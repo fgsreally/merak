@@ -3,7 +3,7 @@ import { createPinia } from 'pinia'
 import ElementPlus from 'element-plus'
 import 'element-plus/dist/index.css'
 import type { App as AppType } from 'vue'
-import { $done, $onMount, $onUnmount, $stopBubble } from 'merak-helper'
+import { $deactive, $onMount, $onUnmount, $stopBubble } from 'merak-helper'
 import App from './App.vue'
 import router from './router'
 import './assets/main.css'
@@ -22,8 +22,8 @@ $stopBubble(true)
 //   // $done()
 // })
 
-$onUnmount(() => {
+$onUnmount((flag) => {
   app.unmount()
-
-  $done()
+  if (flag === 'destroy')
+    $deactive()
 })

@@ -3,8 +3,10 @@ import { createRequire } from 'module'
 import fse from 'fs-extra'
 import cac from 'cac'
 import fg from 'fast-glob'
+import postcss from 'postcss'
 // @ts-expect-error misstypes
 import isVarName from 'is-var-name'
+import { merakPostCss } from './postcss'
 import { analyseHTML, analyseJSGlobals, injectGlobalToESM, injectGlobalToIIFE } from './analyse'
 import { DEFAULT_INJECT_GLOBALS } from './common'
 import { logger } from './log'
@@ -92,6 +94,14 @@ cli.command('', 'parse all file to merak-format')
 
         await fse.outputFile(filePath, html, 'utf-8')
         continue
+      }
+
+      if (entry.endsWith('.css')) {
+        const { css } = await postcss([merakPostCss()]).process(raw)
+        await fse.outputFile(filePath, css)
+        logger.log(`output file "${filePath}"`)
+
+        return
       }
       await fse.copyFile(resolve(cwd, entry), filePath)
     }

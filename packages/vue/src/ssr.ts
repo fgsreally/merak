@@ -1,4 +1,4 @@
-import { $$jump, MERAK_DATA_ID, MERAK_KEEP_ALIVE, Merak, SSRLoader, getInstance } from 'merak-core'
+import { $$jump, MERAK_DATA_ID, MERAK_FLAG, Merak, SSRLoader, getInstance } from 'merak-core'
 import type { PropType } from 'vue'
 import { defineComponent, h, onMounted, onUnmounted, watch } from 'vue'
 import type { Loader } from 'merak-core'
@@ -48,6 +48,6 @@ export const MerakSSR = defineComponent({
     })
 
     expose({ app })
-    return () => h('merak-app', { [MERAK_DATA_ID]: props.name, [MERAK_KEEP_ALIVE]: props.keepAlive })
+    return () => h('merak-app', { [MERAK_DATA_ID]: props.name, [MERAK_FLAG]: props.flag })
   },
 })

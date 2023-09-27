@@ -1,5 +1,16 @@
 # merak-core
 
+## 2.0.0-alpha.0
+
+### Major Changes
+
+- 81c8105: break change: only leave mount and unmount event ,replace keep-alive with flag
+
+### Patch Changes
+
+- 059498e: add destroy method to destroy merak instance
+- e41326f: add instance param in lifecycle
+
 ## 1.0.12
 
 ### Patch Changes

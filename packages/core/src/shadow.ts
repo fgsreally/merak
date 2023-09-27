@@ -1,4 +1,4 @@
-import { MERAK_DATA_ID, MERAK_KEEP_ALIVE } from './common'
+import { MERAK_DATA_ID, MERAK_FLAG } from './common'
 import { Merak } from './merak'
 import { getInstance } from './helper'
 import { debug } from './utils'
@@ -10,6 +10,9 @@ export function defineWebComponent() {
       return [MERAK_DATA_ID]
     }
 
+    /**
+ * @experiment
+ */
     attributeChangedCallback(_: string, oldVal: string, newVal: string) {
       if (newVal === oldVal)
         return
@@ -17,13 +20,11 @@ export function defineWebComponent() {
       if (!app)
         return
 
-      app.unmount(false)
+      app.unmount('destroy')
       this.connectedCallback()
     }
 
     async connectedCallback() {
-      // if (this.shadowRoot)
-      //   return
       const id = this.getAttribute(MERAK_DATA_ID) as string
 
       if (!id) {
@@ -44,7 +45,7 @@ export function defineWebComponent() {
         // work for preload
         if (app.preloadStat) {
           await app.execPromise
-          app.unmount(app.preloadStat === 'script')
+          app.unmount(app.preloadStat === 'script' ? 'hidden' : 'relunch')
           app.preloadStat = false
         }
         else {
@@ -63,7 +64,7 @@ export function defineWebComponent() {
       debug('disconnected', id)
 
       const app = getInstance(id)!
-      app.unmount(this.hasAttribute(MERAK_KEEP_ALIVE) && this.getAttribute(MERAK_KEEP_ALIVE) !== 'false')
+      app.unmount(this.getAttribute(MERAK_FLAG) || 'destroy')
     }
   }
 

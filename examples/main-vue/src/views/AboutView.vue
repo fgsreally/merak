@@ -1,7 +1,6 @@
 <script setup lang="ts">
-import { CompileLoader, MerakApp, preload } from 'merak-vue'
+import { MerakApp } from 'merak-vue'
 
-// preload('assets', 'vite_vue', 'http://localhost:4004', { loader: new CompileLoader() })
 const data = {
   data: 'data from main',
 }
@@ -24,7 +23,6 @@ function addRelativeToBody({ ele }: { ele: HTMLElement }) {
     <p>from vite-vue</p>
     <MerakApp
       name="vite_vue" url="http://localhost:4004" class="micro" route="/about" :props="data"
-      keep-alive
       @tranform-document="addRelativeToBody"
       @after-mount="hook('aftermount')"
       @before-mount="hook('beforemount')"
@@ -32,7 +30,7 @@ function addRelativeToBody({ ele }: { ele: HTMLElement }) {
       @after-unmount="hook('afterunmount')"
     />
     <p>from vite-react</p>
-    <MerakApp name="vite_react" url="http://localhost:4003" keep-alive class="micro" :props="data" />
+    <MerakApp name="vite_react" url="http://localhost:4003" class="micro" :props="data" />
   </div>
 </template>
 

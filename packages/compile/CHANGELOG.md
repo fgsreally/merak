@@ -1,16 +1,19 @@
 # merak-compile
 
+## 2.0.0
+
+### Patch Changes
+
+- 43f4145: cli can handle .css files
+- 43f4145: fix postcss plugin to avoid adding :host selector repeatedly
+
 ## 1.0.4
 
 ### Patch Changes
 
-
-
 ## 1.0.3
 
 ### Patch Changes
-
-
 
 ## 1.0.2
 

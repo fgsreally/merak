@@ -1,5 +1,13 @@
 # vite-plugin-merak
 
+## 1.0.5
+
+### Patch Changes
+
+- Updated dependencies [43f4145]
+- Updated dependencies [43f4145]
+  - merak-compile@2.0.0
+
 ## 1.0.4
 
 ### Patch Changes

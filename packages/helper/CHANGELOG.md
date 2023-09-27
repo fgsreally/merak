@@ -1,5 +1,15 @@
 # merak-helper
 
+## 2.0.0
+
+### Major Changes
+
+- 43f4145: break change: only leave mount and unmount event ,replace keep-alive with flag
+
+### Patch Changes
+
+- 43f4145: export isMerak
+
 ## 2.0.0-alpha.1
 
 ### Patch Changes

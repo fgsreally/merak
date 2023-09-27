@@ -1,5 +1,12 @@
 # merak-vue
 
+## 2.0.0-alpha.2
+
+### Patch Changes
+
+- d4702cb: degrade vue version
+  - merak-core@2.0.0-alpha.0
+
 ## 2.0.0-alpha.1
 
 ### Patch Changes

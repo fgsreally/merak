@@ -22,11 +22,14 @@ const opts = {
 
 export async function runAllExample() {
   console.time('runAllExample')
+  step('\n building  merak-core...')
+
+  await $`pnpm --filter merak-core run build:dev`
+  await $`pnpm --filter merak-core run build:prod`
 
   try {
     if (process.env.CI || process.env.PROD) {
       step('\n building  project...')
-      await $`pnpm --filter merak-core run build:prod`
 
       await $`pnpm --filter example-* run build`
 
@@ -37,8 +40,6 @@ export async function runAllExample() {
       step('\n start e2e test...')
     }
     else {
-      await $`pnpm --filter merak-core run build:dev`
-
       step('\n run dev project...')
       $`pnpm run example:dev`
 

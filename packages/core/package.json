@@ -26,7 +26,7 @@
   "scripts": {
     "serve": "http-server ./dist --cors -p 3000",
     "dev": "tsup --watch",
-    "build": "tsup && npm run build:prod && npm run build:dev",
+    "build": "tsup",
     "build:prod": "cross-env PROD=true tsup",
     "build:dev": "cross-env DEV=true tsup"
   },

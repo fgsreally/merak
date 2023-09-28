@@ -4,15 +4,13 @@ merak runtime in browser
 1. create Merak Instance
 spa example
 ```ts
-import { CompileLoader } from 'merak-core/loader'
-import { Merak } from 'merak-core'
+import { CompileLoader, Merak } from 'merak-core'
 
 const loader = new CompileLoader()//
 const instance = new Merak(id, url, { loader })
 ```
 ```ts
-import { SSRLoader } from 'merak-core/loader'
-import { Merak } from 'merak-core'
+import { Merak, SSRLoader } from 'merak-core'
 
 const loader = new SSRLoader()//
 const instance = new Merak(id, url, { loader })

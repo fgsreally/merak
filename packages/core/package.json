@@ -10,19 +10,9 @@
       "import": "./dist/index.mjs",
       "require": "./dist/index.js"
     },
-    "./loader": {
-      "import": "./dist/loaders/index.mjs",
-      "require": "./dist/loaders/index.js"
-    },
     "./*": "./*"
   },
-  "typesVersions": {
-    "*": {
-      "loader": [
-        "dist/loaders/index.d.ts"
-      ]
-    }
-  },
+
   "scripts": {
     "serve": "http-server ./dist --cors -p 3000",
     "dev": "tsup --watch",

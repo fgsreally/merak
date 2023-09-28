@@ -25,7 +25,7 @@ export const tsup: Options = process.env.PROD
 
       }
     : {
-        entry: ['src/index.ts', 'src/loaders/index.ts'],
+        entry: ['src/index.ts'],
         format: ['esm', 'cjs'],
         dts: true,
         splitting: false,

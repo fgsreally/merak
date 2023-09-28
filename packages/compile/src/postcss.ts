@@ -11,6 +11,7 @@ export function merakPostCss() {
       root.walk((node: any) => {
         if (node.selector) {
           if (node.selectors.some((selector: string) => /:root/g.test(selector)) && !node.selectors.some((selector: string) => /:host/g.test(selector)))
+
             node.selector = node.selector.replace(':root', ':root,:host')
 
           // node.selector = node.selectors

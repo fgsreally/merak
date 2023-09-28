@@ -10,23 +10,13 @@
       "import": "./dist/index.mjs",
       "require": "./dist/index.js"
     },
-    "./loader": {
-      "import": "./dist/loaders/index.mjs",
-      "require": "./dist/loaders/index.js"
-    },
     "./*": "./*"
   },
-  "typesVersions": {
-    "*": {
-      "loader": [
-        "dist/loaders/index.d.ts"
-      ]
-    }
-  },
+
   "scripts": {
     "serve": "http-server ./dist --cors -p 3000",
     "dev": "tsup --watch",
-    "build": "tsup && npm run build:prod && npm run build:dev",
+    "build": "tsup",
     "build:prod": "cross-env PROD=true tsup",
     "build:dev": "cross-env DEV=true tsup"
   },

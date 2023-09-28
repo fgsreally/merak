@@ -44,7 +44,7 @@ export default defineConfig({
 以原生为例,在`js`中
 ```ts
 import { Merak } from 'merak-core'
-import { CompileLoader } from 'merak-core/loader'
+import { CompileLoader } from 'merak-core'
 /** 设置加载器 */
 const loader = new CompileLoader()
 /** 设置子应用配置 */

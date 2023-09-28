@@ -2,7 +2,7 @@ import type { Options } from 'tsup'
 
 export const tsup: Options = process.env.PROD
   ? {
-      entry: ['src/index.ts', 'src/loaders/index.ts'],
+      entry: ['src/index.ts'],
       format: ['iife', 'esm'],
       globalName: 'Merak',
       define: {
@@ -14,7 +14,7 @@ export const tsup: Options = process.env.PROD
     }
   : process.env.DEV
     ? {
-        entry: ['src/index.ts', 'src/loaders/index.ts'],
+        entry: ['src/index.ts'],
         format: ['iife', 'esm'],
         globalName: 'Merak',
         define: {
@@ -25,7 +25,7 @@ export const tsup: Options = process.env.PROD
 
       }
     : {
-        entry: ['src/index.ts', 'src/loaders/index.ts'],
+        entry: ['src/index.ts'],
         format: ['esm', 'cjs'],
         dts: true,
         splitting: false,

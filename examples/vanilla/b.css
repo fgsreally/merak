@@ -1,7 +1,20 @@
-:root {
+:root a{
     width:100px
 }
 
+:root>a{
+    width:100px
+}
+
+:root,:host,a{
+    width:100px
+
+}
+
+:root,body a{
+    width:100px
+
+}
 @font-face {
     font-family: "Open Sans";
     src:

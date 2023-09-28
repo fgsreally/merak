@@ -72,7 +72,6 @@ export class Merak<L extends Loader = Loader> {
   public customVars: string[]
 
   /** 快速切换页面时，当卸载->挂载时间小于这个数，不会触发子应用钩子.timeout为0时，则不走定时器，直接调用 */
-
   public timeout: number
 
   // /** 延后事件 */

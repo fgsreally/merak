@@ -26,6 +26,8 @@ export async function runAllExample() {
   try {
     if (process.env.CI || process.env.PROD) {
       step('\n building  project...')
+      await $`pnpm --filter merak-core run build:prod`
+
       await $`pnpm --filter example-* run build`
 
       step('\n serve bundle...')
@@ -35,6 +37,8 @@ export async function runAllExample() {
       step('\n start e2e test...')
     }
     else {
+      await $`pnpm --filter merak-core run build:dev`
+
       step('\n run dev project...')
       $`pnpm run example:dev`
 

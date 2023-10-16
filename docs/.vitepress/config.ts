@@ -8,7 +8,7 @@ export default defineConfig({
   description: ogDescription,
   base,
   head: [
-    ['link', { rel: 'icon', href: `${base}favicon.ico` }],
+    ['link', { rel: 'icon', href: `${base}merak.png` }],
 
   ],
 
@@ -37,7 +37,7 @@ export default defineConfig({
         activeMatch: '/api/',
       },
       { text: '常见问题', link: '/question/', activeMatch: '/question/' },
-      { text: '框架封装', link: '/pack/', activeMatch: '/pack/' },
+      { text: '博客', link: '/blog/start', activeMatch: '/blog/' },
 
     ],
 
@@ -51,10 +51,7 @@ export default defineConfig({
               text: '介绍',
               link: '/guide/',
             },
-            {
-              text: '看前须知',
-              link: '/guide/must-known',
-            },
+
             {
               text: '快速上手',
               link: '/guide/quick-start',
@@ -80,39 +77,25 @@ export default defineConfig({
               link: '/guide/mode',
             },
             {
+              text: '加载器',
+              link: '/guide/loader',
+            },
+            {
               text: 'Vue',
               link: '/guide/vue',
             },
-
             {
-              text: '嵌套使用',
+              text: 'React',
+              link: '/guide/react',
+            },
+            {
+              text: '依赖与嵌套',
               link: '/guide/nest',
             },
 
           ],
         },
-        {
-          text: '设计思路',
-          collapsible: true,
-          items: [
-            {
-              text: '难点',
-              link: '/guide/idea/question',
-            },
-            {
-              text: '核心设计',
-              link: '/guide/idea/core',
-            },
-            {
-              text: '对比',
-              link: '/guide/idea/compare',
-            },
-            {
-              text: '歧义性行为',
-              link: '/guide/idea/action',
-            },
-          ],
-        },
+
         {
           text: '改造',
           collapsible: false,
@@ -170,8 +153,41 @@ export default defineConfig({
         },
       ],
       '/question': [],
-      '/pack/': [
-
+      '/blog/': [
+        {
+          text: '记录',
+          collapsible: false,
+          items: [
+            {
+              text: '开始之前',
+              link: '/blog/start',
+            },
+            {
+              text: '问题来源',
+              link: '/blog/question-from',
+            },
+            {
+              text: '目标',
+              link: '/blog/goal',
+            },
+            {
+              text: '核心',
+              link: '/blog/core',
+            },
+            {
+              text: '比较',
+              link: '/blog/compare',
+            },
+            {
+              text: '歧义性',
+              link: '/blog/action',
+            },
+            {
+              text: '延申',
+              link: '/blog/genre',
+            },
+          ],
+        },
       ],
     },
   },

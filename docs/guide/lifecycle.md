@@ -16,31 +16,19 @@ app.lifeCycle.beforeMount = () => {}
 
 ```ts
 import {
-  $onDestroy,
-  $onExec,
-  $onHidden,
-  $onRelunch,
-  $onShow
+  $onMount,
+  $onUnmount
 } from 'merak-helper'
 
-// 非keep-alive,子应用重新挂载时执行
-// keep-alive使用$onShow
-$onRelunch(() => {
-  // ..
-})
-// 非keep-alive,子应用卸载时执行
-// keep-alive使用$onHidden
-
-$onDestory(() => {
-  // ..
+$onUnmount(() => {
+  // 卸载时or beforeunload
 })
 
-// 第一次挂载执行+ $onRelunch=非keep-alive 每次挂载执行
-$onExec(() => {
-  // xx
+$onMount(() => {
+  // 挂载时or启动时
 })
 ```
-### keep-alive
+
 有无keep-alive的区别是没有区别（非iframe中）
 
 在内部版本里，没有keep-alive会通过`innerHtml`的方式进行状态保留，但这会有一些问题，故而移除，如果确实需要该功能，那么可以：

@@ -2,15 +2,10 @@
 
 
 ```ts
-import { Merak, merakPostCss } from 'vite-plugin-merak'
+import { Merak } from 'vite-plugin-merak'
 export default {
-  plugins: [Merak(id, [...globals])],
+  plugins: [Merak(id)],
 
-  css: {
-    postcss: {
-      plugins: [merakPostCss()],
-    },
-  },
 }
 ```
 

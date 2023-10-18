@@ -1,5 +1,11 @@
 # merak-core
 
+## 2.0.1
+
+### Patch Changes
+
+- 7b8cb7f: remove merak-compile/loader
+
 ## 2.0.0
 
 ### Major Changes

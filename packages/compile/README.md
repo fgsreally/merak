@@ -3,20 +3,20 @@ provide compilation function to plugin and cli
 
 
 ## cli
-create merak.config.json
+create `merak.config.json`
 ```json
 {
+  "dir": ".",
   "globals": [],
-  "fakeGlobalVar": "test",
-  "dir": "./",
-  "outDir": "./dist",
-  "isInline": false,
-  "format": "esm"
+  "fakeGlobalVar": "fakeGlobalVar",
+  "exclude": ["node_modules/**/*", "dist/**/*"],
+  "format": "esm",
+  "logPath": "./name.md"
 }
 ```
 
 ```shell
- merak -c merak.config.json
+ merak 
 ```
 it will parse files to merak-mode and output to outDir
 

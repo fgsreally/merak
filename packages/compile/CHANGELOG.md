@@ -1,5 +1,12 @@
 # merak-compile
 
+## 2.0.1
+
+### Patch Changes
+
+- 0e96eea: cli can handle inline style
+- d4a0366: fix postcss plugin, clone :root style to :host style correctly
+
 ## 2.0.0
 
 ### Patch Changes

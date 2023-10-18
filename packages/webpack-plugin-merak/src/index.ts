@@ -17,7 +17,7 @@ export class Merak {
     // const { mode } = compiler.options
 
     const format = compiler.options.output.chunkFormat
-    const { fakeGlobalVar, options: { nativeVars = [], customVars = [], force = false, loader = 'compiler', output } } = this
+    const { fakeGlobalVar, options: { nativeVars = [], customVars = [], force = false, loader = 'compile', output } } = this
     nativeVars.push(...DEFAULT_NATIVE_VARS)
     const isDebug = !!this.options.logPath
     const injectScript = `const ${fakeGlobalVar}=window.${fakeGlobalVar}||window;${customVars.length > 0 ? `${fakeGlobalVar}.__m_p__=(k)=>new Proxy(()=>{},{get(_, p) {const v= ${fakeGlobalVar}[k][p];return typeof v==='function'?v.bind(${fakeGlobalVar}):v},has(target, p) { return p in ${fakeGlobalVar}[k]}, set(_,p,v){${fakeGlobalVar}[k][p]=v;return true },apply(_,t,a){return ${fakeGlobalVar}[k](...a) }})` : ''}`

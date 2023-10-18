@@ -1,5 +1,5 @@
 import { resolve } from 'path'
-import { DEFAULT_INJECT_GLOBALS, analyseHTML, analyseJSGlobals, createCustomVarProxy, desctructGlobal, injectGlobalToESM, injectGlobalToIIFE, logger } from 'merak-compile'
+import { DEFAULT_NATIVE_VARS, analyseHTML, analyseJSGlobals, createCustomVarProxy, desctructGlobal, injectGlobalToESM, injectGlobalToIIFE, logger } from 'merak-compile'
 import { createFilter } from 'vite'
 import type { FilterPattern, PluginOption, ResolvedConfig } from 'vite'
 // @ts-expect-error miss types
@@ -16,15 +16,15 @@ function createFillStr(length: number) {
 
 export * from './lib'
 
-export function Merak(fakeGlobalVar: string, opts: { isinLine?: boolean; includes?: FilterPattern; exclude?: FilterPattern; logPath?: string; force?: boolean; nativeVars?: string[]; customVars?: string[];compileHtml?: boolean } = {}): PluginOption {
+export function Merak(fakeGlobalVar: string, opts: { output?: string; includes?: FilterPattern; exclude?: FilterPattern; logPath?: string; force?: boolean; nativeVars?: string[]; customVars?: string[];loader?: 'runtime' | 'compile' } = {}): PluginOption {
   if (!isVarName(fakeGlobalVar))
     throw new Error(`${fakeGlobalVar} is not a valid var`)
 
   // const globalVars = [...new Set(globals)] as string[]
-  const { nativeVars = [], customVars = [], includes = /\.(vue|ts|js|tsx|jsx|mjs)/, exclude = /\.(css|scss|sass|less)$/, logPath, force, isinLine = true, compileHtml = true } = opts
+  const { nativeVars = [], customVars = [], includes = /\.(vue|ts|js|tsx|jsx|mjs)/, exclude = /\.(css|scss|sass|less)$/, logPath, force, output, loader = 'compile' } = opts
   const merakConfig = { _f: fakeGlobalVar, _n: nativeVars, _c: customVars } as any
 
-  nativeVars.push(...DEFAULT_INJECT_GLOBALS)
+  nativeVars.push(...DEFAULT_NATIVE_VARS)
 
   const isDebug = !!logPath
   const filter = createFilter(includes, exclude)
@@ -48,9 +48,9 @@ export function Merak(fakeGlobalVar: string, opts: { isinLine?: boolean; include
 
       async transformIndexHtml(html) {
         html = html.replace('<head>', `<head><script merak-ignore>${injectScript}</script>`)
-        if (compileHtml) {
+        if (loader === 'compile') {
           merakConfig._l = analyseHTML(html).map((item) => {
-            logger.collectAction(`replace url "${item.src}"`)
+            // logger.collectAction(`replace url "${item.src}"`)
             return item.loc
           })
         }
@@ -118,16 +118,16 @@ export function Merak(fakeGlobalVar: string, opts: { isinLine?: boolean; include
             if (chunk.type === 'asset' && typeof chunk.source === 'string') {
               if (chunk.fileName.endsWith('.html')) {
                 chunk.source = chunk.source.replaceAll(base, './')
-                if (compileHtml) {
+                if (loader === 'compile') {
                   merakConfig._l = analyseHTML(chunk.source).map((item) => {
                     logger.collectAction(`replace url "${item.src}"`)
                     return item.loc
                   })
                 }
 
-                if (!isinLine) {
+                if (output) {
                   this.emitFile({
-                    fileName: 'merak.json',
+                    fileName: output,
                     source: JSON.stringify(merakConfig),
                     type: 'asset',
                   })

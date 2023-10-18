@@ -82,10 +82,6 @@ export function $once(eventName: MerakEvent, cb: (flag?: string) => any): () => 
   return () => { }
 }
 
-/**
- * $onMount $onUnmount $onExec run both in merak and individual app
- */
-
 export function $onMount(cb: (flag?: string) => any) {
   return isMerak ? $on('mount', cb) : cb()
 }

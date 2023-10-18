@@ -22,7 +22,7 @@ features:
 
   - icon: 🤞
     title: 简单
-    details: 睡觉>吃饭>文档>原理>使用【难度级别】  
+    details: 就我而言是这样的
   - icon: ⚡️
     title: 灵活
     details: 只暴露一个registerApp的想法很酷，但让你“想怎样就怎样”应该更酷。

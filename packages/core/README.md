@@ -23,45 +23,10 @@ const instance = new Merak(id, url, { loader })
 
 ```
 
-## special mode
-
-### keep-alive
-
-store dom in memory
-```html
-<merak-app data-merak-id="id" keep-alive></merak-app>
-```
-
-### iframe
-
-it will exec script in iframe
-```ts
-const instance = new Merak(id, url, { loader, iframe: iframeID })
-```
 
 
-## helper
-```ts
-getInstance(id)// get Merak instance
-getHost(id)// get shadowroot host
-```
 
 
-## lifecycle
-```ts
-declare function beforeMount(cb: LifeCycle['beforeMount']): void
-declare function beforeUnmount(cb: LifeCycle['beforeUnmount']): void
-declare function afterUnmount(cb: LifeCycle['afterUnmount']): void
-declare function destroy(cb: LifeCycle['destroy']): void
-declare function transformScript(cb: LifeCycle['transformScript']): void
-declare function tranformDocument(cb: LifeCycle['tranformDocument']): void
-declare function errorHandler(cb: LifeCycle['errorHandler']): void
-```
 
-## perf
-```ts
-const app = getInstance(id)
-app.perf.on('load', fn) // load template
 
-app.perf.on('bootstrap', fn)// exec script
-```
+

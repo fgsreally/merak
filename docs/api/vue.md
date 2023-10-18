@@ -17,12 +17,12 @@ interface ShareProps {
   proxy: { // 使用的沙箱
     type: PropType<ProxyGlobals>
   }
-  keepAlive: { // keep-alive
-    type: Boolean
-    default: false
-  }
+
   iframe: { // iframeId
     type: String
+  }
+  timeout: {
+    type: Number
   }
 }
 ```
@@ -31,8 +31,8 @@ interface ShareProps {
 和`core`中配置一致
 ```ts
 interface MerakAppProps extends ShareProps {
-  configOrUrl: {
-    type: PropType<string | MerakConfig>// Merak实例的第三个参数
+  loaderOptions: {
+    type: PropType<any>// Merak实例的第三个参数
   }
 
   loader: {
@@ -46,15 +46,7 @@ interface MerakAppProps extends ShareProps {
 ```
 
 ## MerakSRR
-没有其他配置
+和`MerakApp`一样
 
-## MerakBlock
-```ts
-interface MerakBlockType {
-  // 全局变量名
-  name: {
-    type: String
-    required: true
-  }
-}
-```
+## MerakImport/MerakScope
+[详见](https://github.com/fgsreally/merak/blob/main/packages/vue/src/block.ts)

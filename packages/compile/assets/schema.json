@@ -42,8 +42,12 @@
       "type": "string",
       "enum": ["esm", "iife"]
     },
-    "isinLine": {
-      "type": "boolean"
+    "loader": {
+      "type": "string",
+      "enum": ["compile", "runtime"]
+    },
+    "outPut": {
+      "type": "string"
     }
   },
   "required": ["fakeGlobalVar"]

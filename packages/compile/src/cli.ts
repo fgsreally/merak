@@ -8,7 +8,7 @@ import postcss from 'postcss'
 import isVarName from 'is-var-name'
 import { merakPostCss } from './postcss'
 import { analyseHTML, analyseJSGlobals, injectGlobalToESM, injectGlobalToIIFE } from './analyse'
-import { DEFAULT_INJECT_GLOBALS } from './common'
+import { DEFAULT_NATIVE_VARS } from './common'
 import { logger } from './log'
 const cli = cac('merak')
 const root = process.cwd()
@@ -28,7 +28,8 @@ cli.command('', 'parse all file to merak-format')
 
   .action(async (options) => {
     let {
-      dir = '', nativeVars = [], customVars = [], fakeGlobalVar, format = 'esm', isinLine = true, outDir = 'dist', includes = ['index.html', '**/*.js', '*.js', '**/*.css', '*.css'], exclude = ['node_modules/**/*'], logPath,
+      dir = '', nativeVars = [], customVars = [], fakeGlobalVar, format = 'esm', outDir = 'dist', includes = ['index.html', '**/*.js', '*.js', '**/*.css', '*.css'], exclude = ['node_modules/**/*'], logPath,
+      loader = 'compile', output,
     } = getConfig(options.config)
     if (!isVarName(fakeGlobalVar))
       throw new Error(`${fakeGlobalVar} is not a valid var`)
@@ -36,7 +37,7 @@ cli.command('', 'parse all file to merak-format')
     const cwd = resolve(root, dir)
     fse.ensureDir(resolve(root, outDir))
     const entries = await fg(includes, { cwd, ignore: exclude })
-    nativeVars = [...new Set([...DEFAULT_INJECT_GLOBALS, ...nativeVars])]
+    nativeVars = [...new Set([...DEFAULT_NATIVE_VARS, ...nativeVars])]
     logger.log('compile files:')
     console.table(entries)
     logger.log('native vars:')
@@ -82,14 +83,16 @@ cli.command('', 'parse all file to merak-format')
           _f: fakeGlobalVar, _n: nativeVars, _c: customVars,
         } as any
         let html = raw.replace('</head>', `</head><script merak-ignore>const ${fakeGlobalVar}=window.${fakeGlobalVar}||window</script>`)
-        merakConfig._l = analyseHTML(html).map((item) => {
-          logger.collectAction(`replace url "${item.src}"`)
-          return item.loc
-        })
+        if (loader === 'compile') {
+          merakConfig._l = analyseHTML(html).map((item) => {
+            logger.collectAction(`replace url "${item.src}"`)
+            return item.loc
+          })
+        }
 
-        if (isinLine)
+        if (!output)
           html = html.replace('</body>', `<m-b config="${encodeURIComponent(JSON.stringify(merakConfig))}"></m-b></body>`)
-        else await fse.outputFile(resolve(filePath, '../merak.json'), JSON.stringify(merakConfig), 'utf-8')
+        else await fse.outputFile(resolve(filePath, output), JSON.stringify(merakConfig), 'utf-8')
         logger.log(`output file "${filePath}"`)
 
         const matches = html.match(styleReg)

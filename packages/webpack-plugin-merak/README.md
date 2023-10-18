@@ -13,6 +13,6 @@ module.exports = {
     },
   },
 
-  plugins: [new Merak(id, [...globals])],
+  plugins: [new Merak(id)],
 }
 ```

@@ -19,8 +19,8 @@ export function getUrl(id: string) {
   return (getInstance(id)?.proxyMap.location as Location)?.href
 }
 
-export function $$jump(project: string, to: string, push = true) {
-  const instance = getInstance(project)
+export function $$jump(id: string, to: string, push = true) {
+  const instance = getInstance(id)
   if (instance) {
     (instance.proxyMap.history as History)[push ? 'pushState' : 'replaceState'](null, '', to)
     const event = new PopStateEvent('popstate')

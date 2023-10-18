@@ -12,7 +12,7 @@ import { Perf } from './perf'
 export class Merak<L extends Loader = Loader> {
   /** 所有子应用共享 */
   static namespace: NameSpace = {}
-
+  /** 已经被占用的变量名 */
   static fakeGlobalVars = new Set<string>()
 
   /** 生命周期 */
@@ -22,15 +22,12 @@ export class Merak<L extends Loader = Loader> {
   /** css隔离容器 */
   public shadowRoot: ShadowRoot | null
   /** shadowroot 下的 document */
-
   public sandHtml: HTMLHtmlElement | null
-
   /** iframe 容器 */
   public iframe: HTMLIFrameElement | null
-
   /** window代理 */
   public proxy: Window
-
+  /** 性能管理器 */
   public perf = new Perf()
   /** 所有全局的代理 */
   public proxyMap = {} as unknown as ProxyGlobals
@@ -38,7 +35,7 @@ export class Merak<L extends Loader = Loader> {
   /** 子应用的html */
   public template: string
 
-  /** 加载器，仅spa使用 */
+  /** 加载器，负责加载html */
   public loader: L | undefined
 
   /** 挂载数据 */
@@ -74,9 +71,6 @@ export class Merak<L extends Loader = Loader> {
   /** 快速切换页面时，当卸载->挂载时间小于这个数，不会触发子应用钩子.timeout为0时，则不走定时器，直接调用 */
   public timeout: number
 
-  // /** 延后事件 */
-  // protected delayEvents = [] as string[]
-
   protected timer: NodeJS.Timeout | null
   /** 防止重复加载 */
   protected loadPromise: Promise<any>
@@ -94,15 +88,19 @@ export class Merak<L extends Loader = Loader> {
   // @todo
   sideEffects: (() => void)[] = []
 
-  constructor(public id: string, public url: string, public options: {
-    loader?: L
-    proxy?: ProxyGlobals
-    loaderOptions?: any
-    iframe?: string
-    timeout?: number
-  } = {
+  constructor(
+    /** 分配的名字，等于data-merak-id */public id: string,
+    /** 源url */public url: string, public options: {
+      loader?: L
+      // 沙箱
+      proxy?: ProxyGlobals
+      loaderOptions?: any
+      // iframe id
+      iframe?: string
+      timeout?: number
+    } = {
 
-  },
+    },
   ) {
     if (MerakMap.has(id)) {
       debug('already exists', id)
@@ -145,7 +143,7 @@ export class Merak<L extends Loader = Loader> {
     })
   }
 
-  // 所有merak实例共享的错误处理
+  // 公共错误处理
   static errorHandler({ type, error }: { type: string; error: Error; instance?: Merak }) {
     if (__DEV__)
       console.error(error)
@@ -153,11 +151,12 @@ export class Merak<L extends Loader = Loader> {
       console.error(`[merak] ${type}:${error.message}`)
   }
 
-  // 实例自身的错误处理，默认调用共享处理
+  // 实例自身的错误处理，默认调用公共错误处理
   public errorHandler({ type, error }: { type: string; error: Error }) {
     Merak.errorHandler({ type, error, instance: this })
   }
 
+  // 获得公共命名空间
   get namespace() {
     return Merak.namespace
   }
@@ -362,7 +361,6 @@ export class Merak<L extends Loader = Loader> {
     this.execCycle(MERAK_CYCLE.AFTER_UNMOUNT)
   }
 
-  // Called by the subapplication
   deactive() {
     if (!this.activeFlag)
       return
@@ -387,6 +385,7 @@ export class Merak<L extends Loader = Loader> {
     this.sandHtml = null
   }
 
+  // 彻底销毁应用
   destroy() {
     if (this.mountFlag) {
       debug('must destroy after instance unount')

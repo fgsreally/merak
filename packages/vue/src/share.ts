@@ -14,6 +14,7 @@ export const shareEmits = {
   transformScript: (param: { originScripts: HTMLScriptElement[]; scripts: HTMLScriptElement[]; instance: Merak }) => true,
   // 挂载document前
   tranformDocument: (param: { ele: HTMLElement; instance: Merak }) => true,
+  deactive: (param: LoadDone & { instance: Merak }) => true,
 }
 
 export const shareProps = {

@@ -1,5 +1,5 @@
 import { resolve } from 'path'
-import { DEFAULT_INJECT_GLOBALS, analyseJSGlobals, injectGlobalToESM, injectGlobalToIIFE, logger, merakPostCss } from 'merak-compile'
+import { DEFAULT_NATIVE_VARS, analyseJSGlobals, injectGlobalToESM, injectGlobalToIIFE, logger, merakPostCss } from 'merak-compile'
 import { createFilter } from 'vite'
 // @ts-expect-error miss types
 import isVarName from 'is-var-name'
@@ -11,7 +11,7 @@ export function MerakLib(fakeGlobalVar: string, opts: { isinLine?: boolean; incl
   if (!isVarName(fakeGlobalVar))
     throw new Error(`${fakeGlobalVar} is not a valid var`)
 
-  nativeVars.push(...DEFAULT_INJECT_GLOBALS.filter(item => !['location', 'history'].includes(item)))
+  nativeVars.push(...DEFAULT_NATIVE_VARS.filter(item => !['location', 'history'].includes(item)))
 
   // const globalVars = [...new Set(globals)] as string[]
   const isDebug = !!logPath

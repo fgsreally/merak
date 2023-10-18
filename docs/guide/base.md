@@ -23,28 +23,23 @@ Merak.namespace.emitter = emitter// your event emitter
 ```
 > Merak的静态属性，可以在多个应用中共享
 
-也可以通过继承实现
-```ts
-class YourMerak extends Merak {
-  public emitter = emitter// your event emitter
-  constuctor(/** */) {
-    super(/** */)
 
-  }
-
-  on() {
-    // ..
-  }
-
-  emit() {
-    // ..
-  }
-
-}
-```
 
 ## 路由
 
 简而言之，至少在默认配置下，`merak`的很多表现和无界几乎一致，路由也沿袭着`query`的模式,
 
+:::info 路由跳转
+跳转到指定应用的指定路由
+
+这根视图框架中的路由原理有关，不一定起效
+```ts
+import { $$jump } from 'merak-core'
+import { $jump } from 'merak-helper'
+// 主应用中
+$$jump(id, route)
+// 子应用中
+$jump(id, route)
+```
+:::
 > 这并非一定，可以通过沙箱进行修改

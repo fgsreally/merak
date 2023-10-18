@@ -9,6 +9,7 @@
 1. 提供了工具，加速开发，
 2. 为了解决歧义性问题，比如此时使用`$document`必然获得真正的`document`，
 :::
+
 ```ts
 type MerakEvent = 'mount' | 'destroy' | 'hidden' | 'unmount' | 'relunch'
 // 是否作为子应用
@@ -58,3 +59,4 @@ declare function $sandbox(script: string): string
 // 包裹需执行的esm脚本，返回字符串
 declare function $esm(script: string): string
 ```
+子应用的多数以`$`开头，而主应用中对应的方法则以`$$`开头

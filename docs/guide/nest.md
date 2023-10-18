@@ -18,4 +18,5 @@
 
 ## 应用嵌套
 嵌套使用时，`merak-core`的依赖务必使用共有依赖,所有应用的`merak-core`必须用的是同一个。[详见](https://github.com/fgsreally/merak/tree/main/examples/main-nest/vite.config.ts)
+
 其次，不同应用必须要分配不同的`name`，不能重名

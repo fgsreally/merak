@@ -4,7 +4,8 @@
 
 ```vue
 <script setup lang="ts">
-import { MerakApp, MerakBlock, MerakSSR } from 'merak-vue'
+import { MerakApp, MerakImport, MerakSSR, MerakScope } from 'merak-vue'
+const Lib = defineAsyncComponent(() => import(path))
 </script>
 
 <template>
@@ -13,11 +14,16 @@ import { MerakApp, MerakBlock, MerakSSR } from 'merak-vue'
   <!-- ssr -->
   <MerakSSR name="id" url="子应用url" />
   <!-- lib -->
-  <MerakBlock name="id" url="远程组件url" />
+  <MerakImport name="id" fake-global-var="vue_lib" source="http://localhost:5000/lib.js" />
+  <MerakScope name="id" fake-global-var="vue_lib">
+    <Lib v-bind="{ type: 'lib' }" />
+  </MerakScope>
+
   <!-- name is equal to data-merak-id -->
 </template>
 ```
+> `MerakImport`/`MerakScope`是库模式，也就是`js`为入口（远程必须是一个组件！），只不过前者需要输入源`url`,而后者是在插槽中的异步组件
 
+案例可见[example](https://github.com/fgsreally/merak/tree/main/examples/main-lib-vue)
 
-具体可见[example](https://github.com/fgsreally/merak/tree/main/examples/main-vue)
 参数可见[类型定义](../api/vue.md)

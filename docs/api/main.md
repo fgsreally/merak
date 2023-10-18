@@ -1,5 +1,6 @@
 # 主应用api
 ## jsapi 
+主要的
 ```ts
 const instance = new Merak(name, url, {
   loader, // 加载器
@@ -8,7 +9,10 @@ const instance = new Merak(name, url, {
   iframe, // iframeid
   timeout, // 过期时间，详见实例
 })
-// 预加载，参数为assets/script+上面的参数
+```
+其余的:
+```ts
+// 预加载
 // assets意味着不挂载script，script相反
 declare function preload(type: 'script' | 'assets', ...args: ConstructorParameters<typeof Merak>): Merak<Loader>
 // 设置公共错误处理
@@ -135,5 +139,4 @@ declare class Merak<L extends Loader = Loader> {
 
 ```html
 <merak-app data-merak-id="分配一个名字" />
-
 ```

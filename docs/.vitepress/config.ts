@@ -73,12 +73,20 @@ export default defineConfig({
               link: '/guide/lifecycle',
             },
             {
+              text: '销毁',
+              link: '/guide/deactive',
+            },
+            {
               text: '特殊模式',
               link: '/guide/mode',
             },
             {
               text: '加载器',
               link: '/guide/loader',
+            },
+            {
+              text: '性能',
+              link: '/guide/perf',
             },
             {
               text: 'Vue',
@@ -92,7 +100,14 @@ export default defineConfig({
               text: '依赖与嵌套',
               link: '/guide/nest',
             },
-
+            {
+              text: '隔离变量',
+              link: '/guide/var',
+            },
+            {
+              text: '热更新',
+              link: '/guide/hmr',
+            },
           ],
         },
 
@@ -105,9 +120,14 @@ export default defineConfig({
               link: '/guide/reform/index',
             },
             {
+              text: '继承',
+              link: '/guide/reform/extend',
+            },
+            {
               text: '沙箱改造',
               link: '/guide/reform/proxy',
             },
+
           ],
         },
       ],

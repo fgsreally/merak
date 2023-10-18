@@ -9,6 +9,7 @@ const app = new Merak(name/** 子应用name */, url/** 子应用url */, { iframe
 ```
 
 这会使子应用`js`在`iframe`中执行，
+
 注意 ，同一个`iframeid`的子应用会被分配到同一个`iframe`中执行`js`，当一个`iframeid`中所有子应用都被销毁时，才移除该`iframe`
 
 ::: tip 提醒

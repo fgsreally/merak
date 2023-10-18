@@ -8,7 +8,7 @@ import postcss from 'postcss'
 import isVarName from 'is-var-name'
 import { merakPostCss } from './postcss'
 import { analyseHTML, analyseJSGlobals, injectGlobalToESM, injectGlobalToIIFE } from './analyse'
-import { DEFAULT_INJECT_GLOBALS } from './common'
+import { DEFAULT_NATIVE_VARS } from './common'
 import { logger } from './log'
 const cli = cac('merak')
 const root = process.cwd()
@@ -36,7 +36,7 @@ cli.command('', 'parse all file to merak-format')
     const cwd = resolve(root, dir)
     fse.ensureDir(resolve(root, outDir))
     const entries = await fg(includes, { cwd, ignore: exclude })
-    nativeVars = [...new Set([...DEFAULT_INJECT_GLOBALS, ...nativeVars])]
+    nativeVars = [...new Set([...DEFAULT_NATIVE_VARS, ...nativeVars])]
     logger.log('compile files:')
     console.table(entries)
     logger.log('native vars:')

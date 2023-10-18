@@ -1,27 +1,37 @@
+# webpack-plugin-merak
+
 ```ts
 declare class Merak {
-  constructor(
-    /**
-     * 分配的全局变量名
-     */
-    fakeGlobalVar: string,
-    /**
-     * 隔离的全局变量
-     */
-    globals: string[],
-    options?:
-    | {
-      /**
-      * 需隔离的文件，默认为全部js
-      */
-      filter?: RegExp | undefined
-      /**
-      * 是否强制隔离，由于webpack开发时可能使用大量eval（devtool中的配置），merak会认为该环境中没有需要隔离的变量（实际上有，只不过是在*、* eval中，无法识别），该选项为true时，所有隔离的变量，无论环境中是否使用，均会被隔离
-      */
-      force?: boolean | undefined
-    }
-    | undefined
-  )
+  fakeGlobalVar: string
+  options: {
+    filter?: (file: string) => boolean
+    force?: boolean
+    logPath?: string
+    isInLine?: boolean
+    nativeVars?: string[]
+    customVars?: string[]
+    compileHtml?: boolean
+  }
+  constructor(fakeGlobalVar: string, options?: {
+    // 需要被处理的文件
+    filter?: (file: string) => boolean
+    // 会将所有变量都隔离，而非根据ast按需隔离
+
+    force?: boolean
+    // 输出记录文件
+    logPath?: string
+    // 默认为true，会将信息嵌入html
+    compileHtml?: boolean
+    // 如果为false，会将信息输出为一个json文件
+
+    isInLine?: boolean
+    // 原生隔离变量
+    nativeVars?: string[]
+    // 自定义隔离变量
+
+    customVars?: string[]
+
+  })
   apply(compiler: Compiler): void
 }
 ```

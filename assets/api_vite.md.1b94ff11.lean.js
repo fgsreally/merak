@@ -1,0 +1,1 @@
+import{_ as s,o as a,c as n,a as l}from"./app.7359a12a.js";const A=JSON.parse('{"title":"vite-plugin-merak","description":"","frontmatter":{},"headers":[],"relativePath":"api/vite.md","lastUpdated":1698487972000}'),p={name:"api/vite.md"},o=l("",2),e=[o];function t(c,r,y,C,D,i){return a(),n("div",null,e)}const d=s(p,[["render",t]]);export{A as __pageData,d as default};

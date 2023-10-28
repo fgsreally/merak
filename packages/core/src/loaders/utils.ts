@@ -7,13 +7,20 @@ export abstract class Loader {
     return loadJSONFile(url)
   }
 
-  resolveHtml(html: string) {
+  resolveHtml(html: string, baseUrl: string) {
     let config: any
     // <m-b> merak-base
 
     html = html.replace(/<m-b[^>]+config=['"](.*)['"][\s>]<\/m-b>/, (js, conf) => {
       config = JSON.parse(decodeURIComponent(conf))
       return ''
+    })
+
+    // replace url in inline style
+    html = html.replace(/<style([^>]*)>([\s\S]*?)<\/style>/g, (style) => {
+      return style.replace(/url\(['"]?(.*?)['"]?\)/g, (_, url) => {
+        return `url('${resolveUrl(url, baseUrl)}')`
+      })
     })
     return { html, config }
   }

@@ -15,7 +15,7 @@ export class RuntimeLoader extends Loader {
         config = typeof configOrUrl === 'string' ? (await this.loadJSON(configOrUrl)) : configOrUrl
       }
       else { // inline config
-        config = this.resolveHtml(htmlStr).config as any
+        config = this.resolveHtml(htmlStr, sourceUrl).config as any
       }
       function replaceSrc(str: string, re: RegExp) {
         return str.replace(re, (_, url) => resolveUrl(url, sourceUrl))

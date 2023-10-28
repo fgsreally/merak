@@ -7,7 +7,7 @@ export class SSRLoader extends Loader {
     try {
       let config = {} as unknown as AppConfig
       let htmlStr: string
-      const templateNode = document.querySelector(`[data-merak-sourceUrl='${sourceUrl}']`)
+      const templateNode = document.querySelector(`[data-merak-url='${sourceUrl}']`)
 
       if (LoaderOpts) { // independent config file
         config = typeof LoaderOpts === 'string' ? (await this.loadJSON(LoaderOpts)) : LoaderOpts

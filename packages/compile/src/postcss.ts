@@ -1,8 +1,8 @@
-import type { Plugin } from 'postcss'
+import type { AcceptedPlugin } from 'postcss'
 import { logger } from './log'
 
-export function merakPostCss(): Plugin {
-  return {
+export function merakPostCss(): any {
+  return <AcceptedPlugin>{
     postcssPlugin: 'postcss-merak',
 
     Root(root) {

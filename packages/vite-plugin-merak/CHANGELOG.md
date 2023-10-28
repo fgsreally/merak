@@ -1,5 +1,15 @@
 # vite-plugin-merak
 
+## 1.0.7
+
+### Patch Changes
+
+- 76c8ad5: replace compileHtml/isinLine with loader and output
+- Updated dependencies [76c8ad5]
+- Updated dependencies [7856542]
+- Updated dependencies [76c8ad5]
+  - merak-compile@2.0.2
+
 ## 1.0.6
 
 ### Patch Changes

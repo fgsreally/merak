@@ -1,5 +1,14 @@
 # merak-vue
 
+## 2.0.2
+
+### Patch Changes
+
+- 76c8ad5: add deactive hook
+- Updated dependencies [7856542]
+  - merak-core@2.0.2
+  - merak-helper@2.0.0
+
 ## 2.0.1
 
 ### Patch Changes

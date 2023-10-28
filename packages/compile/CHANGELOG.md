@@ -1,5 +1,13 @@
 # merak-compile
 
+## 2.0.2
+
+### Patch Changes
+
+- 76c8ad5: replace isInline with output/loader, update the schema
+- 7856542: support url in inline style and standard @import in css
+- 76c8ad5: add addEventListener to default nativeVars
+
 ## 2.0.1
 
 ### Patch Changes

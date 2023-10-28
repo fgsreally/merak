@@ -1,12 +1,20 @@
+import type { Plugin } from 'postcss'
 import { logger } from './log'
 
-export function merakPostCss() {
+export function merakPostCss(): Plugin {
   return {
     postcssPlugin: 'postcss-merak',
 
-    Root(root: any) {
+    Root(root) {
       root.walkAtRules('font-face', ({ source: { start, input: { file } } }: any) => {
         logger.collectDangerUsed(file, '"@font-face" need manual process', [start.line, start.column])
+      })
+      root.walkAtRules('import', (rule) => {
+        const { params } = rule
+        if (params.startsWith('\'') || params.startsWith('"')) {
+          const url = `url(${params})`
+          rule.params = url
+        }
       })
       // root.walkRules((rule: any) => {
       //   if (rule.selector.includes(':root')) {

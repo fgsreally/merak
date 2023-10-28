@@ -13,7 +13,7 @@ export class CompileLoader extends Loader {
         config = typeof configOrUrl === 'string' ? (await this.loadJSON(configOrUrl)) : configOrUrl
       }
       else { // inline config
-        const ret = this.resolveHtml(htmlStr)
+        const ret = this.resolveHtml(htmlStr, sourceUrl)
         htmlStr = ret.html
         config = ret.config as unknown as AppConfig
       }

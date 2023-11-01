@@ -310,9 +310,11 @@ importers:
   packages/esbuild-plugin-merak:
     specifiers:
       esbuild: ^0.19.5
+      postcss: ^8.4.30
       tsup: ^6.5.0
     dependencies:
-      tsup: 6.7.0
+      postcss: 8.4.30
+      tsup: 6.7.0_postcss@8.4.30
     devDependencies:
       esbuild: 0.19.5
 
@@ -10008,6 +10010,7 @@ packages:
     dependencies:
       lilconfig: 2.1.0
       yaml: 1.10.2
+    dev: true
 
   /postcss-load-config/3.1.4_postcss@8.4.30:
     resolution: {integrity: sha512-6DiM4E7v4coTE4uzA8U//WhtPwyhiim3eyjEMFCnUpzbrkK9wJHgKDT2mR+HbtSrd/NubVaYTOpSpjUl8NQeRg==}
@@ -10024,7 +10027,6 @@ packages:
       lilconfig: 2.1.0
       postcss: 8.4.30
       yaml: 1.10.2
-    dev: true
 
   /postcss-loader/6.2.1_wtdfwmg7ycxaq333qvq47tatda:
     resolution: {integrity: sha512-WbbYpmAaKcux/P66bZ40bpWsBucjx/TTgVVzRZ9yUO8yQfVBlameJ0ZGVaPfH64hNSBh63a+ICP5nqOpBA0w+Q==}
@@ -12265,6 +12267,7 @@ packages:
     transitivePeerDependencies:
       - supports-color
       - ts-node
+    dev: true
 
   /tsup/6.7.0_postcss@8.4.30:
     resolution: {integrity: sha512-L3o8hGkaHnu5TdJns+mCqFsDBo83bJ44rlK7e6VdanIvpea4ArPcU3swWGsLVbXak1PqQx/V+SSmFPujBK+zEQ==}
@@ -12300,7 +12303,6 @@ packages:
     transitivePeerDependencies:
       - supports-color
       - ts-node
-    dev: true
 
   /tsup/6.7.0_typescript@4.9.5:
     resolution: {integrity: sha512-L3o8hGkaHnu5TdJns+mCqFsDBo83bJ44rlK7e6VdanIvpea4ArPcU3swWGsLVbXak1PqQx/V+SSmFPujBK+zEQ==}

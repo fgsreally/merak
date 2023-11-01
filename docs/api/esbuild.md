@@ -1,6 +1,6 @@
 # esbuild-plugin-merak(wip)
 > 由于esbuild没有默认的`html`和`publicpath`处理，建议使用脚本[命令行工具](./cli.md)代替
-
+> 尚未发布
 ```ts
 // 配置和vite一致
 declare function Merak(fakeGlobalVar: string, opts?: {

@@ -168,7 +168,14 @@ export default defineConfig({
               text: 'webpack',
               link: '/api/webpack',
             },
-
+            {
+              text: 'cli',
+              link: '/api/cli',
+            },
+            {
+              text: 'esbuild',
+              link: '/api/esbuild',
+            },
           ],
         },
       ],

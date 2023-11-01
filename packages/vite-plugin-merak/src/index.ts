@@ -6,6 +6,8 @@ import type { FilterPattern, PluginOption, ResolvedConfig } from 'vite'
 import isVarName from 'is-var-name'
 import { dynamicBase } from 'vite-plugin-dynamic-base'
 import { merakCSS } from './lib'
+
+// work for sourcemap
 function createFillStr(length: number) {
   let str = ''
   for (let i = 0; i < length; i++)

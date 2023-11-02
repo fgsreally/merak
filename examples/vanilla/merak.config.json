@@ -1,4 +1,5 @@
 {
+  "$schema": "https://unpkg.com/merak-compile/assets/schema.json",
   "dir": ".",
   "globals": [],
   "fakeGlobalVar": "vanilla",

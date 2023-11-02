@@ -1,7 +1,7 @@
 import type { Loader } from 'merak-core'
 import { $$jump, CompileLoader, MERAK_DATA_ID, MERAK_FLAG, Merak, getInstance } from 'merak-core'
 import type { PropType } from 'vue'
-import { defineComponent, h, onMounted, onUnmounted, watch } from 'vue'
+import { defineComponent, h, onBeforeUnmount, onMounted, onUnmounted, watch } from 'vue'
 
 import { shareEmits, shareProps } from './share'
 export const vueLoader = new CompileLoader()
@@ -24,8 +24,12 @@ export const MerakApp = defineComponent({
   },
   emits: shareEmits,
   setup(props, { emit, expose }) {
-    const { url, proxy, loader, loaderOptions, props: MerakProps, iframe, name, route, timeout } = props
+    const { url, proxy, loader, loaderOptions, props: MerakProps, iframe, name, route, timeout, inlineStyle } = props
     const app = getInstance(name) || new Merak(name, url, { loader, loaderOptions, proxy, iframe, timeout })
+    onBeforeUnmount(() => {
+      if (inlineStyle)
+        app.storeCSSLink()
+    })
     if (MerakProps)
       app.props = MerakProps
     for (const ev in shareEmits) {
@@ -37,6 +41,7 @@ export const MerakApp = defineComponent({
       onMounted(() => {
         app.lifeCycle[ev] = hook
       })
+
       onUnmounted(() => {
         if (app.lifeCycle[ev] === hook)
           app.lifeCycle[ev] = task

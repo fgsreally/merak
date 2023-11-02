@@ -1,11 +1,13 @@
 import { resolve } from 'path'
-import { DEFAULT_NATIVE_VARS, analyseHTML, analyseJSGlobals, createCustomVarProxy, desctructGlobal, injectGlobalToESM, injectGlobalToIIFE, logger } from 'merak-compile'
+import { DEFAULT_NATIVE_VARS, analyseHTML, analyseJSGlobals, injectGlobalToESM, injectGlobalToIIFE, logger } from 'merak-compile'
 import { createFilter } from 'vite'
 import type { FilterPattern, PluginOption, ResolvedConfig } from 'vite'
 // @ts-expect-error miss types
 import isVarName from 'is-var-name'
 import { dynamicBase } from 'vite-plugin-dynamic-base'
 import { merakCSS } from './lib'
+
+// work for sourcemap
 function createFillStr(length: number) {
   let str = ''
   for (let i = 0; i < length; i++)
@@ -58,9 +60,13 @@ export function Merak(fakeGlobalVar: string, opts: { output?: string; includes?:
         return html
       },
 
-      transform(code, id) {
-        if (filter(id))
-          return `const {${desctructGlobal(nativeVars)}}=${fakeGlobalVar};${createCustomVarProxy(fakeGlobalVar, customVars)}${code}`
+      transform(str, id) {
+        if (filter(id)) {
+          const { map, code } = injectGlobalToESM(str, fakeGlobalVar, nativeVars, customVars, force)
+
+          return { code, map }
+        }
+        // return `const {${desctructGlobal(nativeVars)}}=${fakeGlobalVar};${createCustomVarProxy(fakeGlobalVar, customVars)}${code}`
       },
     }, {
       name: 'vite-plugin-merak:build',

@@ -17,8 +17,8 @@ exports[`analyse file > analyse html file 4`] = `"./xx"`;
 exports[`analyse file > analyse html file 5`] = `"./esm.js"`;
 
 exports[`analyse file > compile esm js 1`] = `
-"import c from 'c'
-const {document,window,}=$test;
+"
+const {document,window,}=$test;import c from 'c'
 
 document.addEventListener('click', c)
 window.onload = async () => {

@@ -18,7 +18,9 @@ export const shareEmits = {
 }
 
 export const shareProps = {
-
+  inlineStyle: {
+    type: Boolean, default: true,
+  },
   name: {
     type: String,
     required: true as const,

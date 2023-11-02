@@ -222,7 +222,7 @@ export function injectGlobalToESM(code: string,
   }
   else {
     const ast = parseSync(code) as any
-    let lastImport
+    // let lastImport
     traverse(ast, {
       ReferencedIdentifier: (path) => {
         const name = path.node.name
@@ -237,18 +237,18 @@ export function injectGlobalToESM(code: string,
         }
       },
 
-      ImportDeclaration(path) {
-        const { node } = path
-        const { end } = node.source
-        lastImport = end
-      },
+      // ImportDeclaration(path) {
+      //   const { node } = path
+      //   const { end } = node.source
+      //   lastImport = end
+      // },
 
     })
 
     const injectGlobals = [...nativeSet]
     // globals = injectGlobals
     if (injectGlobals.length)
-      s.appendRight(lastImport || 0, `\nconst {${desctructGlobal(injectGlobals)}}=${globalVar};`)
+      s.appendRight(0, `\nconst {${desctructGlobal(injectGlobals)}}=${globalVar};`)
   }
   return { code: s.toString(), map: s.generateMap({ hires: true }), warning }
 }

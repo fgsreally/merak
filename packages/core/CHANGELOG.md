@@ -1,5 +1,11 @@
 # merak-core
 
+## 2.0.2
+
+### Patch Changes
+
+- 7856542: support url in inline style and standard @import in css
+
 ## 2.0.1
 
 ### Patch Changes

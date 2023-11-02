@@ -15,7 +15,7 @@ export function Merak(fakeGlobalVar: string, opts: { output?: string; includes?:
             const raw = item.text
             const unUsedGlobals = analyseJSGlobals(raw, [...nativeVars, ...customVars])
             unUsedGlobals.length > 0 && logger.collectUnusedGlobals(chunk.fileName, unUsedGlobals)
-            const { map, code, warning } = injectGlobalToESM(raw, fakeGlobalVar, nativeVars, customVars, force)
+            const { code, warning } = injectGlobalToESM(raw, fakeGlobalVar, nativeVars, customVars, force)
             if (isDebug) {
               warning.forEach(warn => logger.collectDangerUsed(chunk.fileName, warn.info, [warn.loc.start.line, warn.loc.start.column]),
               )
@@ -24,9 +24,9 @@ export function Merak(fakeGlobalVar: string, opts: { output?: string; includes?:
 
             continue
           }
-          if (item.path.endsWith('.css')) {
+          // if (item.path.endsWith('.css')) {
 
-          }
+          // }
         }
       })
     },

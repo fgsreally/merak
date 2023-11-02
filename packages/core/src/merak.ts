@@ -74,7 +74,7 @@ export class Merak<L extends Loader = Loader> {
 
   protected timer: NodeJS.Timeout | null
   /** 防止重复加载 */
-  protected loadPromise: Promise<any>
+  protected loadPromise?: Promise<any>
 
   /** 子应用的 base */
   public baseUrl: string
@@ -304,6 +304,10 @@ export class Merak<L extends Loader = Loader> {
         else {
           this.eventTrigger(window, MERAK_EVENT.MOUNT, 'relunch')
         }
+      }
+      else {
+        // work for block
+        this.execPromise = true
       }
     }
     else {

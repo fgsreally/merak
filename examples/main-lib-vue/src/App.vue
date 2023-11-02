@@ -6,6 +6,10 @@ import { ref } from 'vue'
 
 // const Lib = defineAsyncComponent(() => import('../lib'))
 const isShow = ref(false)
+
+function hook(msg: string) {
+  console.log(msg)
+}
 </script>
 
 <template>
@@ -16,7 +20,13 @@ const isShow = ref(false)
     {{ isShow ? 'delete' : 'append' }} component
   </button>
 
-  <MerakImport v-if="isShow" name="UUID" fake-global-var="vue_lib" source="http://localhost:5000/lib.js" />
+  <MerakImport
+    v-if="isShow" name="UUID" fake-global-var="vue_lib" source="http://localhost:5000/lib.js"
+    @after-mount="hook('aftermount')"
+    @before-mount="hook('beforemount')"
+    @before-unmount="hook('beforeunmount')"
+    @after-unmount="hook('afterunmount')"
+  />
   <!-- <MerakScope v-if="isShow" name="UUID" fake-global-var="vue_lib">
     <Lib v-bind="{ type: 'lib' }" />
   </MerakScope> -->

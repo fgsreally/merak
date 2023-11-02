@@ -1,6 +1,6 @@
 import { iframeInstance } from './iframe'
 import type { LoadDone, NameSpace, Props, ProxyGlobals } from './types'
-import { type Loader, loadTextFile } from './loaders'
+import { type Loader } from './loaders'
 import { createProxy } from './proxy'
 import { MERAK_CYCLE, MERAK_DATA_ID, MERAK_EVENT, MERAK_SHADE_STYLE, PERF_TIME } from './common'
 import { debug, eventTrigger, scriptPromise } from './utils'
@@ -348,7 +348,8 @@ export class Merak<L extends Loader = Loader> {
     this.sandHtml?.querySelectorAll('link[rel=stylesheet]').forEach(async (n) => {
       const href = n.getAttribute('href')
       if (href) {
-        const text = await loadTextFile(href)
+        const res = await fetch(href)
+        const text = await res.text()
         const sheet = new CSSStyleSheet({ baseURL: href })
         sheet.replace(text)
         this.sheets.push(sheet)

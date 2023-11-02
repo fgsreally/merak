@@ -238,6 +238,7 @@ export class Merak<L extends Loader = Loader> {
       this.loadPromise = (this.loader!.load(url, loaderOptions) as Promise<LoadDone>).then((loadRes) => {
         if (loadRes instanceof Error) {
           this.errorHandler({ type: 'loadError', error: loadRes as Error })
+          this.loadPromise = undefined
         }
         else {
           this.perf.record(PERF_TIME.LOAD)

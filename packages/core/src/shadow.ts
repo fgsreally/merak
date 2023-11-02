@@ -62,7 +62,6 @@ export function defineWebComponent() {
     disconnectedCallback() {
       const id = this.getAttribute(MERAK_DATA_ID)!
       debug('disconnected', id)
-
       const app = getInstance(id)!
       app.unmount(this.getAttribute(MERAK_FLAG) || 'destroy')
     }

@@ -1,6 +1,6 @@
 import { iframeInstance } from './iframe'
 import type { LoadDone, NameSpace, Props, ProxyGlobals } from './types'
-import type { Loader } from './loaders'
+import { type Loader, loadTextFile } from './loaders'
 import { createProxy } from './proxy'
 import { MERAK_CYCLE, MERAK_DATA_ID, MERAK_EVENT, MERAK_SHADE_STYLE, PERF_TIME } from './common'
 import { debug, eventTrigger, scriptPromise } from './utils'
@@ -32,6 +32,7 @@ export class Merak<L extends Loader = Loader> {
   /** 所有全局的代理 */
   public proxyMap = {} as unknown as ProxyGlobals
 
+  public sheets = [] as CSSStyleSheet[]
   /** 子应用的html */
   public template: string
 
@@ -251,6 +252,7 @@ export class Merak<L extends Loader = Loader> {
   }
 
   private mountTemplateAndScript() {
+    this.shadowRoot!.adoptedStyleSheets = this.sheets
     this.execCycle(MERAK_CYCLE.BEFORE_MOUNT)
     this.active()
     // work for style flicker
@@ -331,9 +333,23 @@ export class Merak<L extends Loader = Loader> {
     }
 
     else { this.mountTemplateAndScript() }
+
     if (!this.preloadStat)
       this.mountIndex++
     this.mountFlag = true
+  }
+
+  storeCSSLink() {
+    this.sandHtml?.querySelectorAll('link[rel=stylesheet]').forEach(async (n) => {
+      const href = n.getAttribute('href')
+      if (href) {
+        const text = await loadTextFile(href)
+        const sheet = new CSSStyleSheet({ baseURL: href })
+        sheet.replace(text)
+        this.sheets.push(sheet)
+        n.remove()
+      }
+    })
   }
 
   // called directly by shadow
@@ -343,7 +359,6 @@ export class Merak<L extends Loader = Loader> {
 
     this.execCycle(MERAK_CYCLE.BEFORE_UNMOUNT)
     this.eventTrigger(window, MERAK_EVENT.UNMOUNT, flag)
-
     this.mountFlag = false
     // just a flag
     const isKeepAlive = flag === 'destroy'

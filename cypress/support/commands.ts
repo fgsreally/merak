@@ -35,33 +35,3 @@
 //     }
 //   }
 // }
-
-declare namespace Cypress {
-  interface Chainable {
-    /**
-       * Intercept console.log and store it as an alias for further assertions.
-       */
-    interceptConsoleLog(): Chainable<any>
-
-    /**
-       * Verify the order of console.log outputs.
-       * @param expectedOrder - An array of strings representing the expected order of console.log outputs.
-       */
-    verifyConsoleLogOrder(expectedOrder: string[]): Chainable<any>
-  }
-}
-
-Cypress.Commands.add('interceptConsoleLog', () => {
-  cy.window().then((win) => {
-    cy.stub(win.console, 'log').as('consoleLog')
-  })
-})
-
-Cypress.Commands.add('verifyConsoleLogOrder', (expectedOrder: string[]) => {
-  cy.get('@consoleLog').then((consoleLog: any) => {
-    const logs = consoleLog.args.map((args: any) => args[0])
-    const actualOrder = logs.filter((log: any) => expectedOrder.includes(log))
-
-    expect(actualOrder).to.deep.equal(expectedOrder)
-  })
-})

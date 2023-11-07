@@ -1,0 +1,1 @@
+import{_ as s,o as a,c as e,a as n}from"./app.ca02e63f.js";const D=JSON.parse('{"title":"销毁","description":"","frontmatter":{},"headers":[],"relativePath":"guide/deactive.md","lastUpdated":1699324789000}'),o={name:"guide/deactive.md"},t=n("",6),p=[t];function l(c,r,d,i,_,y){return a(),e("div",null,p)}const F=s(o,[["render",l]]);export{D as __pageData,F as default};

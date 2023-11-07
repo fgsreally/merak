@@ -1,5 +1,17 @@
 # merak-core
 
+## 2.1.0
+
+### Minor Changes
+
+- f0659ce: add storeCSSLink to transform link to inline style (for perf)
+
+### Patch Changes
+
+- f0659ce: will retry when load failing
+- f0659ce: support url in inline style and standard @import in css
+- 31634b3: npm package includes both dev/prod version which is useful in cdn
+
 ## 2.0.2
 
 ### Patch Changes

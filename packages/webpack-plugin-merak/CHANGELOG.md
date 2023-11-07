@@ -1,5 +1,13 @@
 # webpack-plugin-merak
 
+## 1.0.8
+
+### Patch Changes
+
+- Updated dependencies [f0659ce]
+- Updated dependencies [f0659ce]
+  - merak-compile@2.1.0
+
 ## 1.0.7
 
 ### Patch Changes

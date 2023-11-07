@@ -1,5 +1,14 @@
 # vite-plugin-merak
 
+## 1.0.8
+
+### Patch Changes
+
+- f0659ce: vite will injectGlobalToESM even in dev
+- Updated dependencies [f0659ce]
+- Updated dependencies [f0659ce]
+  - merak-compile@2.1.0
+
 ## 1.0.7
 
 ### Patch Changes

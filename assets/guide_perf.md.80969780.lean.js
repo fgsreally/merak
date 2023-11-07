@@ -1,0 +1,1 @@
+import{_ as s,o as a,c as n,a as o}from"./app.ca02e63f.js";const A=JSON.parse('{"title":"性能监视","description":"","frontmatter":{},"headers":[],"relativePath":"guide/perf.md","lastUpdated":1699328157000}'),e={name:"guide/perf.md"},p=o("",4),l=[p];function t(c,r,d,D,i,y){return a(),n("div",null,l)}const C=s(e,[["render",t]]);export{A as __pageData,C as default};

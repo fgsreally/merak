@@ -2,8 +2,6 @@ import type { Merak, NameSpace, Props } from 'merak-core'
 
 export { Merak, Props, NameSpace }
 
-export type MerakEvent = 'mount' | 'destroy' | 'hidden' | 'unmount' | 'relunch' | 'show'
-
 export const isMerak = !!window.isMerak
 
 // get real window
@@ -57,7 +55,7 @@ export function $head(): HTMLHeadElement {
   return $document().head
 }
 
-export function $on(eventName: MerakEvent, cb: (flag?: string) => any): () => void {
+export function $on(eventName: string, cb: (flag?: string) => any): () => void {
   const event = $eventName(eventName)
   if (isMerak) {
     const callback = function (e: any) {
@@ -69,7 +67,7 @@ export function $on(eventName: MerakEvent, cb: (flag?: string) => any): () => vo
   return () => { }
 }
 
-export function $once(eventName: MerakEvent, cb: (flag?: string) => any): () => void {
+export function $once(eventName: string, cb: (flag?: string) => any): () => void {
   const event = $eventName(eventName)
   if (isMerak) {
     const callback = function (e: any) {

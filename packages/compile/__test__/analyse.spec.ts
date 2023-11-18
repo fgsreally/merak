@@ -21,7 +21,7 @@ describe('analyse file', () => {
 
   it('compile esm js', async () => {
     const filePath = resolve(__dirname, './fixtures/esm.js')
-    const { code } = injectGlobalToESM(await fs.promises.readFile(filePath, 'utf-8'), '$test', ['document', 'window'], ['d'])
+    const { code } = injectGlobalToESM(await fs.promises.readFile(filePath, 'utf-8'), '$test', ['document', 'window'], ['__HMR__'])
     expect(code).toMatchSnapshot()
   })
 

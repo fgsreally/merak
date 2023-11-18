@@ -1,12 +1,13 @@
 /* eslint-disable no-console */
 import { createApp } from 'vue'
 import { createPinia } from 'pinia'
-import { CompileLoader, preload } from 'merak-vue'
+import { preload, vueLoader } from 'merak-vue'
 
 import App from './App.vue'
 import router from './router'
 import './assets/main.css'
-preload('assets', 'vite_vue', 'http://localhost:4004', { loader: new CompileLoader(), timeout: 2000 })
+
+preload('script', 'vite_vue', 'http://localhost:4004', { loader: vueLoader, timeout: 2000 })
 
 const app = createApp(App)
 app.use(createPinia())

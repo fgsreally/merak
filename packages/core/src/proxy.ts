@@ -97,10 +97,14 @@ export function createProxyWindow(id: string, url: string) {
 
 export function createProxyDocument(id: string, url: string) {
   return {
+    // getPrototypeOf() {
+    //   console.log(Object.getPrototypeOf(document))
+    //   return Object.getPrototypeOf(document)
+    // },
     get(target: any, p: PropertyKey) {
-      const instance = getInstance(id)!
-
       debug(`get [${typeof p === 'symbol' ? p.toString() : p}] from document`, id)
+
+      const instance = getInstance(id)!
 
       if (p === 'rawDocument')
         return document

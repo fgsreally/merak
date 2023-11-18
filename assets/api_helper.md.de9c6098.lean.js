@@ -1,0 +1,1 @@
+import{_ as s,o as n,c as a,a as l}from"./app.ca02e63f.js";const i=JSON.parse('{"title":"helper","description":"","frontmatter":{},"headers":[],"relativePath":"api/helper.md","lastUpdated":1700320156000}'),p={name:"api/helper.md"},o=l("",6),e=[o];function t(c,r,y,C,A,F){return n(),a("div",null,e)}const d=s(p,[["render",t]]);export{i as __pageData,d as default};

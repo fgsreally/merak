@@ -7,6 +7,7 @@ import { parse, walk } from 'html5parser'
 import MagicString from 'magic-string'
 import type { MerakJSFile } from './types'
 import { checkIsDanger, desctructGlobal, isCdn, isRelativeReferences, relativePath } from './utils'
+import { EXCLUDE_TAG } from './common'
 
 interface AnalyseTagRes {
   loc: [number, number]
@@ -181,13 +182,20 @@ export function injectGlobalToIIFE(code: string, globalVar: string, nativeVars: 
       ReferencedIdentifier: (path) => {
         const name = path.node.name
         if (!path.scope.hasBinding(name, true)) {
-          nativeVars.includes(name) && nativeSet.add(name)
-          if (customVars.includes(name)) {
-            const { start } = path.node || {}
-
-            start && s.appendLeft(start, `${globalVar}.`)
-          }
           checkIsDanger(path.node, warning)
+
+          const { start } = path.node as { start: number }
+          if (nativeVars.includes(name)) {
+            if (s.slice(start! - 13, start!) === EXCLUDE_TAG) {
+              s.overwrite(start, start + name.length, `(window.isMerak?window.rawWindow.${name}:${name})`)
+              return
+            }
+
+            nativeSet.add(name)
+          }
+          if (customVars.includes(name))
+
+            s.appendLeft(start, `${globalVar}.`)
         }
       },
       Program(path) {
@@ -228,12 +236,20 @@ export function injectGlobalToESM(code: string,
         const name = path.node.name
 
         if (!path.scope.hasBinding(name, true)) {
-          nativeVars.includes(name) && nativeSet.add(name)
-          if (customVars.includes(name)) {
-            const { start } = path.node || {}
-            start && s.appendLeft(start, `${globalVar}.`)
-          }
           checkIsDanger(path.node, warning)
+
+          const { start } = path.node as { start: number }
+          if (nativeVars.includes(name)) {
+            if (start && s.slice(start! - 13, start!) === EXCLUDE_TAG) {
+              s.overwrite(start, start + name.length, `(window.isMerak?window.rawWindow.${name}:${name})`)
+              return
+            }
+
+            nativeSet.add(name)
+          }
+
+          if (customVars.includes(name))
+            s.appendLeft(start, `${globalVar}.`)
         }
       },
 

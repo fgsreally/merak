@@ -18,11 +18,14 @@ exports[`analyse file > analyse html file 5`] = `"./esm.js"`;
 
 exports[`analyse file > compile esm js 1`] = `
 "
-const {document,window,}=$test;import c from 'c'
+const {window,document,}=$test;import c from 'c'
 
-document.addEventListener('click', c)
+/** @merak */(window.isMerak?window.rawWindow.document:document).addEventListener('click', c);
+(Math.random() > 0.5 ? /** @merak */(window.isMerak?window.rawWindow.document:document) : /** @merak */(window.isMerak?window.rawWindow.document:document).body).addEventListener('click', c)
+$test.__HMR__.run()
+
 window.onload = async () => {
-  console.log($test.d)
+  document.addEventListener('click', c)
 }
 "
 `;

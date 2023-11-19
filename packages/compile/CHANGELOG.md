@@ -1,5 +1,12 @@
 # merak-compile
 
+## 2.1.0
+
+### Patch Changes
+
+- f0659ce: injectGlobalToESM will inject code to the first line
+- f0659ce: support url in inline style and standard @import in css
+
 ## 2.0.2
 
 ### Patch Changes

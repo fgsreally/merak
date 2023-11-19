@@ -1,5 +1,21 @@
 # merak-vue
 
+## 2.1.0
+
+### Minor Changes
+
+- f0659ce: add storeCSSLink to transform link to inline style (for perf)
+
+### Patch Changes
+
+- f0659ce: add shareemits to block component which can trigger hook at now
+- Updated dependencies [f0659ce]
+- Updated dependencies [f0659ce]
+- Updated dependencies [f0659ce]
+- Updated dependencies [31634b3]
+  - merak-core@2.1.0
+  - merak-helper@2.0.0
+
 ## 2.0.2
 
 ### Patch Changes

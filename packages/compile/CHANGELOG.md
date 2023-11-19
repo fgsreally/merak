@@ -1,5 +1,11 @@
 # merak-compile
 
+## 2.1.1
+
+### Patch Changes
+
+- 45d1c69: add /\*_ @merak _/ tag to exclude nativeVariable
+
 ## 2.1.0
 
 ### Patch Changes

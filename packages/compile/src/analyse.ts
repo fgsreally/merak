@@ -188,6 +188,8 @@ export function injectGlobalToIIFE(code: string, globalVar: string, nativeVars: 
           if (nativeVars.includes(name)) {
             if (s.slice(start! - 13, start!) === EXCLUDE_TAG) {
               s.overwrite(start, start + name.length, `(window.isMerak?window.rawWindow.${name}:${name})`)
+              nativeSet.add('window')
+
               return
             }
 
@@ -242,6 +244,7 @@ export function injectGlobalToESM(code: string,
           if (nativeVars.includes(name)) {
             if (start && s.slice(start! - 13, start!) === EXCLUDE_TAG) {
               s.overwrite(start, start + name.length, `(window.isMerak?window.rawWindow.${name}:${name})`)
+              nativeSet.add('window')
               return
             }
 
@@ -252,12 +255,6 @@ export function injectGlobalToESM(code: string,
             s.appendLeft(start, `${globalVar}.`)
         }
       },
-
-      // ImportDeclaration(path) {
-      //   const { node } = path
-      //   const { end } = node.source
-      //   lastImport = end
-      // },
 
     })
 

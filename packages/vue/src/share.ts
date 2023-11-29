@@ -1,5 +1,5 @@
 /* eslint-disable @typescript-eslint/no-unused-vars */
-import type { LoadDone, Merak, ProxyGlobals } from 'merak-core'
+import type { LoadDone, Merak, ProxyFn } from 'merak-core'
 import type { PropType } from 'vue'
 
 export const shareEmits = {
@@ -34,7 +34,7 @@ export const shareProps = {
 
   },
   proxy: {
-    type: Object as PropType<ProxyGlobals>,
+    type: Function as PropType<ProxyFn>,
   },
   flag: {
     type: String,

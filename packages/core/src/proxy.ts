@@ -3,6 +3,7 @@ import { createQuery, debug, getMerakQuerys, isBoundedFunction, isCallable, isCo
 import { getInstance } from './helper'
 import { createProxyTimer } from './proxy/timer'
 import { createProxyListener } from './proxy/listener'
+import type { ProxyFn } from './types'
 
 export const cacheBindFn = new WeakMap()
 
@@ -269,11 +270,12 @@ export function createProxyLocation(id: string) {
   }
 }
 
-export function createProxy(id: string, url: string) {
+export const createProxy: ProxyFn = ({ id, baseUrl: url }) => {
   const { setTimeout, setInterval } = createProxyTimer(id)
   return { document: createProxyDocument(id, url), window: createProxyWindow(id, url), history: createProxyHistory(id), location: createProxyLocation(id), setTimeout, setInterval, addEventListener: createProxyListener(id) }
 }
 
-export function createLibProxy(id: string, url: string) {
-  return { document: createProxyDocument(id, url), window: createProxyWindow(id, url) }
+export const createLibProxy: ProxyFn = ({ id, baseUrl: url }) => {
+  const { setTimeout, setInterval } = createProxyTimer(id)
+  return { document: createProxyDocument(id, url), window: createProxyWindow(id, url), setTimeout, setInterval, addEventListener: createProxyListener(id) }
 }

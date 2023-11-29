@@ -1,5 +1,11 @@
 # merak-core
 
+## 2.1.1
+
+### Patch Changes
+
+- 45d1c69: npm package includes both dev/prod version which is useful in cdn
+
 ## 2.1.0
 
 ### Minor Changes

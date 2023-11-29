@@ -1,5 +1,11 @@
 # merak-helper
 
+## 2.0.1
+
+### Patch Changes
+
+- 4b93e18: remove type MerakEvent;fix $on type
+
 ## 2.0.0
 
 ### Major Changes

@@ -14,6 +14,8 @@ export interface LoadDone {
 
 }
 
+export type ProxyFn = (opts: { id: string; baseUrl: string }) => ProxyGlobals
+
 export interface ProxyGlobals {
   window: ProxyHandler<Window>
   [key: string]: ProxyHandler<any> | Function

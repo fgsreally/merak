@@ -1,5 +1,5 @@
 import { iframeInstance } from './iframe'
-import type { LoadDone, NameSpace, Props, ProxyGlobals } from './types'
+import type { LoadDone, NameSpace, Props, ProxyFn, ProxyGlobals } from './types'
 import { type Loader } from './loaders'
 import { createProxy } from './proxy'
 import { MERAK_CYCLE, MERAK_DATA_ID, MERAK_EVENT, MERAK_SHADE_STYLE, PERF_TIME } from './common'
@@ -91,10 +91,11 @@ export class Merak<L extends Loader = Loader> {
 
   constructor(
     /** 分配的名字，等于data-merak-id */public id: string,
-    /** 源url */public url: string, public options: {
+    /** 源url */public url: string,
+    public options: {
       loader?: L
       // 沙箱
-      proxy?: ProxyGlobals
+      proxy?: ProxyFn
       loaderOptions?: any
       // iframe id
       iframe?: string
@@ -110,13 +111,14 @@ export class Merak<L extends Loader = Loader> {
     }
     MerakMap.set(id, this)
     this.baseUrl = new URL('./', url).href.slice(0, -1)
-    const { proxy = createProxy(id, this.baseUrl), loaderOptions, loader, timeout = 0 } = options
+    const { proxy = createProxy, loaderOptions, loader, timeout = 0 } = options
     this.timeout = timeout
     this.loaderOptions = loaderOptions
     this.loader = loader
 
-    for (const i in proxy)
-      this.proxyMap[i] = typeof proxy[i] === 'function' ? proxy[i] : new Proxy({} as any, proxy[i])
+    const proxyMap = proxy({ id, baseUrl: this.baseUrl })
+    for (const i in proxyMap)
+      this.proxyMap[i] = typeof proxyMap[i] === 'function' ? proxyMap[i] : new Proxy({} as any, proxyMap[i])
 
     const windowProxy = this.proxy = this.proxyMap.window as any
 

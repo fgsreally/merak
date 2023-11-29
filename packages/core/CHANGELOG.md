@@ -1,5 +1,12 @@
 # merak-core
 
+## 2.1.2
+
+### Patch Changes
+
+- f5c28d2: libProxy should be the same as common proxy without location and history
+- f5c28d2: proxy option should be a function
+
 ## 2.1.1
 
 ### Patch Changes

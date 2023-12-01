@@ -1,1 +1,0 @@
-import{_ as s,o as a,c as n,a as o}from"./app.1ba86111.js";const D=JSON.parse('{"title":"热更新","description":"","frontmatter":{},"headers":[],"relativePath":"guide/hmr.md","lastUpdated":1701402733000}'),l={name:"guide/hmr.md"},p=o("",7),e=[p];function t(c,r,i,F,_,y){return a(),n("div",null,e)}const h=s(l,[["render",t]]);export{D as __pageData,h as default};

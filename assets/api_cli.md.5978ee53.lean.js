@@ -1,1 +1,0 @@
-import{_ as s,o as a,c as n,a as o}from"./app.1ba86111.js";const A=JSON.parse('{"title":"cli","description":"","frontmatter":{},"headers":[],"relativePath":"api/cli.md","lastUpdated":1701403370000}'),l={name:"api/cli.md"},p=o("",9),e=[p];function t(c,r,D,F,y,i){return a(),n("div",null,e)}const u=s(l,[["render",t]]);export{A as __pageData,u as default};

@@ -1,5 +1,12 @@
 # merak-core
 
+## 2.1.3
+
+### Patch Changes
+
+- 6beb584: libProxy should be the same as common proxy without location and history
+- 6beb584: proxy option should be a function
+
 ## 2.1.2
 
 ### Patch Changes

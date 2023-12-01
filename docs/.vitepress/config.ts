@@ -108,6 +108,10 @@ export default defineConfig({
               text: '热更新',
               link: '/guide/hmr',
             },
+            {
+              text: '调试',
+              link: '/guide/debug',
+            },
           ],
         },
 

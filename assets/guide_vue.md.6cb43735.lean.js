@@ -1,1 +1,0 @@
-import{_ as s,o as a,c as n,a as l}from"./app.1ba86111.js";const A=JSON.parse('{"title":"merak-vue","description":"","frontmatter":{},"headers":[],"relativePath":"guide/vue.md","lastUpdated":1701402733000}'),p={name:"guide/vue.md"},o=l("",6),e=[o];function t(c,r,D,F,y,C){return a(),n("div",null,e)}const u=s(p,[["render",t]]);export{A as __pageData,u as default};

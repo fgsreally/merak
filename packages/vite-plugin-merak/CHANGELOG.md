@@ -1,5 +1,16 @@
 # vite-plugin-merak
 
+## 1.1.0
+
+### Minor Changes
+
+- f4f7cba: update vite version
+- f4f7cba: upgrade vite version
+
+### Patch Changes
+
+- f4f7cba: won't generate sourcemap in dev which will break sourcemap resolve in browser
+
 ## 1.0.9
 
 ### Patch Changes

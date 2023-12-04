@@ -1,1 +1,0 @@
-import{_ as e,o,c,a as d}from"./app.6f935c16.js";const h=JSON.parse('{"title":"目标","description":"","frontmatter":{},"headers":[],"relativePath":"blog/goal.md","lastUpdated":1701700110000}'),l={name:"blog/goal.md"},i=d("",7),t=[i];function a(s,r,n,_,p,m){return o(),c("div",null,t)}const f=e(l,[["render",a]]);export{h as __pageData,f as default};

@@ -1,1 +1,0 @@
-import{_ as s,o as n,c as a,a as l}from"./app.6f935c16.js";const i=JSON.parse('{"title":"webpack-plugin-merak","description":"","frontmatter":{},"headers":[],"relativePath":"api/webpack.md","lastUpdated":1701700110000}'),p={name:"api/webpack.md"},o=l("",2),e=[o];function t(c,r,y,D,C,F){return n(),a("div",null,e)}const B=s(p,[["render",t]]);export{i as __pageData,B as default};

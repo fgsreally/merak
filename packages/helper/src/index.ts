@@ -44,7 +44,7 @@ export function $eventName(event: string) {
 
 // sub app baseUrl
 export function $base() {
-  return isMerak ? $instance()!.url : location.origin
+  return isMerak ? $instance()!.baseUrl : location.origin
 }
 
 export function $body(): HTMLElement {

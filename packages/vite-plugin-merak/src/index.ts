@@ -62,9 +62,8 @@ export function Merak(fakeGlobalVar: string, opts: { output?: string; includes?:
 
       transform(str, id) {
         if (filter(id)) {
-          const { map, code } = injectGlobalToESM(str, fakeGlobalVar, nativeVars, customVars, force)
-
-          return { code, map }
+          const { code } = injectGlobalToESM(str, fakeGlobalVar, nativeVars, customVars, force)
+          return { code }
         }
         // return `const {${desctructGlobal(nativeVars)}}=${fakeGlobalVar};${createCustomVarProxy(fakeGlobalVar, customVars)}${code}`
       },

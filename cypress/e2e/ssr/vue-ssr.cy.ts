@@ -7,7 +7,7 @@ describe('vue ssr app', () => {
     cy.wait(1000)
   })
   it('should mount template on body', () => {
-    cy.get(`[data-merak-url="${SUBAPP_URL.vite_vue}"]`).should('exist')
+    cy.get(`[data-merak-url='${SUBAPP_URL.vite_vue}/index.html']`).should('exist')
   })
 
   it('should work', () => {

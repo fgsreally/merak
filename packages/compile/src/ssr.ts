@@ -1,19 +1,48 @@
+import type { TransformCallback } from 'stream'
 import { Transform } from 'stream'
+import { StringDecoder } from 'node:string_decoder'
 import { Parser } from 'htmlparser2'
-import { resolveUrl } from './utils'
+import { compileHTML, resolveUrl } from './utils'
+import { analyseHTML } from './analyse'
 
 function mergeAttrs(attrs: Record<string, string>) {
   return Object.entries(attrs).reduce((p, c) => `${p} ${c[0]}='${c[1]}'`, '')
 }
 
+/**
+ * @deprecated
+ */
 export function wrap(html: string, url: string) {
   return `<template data-merak-url='${url}'>${html}</template>`
 }
+
+export function addMerakTagToHtml(main: string, sub: string, url: string, { tag = 'template', attrs = {} }: {
+  tag?: string
+  attrs?: Record<string, string>
+} = {}) {
+  const subHtml = compileHTML(sub, url, analyseHTML(sub).map(item => item.loc))
+
+  return main.replace('</body>', `<${tag} data-merak-url='${url}'${mergeAttrs(attrs)}>${subHtml}</${tag}></body>`)
+}
+
+function isBuffer(_chunk: string | Buffer, encoding: string): _chunk is Buffer {
+  return encoding === 'buffer'
+}
+
+/**
+ * @todo resolve inner script
+ */
 export class SsrTransformer extends Transform {
-  private parser: Parser
-  constructor(public readonly url: string, public templateAttrs: Record<string, string> = {}) {
+  private readonly parser: Parser
+  private readonly _decoder = new StringDecoder()
+  tag: string
+  constructor(public readonly url: string, opts: { attrs?: Record<string, string>; tag?: string } = {}) {
     super()
-    this.push(`<template data-merak-url='${url}' ${mergeAttrs(templateAttrs)}>`)
+
+    const { attrs = {}, tag = 'template' } = opts
+
+    this.tag = tag
+    this.push(`<${tag} data-merak-url='${url}' ${mergeAttrs(attrs)}>`)
     this.parser = new Parser({
       onopentag: (tag, attrs) => {
         if ('merak-ignore' in attrs)
@@ -35,13 +64,19 @@ export class SsrTransformer extends Transform {
         this.push(text)
       },
       onend: () => {
-        this.push('</template>')
       },
     })
   }
 
+  _flush(callback: TransformCallback): void {
+    this.push(`</${this.tag}>`)
+    callback()
+  }
+
   _transform(chunk: any, encoding: string, callback: () => void) {
-    this.parser.write(chunk.toString())
+    this.parser.write(
+      isBuffer(chunk, encoding) ? this._decoder.write(chunk) : chunk,
+    )
     callback()
   }
 }

@@ -4,7 +4,7 @@ import path from 'node:path'
 import { fileURLToPath } from 'node:url'
 import express from 'express'
 import axios from 'axios'
-import { compileHTML, resolveHtmlConfig, wrap } from 'merak-compile'
+import { addMerakTagToHtml } from 'merak-compile'
 const isProduction = process.env.PROD || process.env.CI
 
 export async function createServer(root = process.cwd(), isProd = isProduction) {
@@ -61,15 +61,13 @@ export async function createServer(root = process.cwd(), isProd = isProduction) 
       }
 
       const [strOrStream, links] = await render(url, manifest)
-      const appurl = 'http://127.0.0.1:4004/index.html'
+      const appurl = 'http://localhost:4004/index.html'
       const { data } = await axios.get(appurl)
-      const { config } = resolveHtmlConfig(data)
       const html = template
         .replace('<!--preload-links-->', links)
         .replace('<!--app-html-->', strOrStream)
-        .replace('</body>', `${wrap(compileHTML(data, appurl, config._l), 'http://localhost:4004')}</body>`)
 
-      res.status(200).set({ 'Content-Type': 'text/html' }).end(html)
+      res.status(200).set({ 'Content-Type': 'text/html' }).end(addMerakTagToHtml(html, data, appurl))
     }
     catch (e) {
       vite && vite.ssrFixStacktrace(e)

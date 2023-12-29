@@ -1,5 +1,13 @@
 # merak-compile
 
+## 2.1.3
+
+### Patch Changes
+
+- bba2726: fix SsrTransformer. now it can work for http stream
+- bba2726: add addMerakTagToHtml for ssr basic use(for convenient)
+- bba2726: SsrTransformer should have the same opts in addMerakTagToHtml
+
 ## 2.1.1
 
 ### Patch Changes

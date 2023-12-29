@@ -35,10 +35,14 @@ function isBuffer(_chunk: string | Buffer, encoding: string): _chunk is Buffer {
 export class SsrTransformer extends Transform {
   private readonly parser: Parser
   private readonly _decoder = new StringDecoder()
-
-  constructor(public readonly url: string, public templateAttrs: Record<string, string> = {}) {
+  tag: string
+  constructor(public readonly url: string, opts: { attrs?: Record<string, string>; tag?: string } = {}) {
     super()
-    this.push(`<template data-merak-url='${url}' ${mergeAttrs(templateAttrs)}>`)
+
+    const { attrs = {}, tag = 'template' } = opts
+
+    this.tag = tag
+    this.push(`<${tag} data-merak-url='${url}' ${mergeAttrs(attrs)}>`)
     this.parser = new Parser({
       onopentag: (tag, attrs) => {
         if ('merak-ignore' in attrs)
@@ -65,7 +69,7 @@ export class SsrTransformer extends Transform {
   }
 
   _flush(callback: TransformCallback): void {
-    this.push('</template>')
+    this.push(`</${this.tag}>`)
     callback()
   }
 

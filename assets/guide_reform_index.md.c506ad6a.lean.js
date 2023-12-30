@@ -1,0 +1,1 @@
+import{_ as e,o as a,c as t,a as r}from"./app.c7c475cc.js";const m=JSON.parse('{"title":"改造","description":"","frontmatter":{},"headers":[],"relativePath":"guide/reform/index.md","lastUpdated":1703924165000}'),o={name:"guide/reform/index.md"},_=r("",5),d=[_];function n(s,c,i,p,h,l){return a(),t("div",null,d)}const x=e(o,[["render",n]]);export{m as __pageData,x as default};

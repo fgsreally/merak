@@ -19,6 +19,7 @@ export const hooks = [
 export function MerakApp(
   props:
   shareProps & {
+    children?: any
     loaderOptions?: any
     loader?: Loader
     route?: string
@@ -46,12 +47,12 @@ export function MerakApp(
       if (inlineStyle)
         app.storeCSSLink()
 
-    //   Promise.resolve().then(() => {
-    //     for (const hook of hooks) {
-    //       if (props[hook])
-    //         app.lifeCycle[hook] = originHooks[hook]
-    //     }
-    //   })
+      Promise.resolve().then(() => {
+        for (const hook of hooks) {
+          if (props[hook])
+            app.lifeCycle[hook] = originHooks[hook]
+        }
+      })
     }
   }, [])
 
@@ -59,5 +60,5 @@ export function MerakApp(
     route && $$jump(name, route)
   }, [route])
 
-  return createElement('merak-app', { [MERAK_DATA_ID]: name, [MERAK_FLAG]: flag })
+  return createElement('merak-app', { [MERAK_DATA_ID]: name, [MERAK_FLAG]: flag }, null)
 }

@@ -1,1 +1,0 @@
-import{_ as o,o as e,c,a as d}from"./app.c7c475cc.js";const b=JSON.parse('{"title":"比较","description":"","frontmatter":{},"headers":[],"relativePath":"blog/compare.md","lastUpdated":1703924165000}'),t={name:"blog/compare.md"},l=d("",18),r=[l];function a(p,s,i,n,u,_){return e(),c("div",null,r)}const g=o(t,[["render",a]]);export{b as __pageData,g as default};

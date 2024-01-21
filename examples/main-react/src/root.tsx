@@ -1,5 +1,9 @@
 import { Link, Outlet, Route, Routes } from "react-router-dom";
-import { MerakApp } from "merak-react";
+import { MerakApp, MerakImport, MerakScope } from "merak-react";
+import { lazy } from "react";
+
+const Block = lazy(() => import("./block"));
+
 export default function App() {
   return (
     <div>
@@ -7,9 +11,27 @@ export default function App() {
         <Route path="/" element={<Layout />}>
           <Route index id={"tohome"} element={<Home />} />
           <Route path="about" id={"toabout"} element={<About />} />
+          <Route path="lazy" id={"tolazy"} element={<Lazy />} />
         </Route>
       </Routes>
     </div>
+  );
+}
+
+export function Lazy() {
+  return (
+    <>
+      Scope:
+      <MerakScope name='scope' fakeGlobalVar="block_scope">
+        <Block label='scope'></Block>
+      </MerakScope>
+
+      Import:
+      <MerakImport name='import' fakeGlobalVar="block_import" source="http://localhost:5173/src/block.tsx" props={{label:'import'}}>
+
+
+      </MerakImport>
+    </>
   );
 }
 
@@ -26,6 +48,9 @@ function Layout() {
           <li>
             <Link to="/about">About</Link>
           </li>
+          <li>
+            <Link to="/lazy">Lazy</Link>
+          </li>
         </ul>
       </nav>
 
@@ -37,6 +62,9 @@ function Layout() {
 }
 
 function About() {
+  function hook(msg: string) {
+    return () => console.log(msg);
+  }
   return (
     <>
       <MerakApp
@@ -45,6 +73,10 @@ function About() {
         class="micro"
         route="/about"
         props={{ data: "data from main" }}
+        afterMount={hook("aftermount")}
+        beforeMount={hook("beforemount")}
+        beforeUnmount={hook("beforeunmount")}
+        afterUnmount={hook("afterunmount")}
       ></MerakApp>
     </>
   );

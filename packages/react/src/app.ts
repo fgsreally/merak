@@ -1,6 +1,6 @@
 import type { Loader } from 'merak-core'
 import { $$jump, CompileLoader, MERAK_DATA_ID, MERAK_FLAG, Merak, SSRLoader, getInstance } from 'merak-core'
-import { createElement, useEffect } from 'react'
+import { type FC, createElement, useEffect } from 'react'
 import type { shareProps } from './types'
 export const reactLoader = new CompileLoader()
 export const reactSSRLoader = new SSRLoader()
@@ -16,15 +16,13 @@ export const hooks = [
   'deactive',
 ] as const
 
-export function MerakApp(
-  props:
-  shareProps & {
-    children?: any
-    loaderOptions?: any
-    loader?: Loader
-    route?: string
-    ssr?: boolean
-  } & Partial<Merak['lifeCycle']>) {
+export const MerakApp: FC<shareProps & {
+  loaderOptions?: any
+  loader?: Loader
+  route?: string
+  ssr?: boolean
+} & Partial<Merak['lifeCycle']>> = (
+  props) => {
   const { url, proxy, loader, loaderOptions, props: MerakProps, iframe, name, route, timeout, inlineStyle = true, flag = 'destroy', ssr = false } = props
 
   const app = getInstance(name) || new Merak(name, url, { loader: loader || (ssr ? reactSSRLoader : reactLoader), loaderOptions, proxy, iframe, timeout })
@@ -37,7 +35,7 @@ export function MerakApp(
         const origin = app.lifeCycle[hook]
         originHooks[hook] = origin
         app.lifeCycle[hook] = (arg: any) => {
-          origin(arg)
+          origin?.(arg)
           props[hook]!(arg)
         }
       }

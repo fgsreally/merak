@@ -5,10 +5,11 @@ import { defineComponent, h, onBeforeUnmount, onMounted, onUnmounted, watch } fr
 
 import { shareEmits, shareProps } from './share'
 export const vueSSRLoader = new SSRLoader()
-
 export const vueLoader = new CompileLoader()
+
 export const MerakApp = defineComponent({
   inheritAttrs: true,
+
   props: {
     ...shareProps,
     loaderOptions: {

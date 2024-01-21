@@ -41,9 +41,7 @@ export const MerakImport = defineComponent({
       type: Boolean,
       default: true,
     },
-    globals: {
-      type: Array as PropType<string[]>,
-    },
+
   },
   emits: shareEmits,
 
@@ -52,6 +50,8 @@ export const MerakImport = defineComponent({
     const app = getInstance(name) || new Merak(name, url, { proxy: proxy || createLibProxy, iframe, timeout })
     if (!app.fakeGlobalVar)
       app.setGlobalVars(fakeGlobalVar, nativeVars, customVars)
+    if (MerakProps)
+      app.props = MerakProps
 
     let vnode: VNode
     for (const ev in shareEmits) {
@@ -117,12 +117,15 @@ export const MerakScope = defineComponent({
   emits: shareEmits,
   // emits: shareEmits,
   setup(props, { slots, emit }) {
-    const { fakeGlobalVar, deactive, head, name, proxy, iframe, url, nativeVars = shareNativeVars, customVars = [], timeout, inlineStyle } = props
+    const { fakeGlobalVar, deactive, head, name, proxy, iframe, url, nativeVars = shareNativeVars, customVars = [], timeout, inlineStyle, props: MerakProps } = props
 
     const app = getInstance(name) || new Merak(name, url, { proxy: proxy || createLibProxy, iframe, timeout })
 
     if (!app.fakeGlobalVar)
       app.setGlobalVars(fakeGlobalVar, nativeVars, customVars)
+
+    if (MerakProps)
+      app.props = MerakProps
 
     for (const ev in shareEmits) {
       const task = app.lifeCycle[ev]

@@ -1,5 +1,15 @@
 # merak-vue
 
+## 2.1.4
+
+### Patch Changes
+
+- 9be6ae8: props on MerakImport will work for both MerakInstance and remote component
+- 9be6ae8: add ssr to MerakApp;remove MerakSSR
+- Updated dependencies [9be6ae8]
+  - merak-core@2.1.4
+  - merak-helper@2.0.2
+
 ## 2.1.3
 
 ### Patch Changes

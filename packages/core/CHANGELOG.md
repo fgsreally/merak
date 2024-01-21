@@ -1,5 +1,11 @@
 # merak-core
 
+## 2.1.4
+
+### Patch Changes
+
+- 9be6ae8: replace **DEV** with NODE_ENV
+
 ## 2.1.2
 
 ### Patch Changes

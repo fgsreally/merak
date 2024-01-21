@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { MerakSSR } from 'merak-vue'
+import { MerakApp } from 'merak-vue'
 const data = {
   data: 'data from main-vue-ssr',
 }
@@ -12,7 +12,7 @@ function callback() {
 <template>
   <div class="about">
     <h1>This is an about page</h1>
-    <MerakSSR name="vite_vue" url="http://localhost:4004/index.html" :props="data" @before-unmount="callback" @destroy="callback" />
+    <MerakApp ssr name="vite_vue" url="http://localhost:4004/index.html" :props="data" @before-unmount="callback" @destroy="callback" />
   </div>
 </template>
 

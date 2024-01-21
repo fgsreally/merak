@@ -1,9 +1,11 @@
 import type { Loader } from 'merak-core'
-import { $$jump, CompileLoader, MERAK_DATA_ID, MERAK_FLAG, Merak, getInstance } from 'merak-core'
+import { $$jump, CompileLoader, MERAK_DATA_ID, MERAK_FLAG, Merak, SSRLoader, getInstance } from 'merak-core'
 import type { PropType } from 'vue'
 import { defineComponent, h, onBeforeUnmount, onMounted, onUnmounted, watch } from 'vue'
 
 import { shareEmits, shareProps } from './share'
+export const vueSSRLoader = new SSRLoader()
+
 export const vueLoader = new CompileLoader()
 export const MerakApp = defineComponent({
   inheritAttrs: true,
@@ -15,17 +17,19 @@ export const MerakApp = defineComponent({
 
     loader: {
       type: Object as PropType<Loader>,
-      default: vueLoader,
     },
     route: {
       type: String,
     },
-
+    ssr: {
+      type: Boolean,
+      default: false,
+    },
   },
   emits: shareEmits,
   setup(props, { emit, expose }) {
-    const { url, proxy, loader, loaderOptions, props: MerakProps, iframe, name, route, timeout, inlineStyle } = props
-    const app = getInstance(name) || new Merak(name, url, { loader, loaderOptions, proxy, iframe, timeout })
+    const { url, proxy, loader, loaderOptions, props: MerakProps, iframe, name, route, timeout, inlineStyle, ssr } = props
+    const app = getInstance(name) || new Merak(name, url, { loader: loader || (ssr ? vueSSRLoader : vueLoader), loaderOptions, proxy, iframe, timeout })
     onBeforeUnmount(() => {
       if (inlineStyle)
         app.storeCSSLink()

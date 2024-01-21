@@ -1,5 +1,11 @@
 # merak-helper
 
+## 2.0.2
+
+### Patch Changes
+
+- 8696dec: $base will get baseUrl,not html url
+
 ## 2.0.1
 
 ### Patch Changes

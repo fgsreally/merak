@@ -1,5 +1,31 @@
 # vite-plugin-merak
 
+## 1.2.0
+
+### Minor Changes
+
+- bba2726: update vite version
+- bba2726: upgrade vite version
+
+### Patch Changes
+
+- bba2726: won't generate sourcemap in dev which will break sourcemap resolve in browser
+- Updated dependencies [bba2726]
+- Updated dependencies [bba2726]
+- Updated dependencies [bba2726]
+  - merak-compile@2.1.3
+
+## 1.1.0
+
+### Minor Changes
+
+- f4f7cba: update vite version
+- f4f7cba: upgrade vite version
+
+### Patch Changes
+
+- f4f7cba: won't generate sourcemap in dev which will break sourcemap resolve in browser
+
 ## 1.0.9
 
 ### Patch Changes

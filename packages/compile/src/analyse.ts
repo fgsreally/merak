@@ -227,8 +227,8 @@ export function injectGlobalToESM(code: string,
   const warning: { info: string; loc: SourceLocation }[] = []
 
   if (force) {
-    s.prepend(createCustomVarProxy(globalVar, customVars))
     s.prepend(`\nconst {${desctructGlobal(nativeVars)}}=${globalVar};`)
+    s.prepend(createCustomVarProxy(globalVar, customVars))
   }
   else {
     const ast = parseSync(code) as any

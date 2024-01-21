@@ -1,0 +1,29 @@
+{
+  "name": "merak-react",
+  "version": "0.0.0",
+  "description": "",
+  "main": "dist/index.js",
+  "module": "dist/index.mjs",
+  "types": "dist/index.d.ts",
+  "scripts": {
+    "dev": "tsup --watch",
+    "build": "tsup"
+  },
+  "keywords": [],
+  "author": "",
+  "files": [
+    "dist"
+  ],
+  "license": "MIT",
+  "dependencies": {
+    "merak-core": "workspace:*",
+    "merak-helper": "workspace:*",
+    "react": "^18.2.0",
+    "react-dom": "^18.2.0"
+  },
+  "devDependencies": {
+    "@types/react": "^18.0.26",
+    "@types/react-dom": "^18.0.9",
+    "tsup": "^6.5.0"
+  }
+}

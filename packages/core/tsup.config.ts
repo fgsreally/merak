@@ -6,7 +6,7 @@ export const tsup: Options = process.env.PROD
       format: ['iife', 'esm'],
       globalName: 'Merak',
       define: {
-        __DEV__: 'false',
+        'process.env.NODE_ENV': '"production"',
       },
       minify: true,
       outDir: 'dist/prod',
@@ -18,7 +18,7 @@ export const tsup: Options = process.env.PROD
         format: ['iife', 'esm'],
         globalName: 'Merak',
         define: {
-          __DEV__: 'true',
+          'process.env.NODE_ENV': '"development"',
         },
         minify: true,
         outDir: 'dist/dev',
@@ -27,6 +27,7 @@ export const tsup: Options = process.env.PROD
     : {
         entry: ['src/index.ts'],
         format: ['esm', 'cjs'],
+
         dts: true,
         splitting: false,
         clean: true,

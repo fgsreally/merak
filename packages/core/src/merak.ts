@@ -148,7 +148,7 @@ export class Merak<L extends Loader = Loader> {
 
   // 公共错误处理
   static errorHandler({ type, error }: { type: string; error: Error; instance?: Merak }) {
-    if (__DEV__)
+    if (process.env.NODE_ENV === 'development')
       console.error(error)
     else
       console.error(`[merak] ${type}:${error.message}`)

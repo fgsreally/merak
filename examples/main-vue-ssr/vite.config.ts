@@ -14,12 +14,7 @@ export default defineConfig({
       'merak-core': 'http://localhost:3000/prod/index.mjs',
     },
   },
-  define: {
-    __DEV__: true,
-    // process: {
-    //   env: 'development',
-    // },
-  },
+
   server: {
     port: 5004,
   },

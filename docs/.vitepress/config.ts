@@ -1,9 +1,24 @@
 import { defineConfig } from 'vitepress'
+import { pagefindPlugin } from 'vitepress-plugin-pagefind'
+
 const ogDescription = '基于编译，剑走偏锋的微前端方案'
 
 const base = process.env.NODE_ENV === 'production' ? '/merak/' : ''
 
 export default defineConfig({
+
+  vite: {
+    plugins: [pagefindPlugin({
+      customSearchQuery(input) {
+        // 将搜索的每个中文单字两侧加上空格
+        return input.replace(/[\u4E00-\u9FA5]/g, ' $& ')
+          .replace(/\s+/g, ' ')
+          .trim()
+      },
+    })],
+
+  },
+
   title: '天璇',
   description: ogDescription,
   base,

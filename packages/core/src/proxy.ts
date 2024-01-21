@@ -15,7 +15,7 @@ export function addWindowVar(variable: string) {
   WINDOW_VAR_SET.add(variable)
 }
 
-if (__DEV__) {
+if (process.env.NODE_ENV === 'development') {
   // work for react
   addWindowVar('$RefreshSig$')
   addWindowVar('$RefreshReg$')
@@ -113,7 +113,7 @@ export function createProxyDocument(id: string, url: string) {
         return instance!.proxy
       // work for vite dev mode
       // to handle assets
-      if (__DEV__) {
+      if (process.env.NODE_ENV === 'development') {
         if (p === 'createElement') {
           return (tagName: any, options?: ElementCreationOptions | undefined) => {
             const el = document.createElement(tagName, options)

@@ -17,7 +17,7 @@ function addRelativeToBody({ ele }: { ele: HTMLElement }) {
   <div class="about">
     <p>from vue_cli</p>
     <MerakApp
-      name="vue_cli" url="http://localhost:4005" keep-alive class="micro" route="/#/about" :props="data"
+      name="vue_cli" url="http://localhost:4005" class="micro" route="/#/about" :props="data"
       @tranform-document="addRelativeToBody"
     />
     <p>from vite-vue</p>

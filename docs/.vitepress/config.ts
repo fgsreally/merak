@@ -51,7 +51,7 @@ export default defineConfig({
         link: '/api/main',
         activeMatch: '/api/',
       },
-      { text: '常见问题', link: '/question/', activeMatch: '/question/' },
+      { text: '常见问题', link: '/question.md' },
       { text: '博客', link: '/blog/start', activeMatch: '/blog/' },
 
     ],
@@ -60,7 +60,7 @@ export default defineConfig({
       '/guide/': [
         {
           text: '入门',
-          collapsible: true,
+          collapsed: false,
           items: [
             {
               text: '介绍',
@@ -76,7 +76,7 @@ export default defineConfig({
 
         {
           text: '指南',
-          collapsible: true,
+          collapsed: false,
           items: [
 
             {
@@ -95,14 +95,7 @@ export default defineConfig({
               text: '特殊模式',
               link: '/guide/mode',
             },
-            {
-              text: '加载器',
-              link: '/guide/loader',
-            },
-            {
-              text: '性能',
-              link: '/guide/perf',
-            },
+
             {
               text: 'Vue',
               link: '/guide/vue',
@@ -111,28 +104,44 @@ export default defineConfig({
               text: 'React',
               link: '/guide/react',
             },
+
             {
-              text: '依赖与嵌套',
-              link: '/guide/nest',
+              text: '沙箱原理',
+              link: '/guide/sandbox',
             },
+
+          ],
+        },
+        {
+          text: '次要',
+          collapsed: true,
+          items: [
             {
-              text: '隔离变量',
-              link: '/guide/var',
+              text: '调试/错误处理',
+              link: '/guide/secondary/debug',
             },
             {
               text: '热更新',
-              link: '/guide/hmr',
+              link: '/guide/secondary/hmr',
             },
             {
-              text: '调试',
-              link: '/guide/debug',
+              text: '性能',
+              link: '/guide/secondary/perf',
+            },
+            {
+              text: '加载器',
+              link: '/guide/secondary/loader',
+            },
+            {
+              text: '嵌套与依赖共享',
+              link: '/guide/secondary/nest',
             },
           ],
-        },
 
+        },
         {
           text: '改造',
-          collapsible: false,
+          collapsed: false,
           items: [
             {
               text: '改造须知',
@@ -153,7 +162,7 @@ export default defineConfig({
       '/api/': [
         {
           text: '主应用',
-          collapsible: true,
+          collapsed: true,
           items: [
             {
               text: 'Merak',
@@ -169,11 +178,15 @@ export default defineConfig({
               text: 'vue',
               link: '/api/vue',
             },
+            {
+              text: 'react',
+              link: '/api/react',
+            },
           ],
         },
         {
           text: '子应用',
-          collapsible: true,
+          collapsed: false,
           items: [
             {
               text: 'helper',
@@ -191,18 +204,14 @@ export default defineConfig({
               text: 'cli',
               link: '/api/cli',
             },
-            {
-              text: 'esbuild',
-              link: '/api/esbuild',
-            },
+
           ],
         },
       ],
-      '/question': [],
       '/blog/': [
         {
           text: '记录',
-          collapsible: false,
+          collapsed: false,
           items: [
             {
               text: '开始之前',

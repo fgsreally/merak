@@ -47,7 +47,13 @@ export function Merak(fakeGlobalVar: string, opts: { output?: string; includes?:
       name: 'vite-plugin-merak:dev',
       apply: 'serve',
       enforce: 'post',
-
+      config() {
+        return {
+          server: {
+            cors: true,
+          },
+        }
+      },
       async transformIndexHtml(html) {
         html = html.replace('<head>', `<head><script merak-ignore>${injectScript}</script>`)
         if (loader === 'compile') {

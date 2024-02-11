@@ -7,6 +7,8 @@ document.createElement('a')
 ```
 这个时候读到的`document`就是沙箱中的`document`了
 
+
+> 以下部分可在`vite/webpack`插件配置中看到
 ## 原生隔离变量
 `nativeVars`是指像`document`一样，原生就存在的变量
 

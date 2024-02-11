@@ -12,7 +12,7 @@ const Lib = defineAsyncComponent(() => import(path))
   <!-- spa -->
   <MerakApp name="id" url="子应用url" />
   <!-- ssr -->
-  <MerakSSR name="id" url="子应用url" />
+  <MerakApp ssr name="id" url="子应用url" />
   <!-- lib -->
   <MerakImport name="id" fake-global-var="vue_lib" source="http://localhost:5000/lib.js" />
   <MerakScope name="id" fake-global-var="vue_lib">

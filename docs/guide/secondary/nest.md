@@ -1,7 +1,9 @@
 # 共有依赖和嵌套使用
 
 ## 共有依赖
-使用cdn，子应用中加上`merak-ignore`即可
+比如主子应用都用了一个`vue`的`cdn`,
+
+子应用中加上`merak-ignore`即可
 即
 ```html
 <script src='xx' merak-ignore></script>

@@ -1,5 +1,8 @@
 # 基础功能
 
+## 基础使用
+
+
 ## 数据/功能共享
 
 ```ts
@@ -10,9 +13,9 @@ app.props.test = () => console.log('test')
 
 ```ts
 // 子应用中
-
-if (window.$Merak)
-  window.$Merak.props.test()// output:test
+import { $props, isMerak } from 'merak-helper'
+if (isMerak)
+  $props().test()// output:test
 ```
 ## 事件总线
 
@@ -21,8 +24,7 @@ if (window.$Merak)
 ```ts
 Merak.namespace.emitter = emitter// your event emitter
 ```
-> Merak的静态属性，可以在多个应用中共享
-
+也可以通过上文功能共享实现
 
 
 ## 路由

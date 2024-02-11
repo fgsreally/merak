@@ -75,7 +75,7 @@ const app = new Merak(name, url, { proxy: createLibProxy(name, url) })
 :::
 
 ### 客户端
-原理详见[loader](./loader.md#ssrloader)
+原理详见[loader](./secondary/loader.md#ssrloader)
 > 也可以自己设计`ssr`的流程
 ```ts
 const loader = new SSRLoader()

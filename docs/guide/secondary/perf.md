@@ -6,4 +6,6 @@ getInstance(id).perf.on('load', (time: number) => {
 })
 ```
 
-默认只有两个事件：`load`/`bootstrap`,分别对应`html`加载和`js` 执行的时长
+默认只有两个事件：`load`/`bootstrap`
+
+分别对应`html`加载和`js` 执行的时长

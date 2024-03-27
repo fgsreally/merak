@@ -6,7 +6,7 @@ const selector = getShadowSelector('UUID')
 
 describe('lib app ', () => {
   beforeEach(() => {
-    cy.visit(`${MAINAPP_URL.VUE_LIB}`)
+    cy.visit(`${MAINAPP_URL.VUE_LIB}`, {})
     cy.wait(3000)
   })
 

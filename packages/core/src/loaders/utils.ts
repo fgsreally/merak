@@ -35,7 +35,7 @@ export async function loadTextFile(url: string) {
   return res.text()
 }
 
-export function compileHTML(code: string, htmlUrl: string, loc: [number, number][]) {
+export function resolvePathInHTML(code: string, htmlUrl: string, loc: [number, number][]) {
   const originStr = code
   let index = 0
   code = ''

@@ -2,8 +2,8 @@ import type { TransformCallback } from 'stream'
 import { Transform } from 'stream'
 import { StringDecoder } from 'node:string_decoder'
 import { Parser } from 'htmlparser2'
-import { compileHTML, resolveUrl } from './utils'
-import { analyseHTML } from './analyse'
+import { resolvePathInHTML, resolveUrl } from './utils'
+import { analysePathInHTML } from './analyse'
 
 function mergeAttrs(attrs: Record<string, string>) {
   return Object.entries(attrs).reduce((p, c) => `${p} ${c[0]}='${c[1]}'`, '')
@@ -20,7 +20,7 @@ export function addMerakTagToHtml(main: string, sub: string, url: string, { tag 
   tag?: string
   attrs?: Record<string, string>
 } = {}) {
-  const subHtml = compileHTML(sub, url, analyseHTML(sub).map(item => item.loc))
+  const subHtml = resolvePathInHTML(sub, url, analysePathInHTML(sub).map(item => item.loc))
 
   return main.replace('</body>', `<${tag} data-merak-url='${url}'${mergeAttrs(attrs)}>${subHtml}</${tag}></body>`)
 }

@@ -23,7 +23,7 @@ export function resolveHtmlConfig(html: string) {
   })
   return { html, config }
 }
-export function compileHTML(code: string, baseUrl: string, loc: [number, number][]) {
+export function resolvePathInHTML(code: string, baseUrl: string, loc: [number, number][]) {
   const originStr = code
   let index = 0
   code = ''

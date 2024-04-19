@@ -1,5 +1,5 @@
 import type { Plugin } from 'esbuild'
-import { analyseHTML, analyseJSGlobals, injectGlobalToESM, logger, merakPostCss } from 'merak-compile'
+import { analyseJSGlobals, analysePathInHTML, injectGlobalToESM, logger, merakPostCss } from 'merak-compile'
 import postcss from 'postcss'
 // only work for prod
 export function Merak(fakeGlobalVar: string, opts: { exclude?: RegExp; logPath?: string; force?: boolean; nativeVars?: string[]; customVars?: string[]; loader?: 'runtime' | 'compile' } = {}): Plugin {
@@ -33,7 +33,7 @@ export function Merak(fakeGlobalVar: string, opts: { exclude?: RegExp; logPath?:
           if (item.path.endsWith('.html')) {
             const html = item.text.replace('<head>', `<head><script merak-ignore>${injectScript}</script>`)
             if (loader === 'compile') {
-              merakConfig._l = analyseHTML(html).map((item) => {
+              merakConfig._l = analysePathInHTML(html).map((item) => {
                 // logger.collectAction(`replace url "${item.src}"`)
                 return item.loc
               })

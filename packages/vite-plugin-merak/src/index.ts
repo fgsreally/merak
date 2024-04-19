@@ -1,5 +1,5 @@
 import { resolve } from 'path'
-import { DEFAULT_NATIVE_VARS, analyseHTML, analyseJSGlobals, injectGlobalToESM, injectGlobalToIIFE, logger } from 'merak-compile'
+import { DEFAULT_NATIVE_VARS, analyseJSGlobals, analysePathInHTML, injectGlobalToESM, injectGlobalToIIFE, logger } from 'merak-compile'
 import { createFilter } from 'vite'
 import type { FilterPattern, PluginOption, ResolvedConfig } from 'vite'
 // @ts-expect-error miss types
@@ -57,7 +57,7 @@ export function Merak(fakeGlobalVar: string, opts: { output?: string; includes?:
       async transformIndexHtml(html) {
         html = html.replace('<head>', `<head><script merak-ignore>${injectScript}</script>`)
         if (loader === 'compile') {
-          merakConfig._l = analyseHTML(html).map((item) => {
+          merakConfig._l = analysePathInHTML(html).map((item) => {
             // logger.collectAction(`replace url "${item.src}"`)
             return item.loc
           })
@@ -130,7 +130,7 @@ export function Merak(fakeGlobalVar: string, opts: { output?: string; includes?:
               if (chunk.fileName.endsWith('.html')) {
                 chunk.source = chunk.source.replaceAll(base, './')
                 if (loader === 'compile') {
-                  merakConfig._l = analyseHTML(chunk.source).map((item) => {
+                  merakConfig._l = analysePathInHTML(chunk.source).map((item) => {
                     logger.collectAction(`replace url "${item.src}"`)
                     return item.loc
                   })

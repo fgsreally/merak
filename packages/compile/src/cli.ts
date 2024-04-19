@@ -7,7 +7,7 @@ import postcss from 'postcss'
 // @ts-expect-error misstypes
 import isVarName from 'is-var-name'
 import { merakPostCss } from './postcss'
-import { analyseHTML, analyseJSGlobals, injectGlobalToESM, injectGlobalToIIFE } from './analyse'
+import { analyseJSGlobals, analysePathInHTML, injectGlobalToESM, injectGlobalToIIFE } from './analyse'
 import { DEFAULT_NATIVE_VARS } from './common'
 import { logger } from './log'
 const cli = cac('merak')
@@ -84,7 +84,7 @@ cli.command('', 'parse all file to merak-format')
         } as any
         let html = raw.replace('</head>', `</head><script merak-ignore>const ${fakeGlobalVar}=window.${fakeGlobalVar}||window</script>`)
         if (loader === 'compile') {
-          merakConfig._l = analyseHTML(html).map((item) => {
+          merakConfig._l = analysePathInHTML(html).map((item) => {
             logger.collectAction(`replace url "${item.src}"`)
             return item.loc
           })

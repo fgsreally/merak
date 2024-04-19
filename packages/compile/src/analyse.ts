@@ -9,14 +9,13 @@ import type { MerakJSFile } from './types'
 import { checkIsDanger, desctructGlobal, isCdn, isRelativeReferences, relativePath } from './utils'
 import { EXCLUDE_TAG } from './common'
 
-interface AnalyseTagRes {
+interface PathRecord {
   loc: [number, number]
   src: string
 }
-
-export const analyseHTML = (code: string) => {
+export const analysePathInHTML = (code: string) => {
   const ast = parse(code)
-  const res = [] as AnalyseTagRes[]
+  const res = [] as PathRecord[]
 
   walk(ast, {
     enter: (node) => {
@@ -67,6 +66,7 @@ export const analyseHTML = (code: string) => {
       }
     },
   })
+
   return res
 }
 
@@ -89,7 +89,7 @@ export const analyseJSGlobals = (code: string, globalVars: string[]) => {
 }
 
 export function analyseInlineESM(code: string) {
-  const res = [] as AnalyseTagRes[]
+  const res = [] as PathRecord[]
   const ast = parseSync(code) as any
 
   traverse(ast, {
@@ -265,6 +265,33 @@ export function injectGlobalToESM(code: string,
   }
   return { code: s.toString(), map: s.generateMap({ hires: true }), warning }
 }
+
+export function compileStatement(code: string, globalVar: string) {
+  const s = new MagicString(code)
+  const ast = parseSync(code, { filename: 'any' }) as any
+  traverse(ast, {
+    ReferencedIdentifier: (path) => {
+      const name = path.node.name
+      if (!path.scope.hasBinding(name, true)) {
+        const { start } = path.node as { start: number }
+        s.appendRight(start, `${globalVar}.`)
+      }
+    },
+
+  })
+
+  return s.toString()
+}
+
+export function compileHTML(html: string, globalVar: string) {
+  return html.replace(/<(\w+)([^>]*)>/g, (_, tag, attrs) => {
+    return `<${tag}${(attrs as string).replace(/(on\w+)="([^"]*)"/g, (_, event, content) => {
+      return `${event}="${compileStatement(content, globalVar)}"`
+    })}>`
+  })
+}
+
+// export function
 
 export function createCustomVarProxy(globalVar: string, customVars: string[]) {
   return customVars.map(item => `const ${item}=${globalVar}.__m_p__('${item}')`).reduce((p, c) => `${p + c};`, '')

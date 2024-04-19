@@ -104,7 +104,7 @@ export function $onUnmount(cb: (flag?: 'destroy' | string) => any) {
 export function $sandbox(script: string) {
   if (isMerak) {
     const fakeGlobalVar = window.$Merak.fakeGlobalVar
-    return `with(window.$MerakMap.get(${fakeGlobalVar}).proxy){${script}}`
+    return `with(${fakeGlobalVar}){${script}}`
   }
 
   else { return script }
@@ -116,6 +116,20 @@ export function $esm(script: string) {
     return `const {${nativeVars.reduce((p: string, c: string) => `${p},${c}`)}}=${fakeGlobalVar};${createCustomVarProxy(fakeGlobalVar, customVars)}\n${script}`
   }
   return script
+}
+
+/**
+ * @experiment work for events on html
+ */
+export function $html(html: string) {
+  if (isMerak) {
+    return html.replace(/<(\w+)([^>]*)>/g, (_, tag, attrs) => {
+      return `<${tag}${(attrs as string).replace(/(on\w+)="([^"]*)"/g, (_, event, content) => {
+        return `${event}="${$sandbox(content)}"`
+      })}>`
+    })
+  }
+  return html
 }
 
 function createCustomVarProxy(globalVar: string, customVars: string[]) {

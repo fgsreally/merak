@@ -151,3 +151,5 @@ exports[`analyse file > compile iife js 1`] = `
 }])
 })()"
 `;
+
+exports[`analyse file > compile statement 1`] = `"test.console.log(test.window)"`;

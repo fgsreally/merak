@@ -1,6 +1,6 @@
 import { resolve } from 'path'
 import type { Compiler } from 'webpack'
-import { DEFAULT_NATIVE_VARS, analyseJSGlobals, analysePathInHTML, injectGlobalToESM, injectGlobalToIIFE, logger } from 'merak-compile'
+import { DEFAULT_NATIVE_VARS, analyseJSGlobals, analysePathInHTML, compileHTML, injectGlobalToESM, injectGlobalToIIFE, logger } from 'merak-compile'
 // @ts-expect-error miss types
 import isVarName from 'is-var-name'
 import type HtmlWebpackPlugin from 'html-webpack-plugin'
@@ -79,6 +79,8 @@ export class Merak {
       )
       htmlPlugin.getHooks(compilation).beforeEmit.tap('MerakPlugin', (data) => {
         const merakConfig: any = { _f: fakeGlobalVar, _n: nativeVars, _c: customVars }
+
+        data.html = compileHTML(data.html, this.fakeGlobalVar)
 
         if (loader === 'compile') {
           merakConfig._l = analysePathInHTML(data.html).map((item) => {

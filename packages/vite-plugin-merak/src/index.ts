@@ -1,5 +1,5 @@
 import { resolve } from 'path'
-import { DEFAULT_NATIVE_VARS, analyseJSGlobals, analysePathInHTML, injectGlobalToESM, injectGlobalToIIFE, logger } from 'merak-compile'
+import { DEFAULT_NATIVE_VARS, analyseJSGlobals, analysePathInHTML, compileHTML, injectGlobalToESM, injectGlobalToIIFE, logger } from 'merak-compile'
 import { createFilter } from 'vite'
 import type { FilterPattern, PluginOption, ResolvedConfig } from 'vite'
 // @ts-expect-error miss types
@@ -55,7 +55,7 @@ export function Merak(fakeGlobalVar: string, opts: { output?: string; includes?:
         }
       },
       async transformIndexHtml(html) {
-        html = html.replace('<head>', `<head><script merak-ignore>${injectScript}</script>`)
+        html = compileHTML(html.replace('<head>', `<head><script merak-ignore>${injectScript}</script>`), fakeGlobalVar)
         if (loader === 'compile') {
           merakConfig._l = analysePathInHTML(html).map((item) => {
             // logger.collectAction(`replace url "${item.src}"`)
@@ -128,7 +128,7 @@ export function Merak(fakeGlobalVar: string, opts: { output?: string; includes?:
           Object.entries(bundle).map(async ([, chunk]) => {
             if (chunk.type === 'asset' && typeof chunk.source === 'string') {
               if (chunk.fileName.endsWith('.html')) {
-                chunk.source = chunk.source.replaceAll(base, './')
+                chunk.source = compileHTML(chunk.source.replaceAll(base, './'), fakeGlobalVar)
                 if (loader === 'compile') {
                   merakConfig._l = analysePathInHTML(chunk.source).map((item) => {
                     logger.collectAction(`replace url "${item.src}"`)

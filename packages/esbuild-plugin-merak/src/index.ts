@@ -1,5 +1,5 @@
 import type { Plugin } from 'esbuild'
-import { analyseJSGlobals, analysePathInHTML, compileHTML, injectGlobalToESM, logger, merakPostCss } from 'merak-compile'
+import { analyseHTML, compileHTML, getUnusedGlobalVariables, injectGlobalToESM, logger, merakPostCss } from 'merak-compile'
 import postcss from 'postcss'
 // only work for prod
 export function Merak(fakeGlobalVar: string, opts: { exclude?: RegExp; logPath?: string; force?: boolean; nativeVars?: string[]; customVars?: string[]; loader?: 'runtime' | 'compile' } = {}): Plugin {
@@ -19,8 +19,8 @@ export function Merak(fakeGlobalVar: string, opts: { exclude?: RegExp; logPath?:
             continue
           if (item.path.endsWith('.js')) {
             const raw = item.text
-            const unUsedGlobals = analyseJSGlobals(raw, [...nativeVars, ...customVars])
-            unUsedGlobals.length > 0 && logger.collectUnusedGlobals(item.path, unUsedGlobals)
+            const unUsedGlobals = getUnusedGlobalVariables(raw, [...nativeVars, ...customVars])
+            unUsedGlobals.length > 0 && logger.collectUnscopedVar(item.path, unUsedGlobals)
             const { code, warning } = injectGlobalToESM(raw, fakeGlobalVar, nativeVars, customVars, force)
             if (isDebug) {
               warning.forEach(warn => logger.collectDangerUsed(item.path, warn.info, [warn.loc.start.line, warn.loc.start.column]),
@@ -33,13 +33,13 @@ export function Merak(fakeGlobalVar: string, opts: { exclude?: RegExp; logPath?:
           if (item.path.endsWith('.html')) {
             const html = compileHTML(item.text.replace('<head>', `<head><script merak-ignore>${injectScript}</script>`), fakeGlobalVar)
             if (loader === 'compile') {
-              merakConfig._l = analysePathInHTML(html).map((item) => {
+              merakConfig._l = analyseHTML(html).map((item) => {
                 // logger.collectAction(`replace url "${item.src}"`)
                 return item.loc
               })
             }
 
-            item.contents = strToUint8(html.replace('</body>', `<m-b config='${encodeURIComponent(JSON.stringify(merakConfig))}'></m-b></body>`))
+            item.contents = strToUint8(html.replace('</body>', `<merak c='${encodeURIComponent(JSON.stringify(merakConfig))}'></m-b></body>`))
           }
           if (item.path.endsWith('.css')) {
             const { css } = await processor.process(item.text)

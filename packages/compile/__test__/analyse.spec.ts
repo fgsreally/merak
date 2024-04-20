@@ -1,11 +1,11 @@
 import fs from 'fs'
 import { resolve } from 'path'
 import { describe, expect, it } from 'vitest'
-import { analyseJSGlobals, analysePathInHTML, compileStatement, injectGlobalToESM, injectGlobalToIIFE } from '../src'
+import { analyseHTML, compileStatement, getUnusedGlobalVariables, injectGlobalToESM, injectGlobalToIIFE } from '../src'
 describe('analyse file', () => {
   it('analyse html file', async () => {
     const content = await fs.promises.readFile(resolve(__dirname, './fixtures/index.html'), 'utf-8')
-    const ret = analysePathInHTML(content)
+    const ret = analyseHTML(content)
     expect(ret.length).toBe(5)
 
     function getPath(str: string, start: number, end: number) {
@@ -16,7 +16,7 @@ describe('analyse file', () => {
   })
 
   it('analyese js globals', async () => {
-    expect(analyseJSGlobals('const a=document.createElement(\'div\')', [])).toMatchSnapshot()
+    expect(getUnusedGlobalVariables('const a=document.createElement(\'div\')', [])).toMatchSnapshot()
   })
 
   it('compile esm js', async () => {

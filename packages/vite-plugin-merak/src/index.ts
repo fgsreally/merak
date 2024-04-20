@@ -1,5 +1,5 @@
 import { resolve } from 'path'
-import { DEFAULT_NATIVE_VARS, analyseJSGlobals, analysePathInHTML, compileHTML, injectGlobalToESM, injectGlobalToIIFE, logger } from 'merak-compile'
+import { DEFAULT_NATIVE_VARS, analyseHTML, compileHTML, getUnusedGlobalVariables, injectGlobalToESM, injectGlobalToIIFE, logger } from 'merak-compile'
 import { createFilter } from 'vite'
 import type { FilterPattern, PluginOption, ResolvedConfig } from 'vite'
 // @ts-expect-error miss types
@@ -57,12 +57,12 @@ export function Merak(fakeGlobalVar: string, opts: { output?: string; includes?:
       async transformIndexHtml(html) {
         html = compileHTML(html.replace('<head>', `<head><script merak-ignore>${injectScript}</script>`), fakeGlobalVar)
         if (loader === 'compile') {
-          merakConfig._l = analysePathInHTML(html).map((item) => {
+          merakConfig._l = analyseHTML(html).map((item) => {
             // logger.collectAction(`replace url "${item.src}"`)
             return item.loc
           })
         }
-        html = html.replace('</body>', `<m-b config='${encodeURIComponent(JSON.stringify(merakConfig))}'></m-b></body>`)
+        html = html.replace('</body>', `<merak c='${encodeURIComponent(JSON.stringify(merakConfig))}'></m-b></body>`)
         return html
       },
 
@@ -71,7 +71,7 @@ export function Merak(fakeGlobalVar: string, opts: { output?: string; includes?:
           const { code } = injectGlobalToESM(str, fakeGlobalVar, nativeVars, customVars, force)
           return { code }
         }
-        // return `const {${desctructGlobal(nativeVars)}}=${fakeGlobalVar};${createCustomVarProxy(fakeGlobalVar, customVars)}${code}`
+        // return `const {${desctructVars(nativeVars)}}=${fakeGlobalVar};${createCustomVarProxy(fakeGlobalVar, customVars)}${code}`
       },
     }, {
       name: 'vite-plugin-merak:build',
@@ -90,8 +90,8 @@ export function Merak(fakeGlobalVar: string, opts: { output?: string; includes?:
         if (!filter(chunk.fileName))
           return
 
-        const unUsedGlobals = analyseJSGlobals(raw, [...nativeVars, ...customVars])
-        unUsedGlobals.length > 0 && logger.collectUnusedGlobals(chunk.fileName, unUsedGlobals)
+        const unUsedGlobals = getUnusedGlobalVariables(raw, [...nativeVars, ...customVars])
+        unUsedGlobals.length > 0 && logger.collectUnscopedVar(chunk.fileName, unUsedGlobals)
         const { map, code, warning } = (opts.format === 'es' ? injectGlobalToESM : injectGlobalToIIFE)(raw, fakeGlobalVar, nativeVars, customVars, force)
         if (isDebug) {
           warning.forEach(warn => logger.collectDangerUsed(chunk.fileName, warn.info, [warn.loc.start.line, warn.loc.start.column]),
@@ -130,7 +130,7 @@ export function Merak(fakeGlobalVar: string, opts: { output?: string; includes?:
               if (chunk.fileName.endsWith('.html')) {
                 chunk.source = compileHTML(chunk.source.replaceAll(base, './'), fakeGlobalVar)
                 if (loader === 'compile') {
-                  merakConfig._l = analysePathInHTML(chunk.source).map((item) => {
+                  merakConfig._l = analyseHTML(chunk.source).map((item) => {
                     logger.collectAction(`replace url "${item.src}"`)
                     return item.loc
                   })
@@ -144,7 +144,7 @@ export function Merak(fakeGlobalVar: string, opts: { output?: string; includes?:
                   })
                 }
                 else {
-                  chunk.source = chunk.source.replace('</body>', `<m-b config='${encodeURIComponent(JSON.stringify(merakConfig))}'></m-b></body>`)
+                  chunk.source = chunk.source.replace('</body>', `<merak c='${encodeURIComponent(JSON.stringify(merakConfig))}'></m-b></body>`)
                 }
               }
             }

@@ -14,8 +14,11 @@ export class Logger {
     this.dangerUsedRecord[file][message].times++
   }
 
-  collectUnusedGlobals(file: string, globals: string[]) {
-    this.unusedGlobalRecord[file] = globals
+  collectUnscopedVar(file: string, variable: string) {
+    if (!this.unusedGlobalRecord[file])
+      this.unusedGlobalRecord[file] = []
+    if (!this.unusedGlobalRecord[file].includes(variable))
+      this.unusedGlobalRecord[file].push(variable)
   }
 
   collectAction(value: string) {
@@ -30,12 +33,13 @@ export class Logger {
   output(outputPath?: string) {
     if (!outputPath)
       return
+
     const ret = [] as any[]
 
     ret.push({ h1: 'Action Info:' })
     ret.push({ ol: this.actionRecord })
 
-    ret.push({ h1: 'Danger used like eval:' })
+    ret.push({ h1: 'Danger used like `eval`:' })
 
     for (const file in this.dangerUsedRecord) {
       ret.push({ blockquote: `file:\`${file}\`` })
@@ -58,4 +62,4 @@ export class Logger {
   }
 }
 
-export const logger = new Logger()
+// export const logger = new Logger()

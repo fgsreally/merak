@@ -37,7 +37,7 @@ export function eventTrigger(el: HTMLElement | Window | Document, eventName: str
   el.dispatchEvent(event)
 }
 
-export function desctructGlobal(globals: string[]) {
+export function desctructVars(globals: string[]) {
   return globals.join(',')
 }
 

@@ -1,5 +1,5 @@
 import { resolve } from 'path'
-import { DEFAULT_NATIVE_VARS, analyseJSGlobals, injectGlobalToESM, injectGlobalToIIFE, logger, merakPostCss } from 'merak-compile'
+import { DEFAULT_NATIVE_VARS, getUnusedGlobalVariables, injectGlobalToESM, injectGlobalToIIFE, logger, merakPostCss } from 'merak-compile'
 import { createFilter } from 'vite'
 // @ts-expect-error miss types
 import isVarName from 'is-var-name'
@@ -24,8 +24,8 @@ export function MerakLib(fakeGlobalVar: string, opts: { isinLine?: boolean; incl
       if (!filter(chunk.fileName))
         return
 
-      const unUsedGlobals = analyseJSGlobals(raw, [...nativeVars, ...customVars])
-      unUsedGlobals.length > 0 && logger.collectUnusedGlobals(chunk.fileName, unUsedGlobals)
+      const unUsedGlobals = getUnusedGlobalVariables(raw, [...nativeVars, ...customVars])
+      unUsedGlobals.length > 0 && logger.collectUnscopedVar(chunk.fileName, unUsedGlobals)
       const { map, code, warning } = (opts.format === 'es' ? injectGlobalToESM : injectGlobalToIIFE)(raw, fakeGlobalVar, nativeVars, customVars, force)
       if (isDebug) {
         warning.forEach(warn => logger.collectDangerUsed(chunk.fileName, warn.info, [warn.loc.start.line, warn.loc.start.column]),

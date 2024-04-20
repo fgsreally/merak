@@ -6,14 +6,15 @@ import type { IText } from 'html5parser'
 import { parse, walk } from 'html5parser'
 import MagicString from 'magic-string'
 import type { MerakJSFile } from './types'
-import { checkIsDanger, desctructGlobal, isCdn, isRelativeReferences, relativePath } from './utils'
+import { checkIsDanger, desctructVars, isCdn, isRelativeReferences, relativePath } from './utils'
 import { EXCLUDE_TAG } from './common'
 
 interface PathRecord {
   loc: [number, number]
   src: string
+
 }
-export const analysePathInHTML = (code: string) => {
+export const analyseHTML = (code: string) => {
   const ast = parse(code)
   const res = [] as PathRecord[]
 
@@ -70,7 +71,7 @@ export const analysePathInHTML = (code: string) => {
   return res
 }
 
-export const analyseJSGlobals = (code: string, globalVars: string[]) => {
+export const getUnusedGlobalVariables = (code: string, globalVars: string[]) => {
   const unUsedGlobalSet = new Set<string>()
   const ast = parseSync(code, { filename: 'any' }) as any
   traverse(ast, {
@@ -123,45 +124,45 @@ export function analyseInlineESM(code: string) {
 /**
  * @deprecated
  */
-export const analyseJS = (code: string, filePath: string, rootPath: string, globals: string[]) => {
-  const ret = {
-    type: 'js',
-    filePath: relativePath(rootPath, filePath),
-    imports: [],
-    dynamicImports: {},
-  } as unknown as MerakJSFile
-  const ast = parseSync(code) as any
+// export const analyseJS = (code: string, filePath: string, rootPath: string, globals: string[]) => {
+//   const ret = {
+//     type: 'js',
+//     filePath: relativePath(rootPath, filePath),
+//     imports: [],
+//     dynamicImports: {},
+//   } as unknown as MerakJSFile
+//   const ast = parseSync(code) as any
 
-  const globalSet = new Set()
-  traverse(ast, {
-    // record all global variable
-    Identifier(path) {
-      const { scope } = path
-      Object.keys((scope as any).globals).forEach(item => globals.includes(item) && globalSet.add(item))
-    },
-    // static import
-    //  relative path
-    ImportDeclaration(path) {
-      const { node } = path
+//   const globalSet = new Set()
+//   traverse(ast, {
+//     // record all global variable
+//     Identifier(path) {
+//       const { scope } = path
+//       Object.keys((scope as any).globals).forEach(item => globals.includes(item) && globalSet.add(item))
+//     },
+//     // static import
+//     //  relative path
+//     ImportDeclaration(path) {
+//       const { node } = path
 
-      const { value, start, end } = node.source as any
-      if (isRelativeReferences(value))
-        ret.imports.push({ filePath: '', loc: [start, end] })
+//       const { value, start, end } = node.source as any
+//       if (isRelativeReferences(value))
+//         ret.imports.push({ filePath: '', loc: [start, end] })
 
-      else
-        ret.imports.push({ filePath: relativePath(rootPath, resolve(filePath, '../', value)), loc: [start, end] })
-    },
-    // dynamic import
-    Import(path) {
-      const { start, end } = path.parent as { start: number; end: number }
-      const { value } = (path.parent as any).arguments[0]
-      ret.dynamicImports[relativePath(rootPath, resolve(filePath, '../', value))] = { loc: [start, end] }
-    },
+//       else
+//         ret.imports.push({ filePath: relativePath(rootPath, resolve(filePath, '../', value)), loc: [start, end] })
+//     },
+//     // dynamic import
+//     Import(path) {
+//       const { start, end } = path.parent as { start: number; end: number }
+//       const { value } = (path.parent as any).arguments[0]
+//       ret.dynamicImports[relativePath(rootPath, resolve(filePath, '../', value))] = { loc: [start, end] }
+//     },
 
-  })
-  ret.globals = [...globalSet] as string[]
-  return ret
-}
+//   })
+//   ret.globals = [...globalSet] as string[]
+//   return ret
+// }
 
 export function injectGlobalToIIFE(code: string, globalVar: string, nativeVars: string[],
   customVars: string[], force?: boolean) {
@@ -172,7 +173,7 @@ export function injectGlobalToIIFE(code: string, globalVar: string, nativeVars: 
   let start = 0
   let end = 0
   if (force) {
-    s.appendLeft(start, `(()=>{const {${desctructGlobal(nativeVars)}}=${globalVar};${createCustomVarProxy(globalVar, customVars)}`)
+    s.appendLeft(start, `(()=>{const {${desctructVars(nativeVars)}}=${globalVar};${createCustomVarProxy(globalVar, customVars)}`)
     s.append('})()')
   }
   else {
@@ -208,7 +209,7 @@ export function injectGlobalToIIFE(code: string, globalVar: string, nativeVars: 
     const injectGlobals = [...nativeSet]
 
     if (injectGlobals.length) {
-      s.appendLeft(start, `(()=>{const {${desctructGlobal(injectGlobals)}}=${globalVar};`)
+      s.appendLeft(start, `(()=>{const {${desctructVars(injectGlobals)}}=${globalVar};`)
       s.appendRight(end, '})()')
     }
   }
@@ -227,7 +228,7 @@ export function injectGlobalToESM(code: string,
   const warning: { info: string; loc: SourceLocation }[] = []
 
   if (force) {
-    s.prepend(`\nconst {${desctructGlobal(nativeVars)}}=${globalVar};`)
+    s.prepend(`\nconst {${desctructVars(nativeVars)}}=${globalVar};`)
     s.prepend(createCustomVarProxy(globalVar, customVars))
   }
   else {
@@ -261,7 +262,7 @@ export function injectGlobalToESM(code: string,
     const injectGlobals = [...nativeSet]
     // globals = injectGlobals
     if (injectGlobals.length)
-      s.appendRight(0, `\nconst {${desctructGlobal(injectGlobals)}}=${globalVar};`)
+      s.appendRight(0, `\nconst {${desctructVars(injectGlobals)}}=${globalVar};`)
   }
   return { code: s.toString(), map: s.generateMap({ hires: true }), warning }
 }

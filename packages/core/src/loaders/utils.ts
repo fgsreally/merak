@@ -9,9 +9,9 @@ export abstract class Loader {
 
   resolveHtml(html: string, baseUrl: string) {
     let config: any
-    // <m-b> merak-base
+    // <merak> merak-base
 
-    html = html.replace(/<m-b[^>]+config=['"](.*)['"][\s>]<\/m-b>/, (js, conf) => {
+    html = html.replace(/<merak[^>]+c=['"](.*)['"][\s>]<\/merak>/, (js, conf) => {
       config = JSON.parse(decodeURIComponent(conf))
       return ''
     })

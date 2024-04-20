@@ -10,14 +10,14 @@ export function isRelativeReferences(str: string) {
 export function relativePath(from: string, to: string) {
   return relative(from, to).replace(/\\/g, '/')
 }
-export function desctructGlobal(globals: string[]) {
+export function desctructVars(globals: string[]) {
   return globals.reduce((p, c) => `${p}${c},`, '')
 }
 
 export function resolveHtmlConfig(html: string) {
   let config
 
-  html = html.replace(/<m-b[^>]+config=['"](.*)['"][\s>]<\/m-b>/, (js, conf) => {
+  html = html.replace(/<merak[^>]+c=['"](.*)['"][\s>]<\/merak>/, (js, conf) => {
     config = JSON.parse(decodeURIComponent(conf))
     return ''
   })

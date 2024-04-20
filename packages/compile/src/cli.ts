@@ -7,7 +7,7 @@ import postcss from 'postcss'
 // @ts-expect-error misstypes
 import isVarName from 'is-var-name'
 import { merakPostCss } from './postcss'
-import { analyseJSGlobals, analysePathInHTML, injectGlobalToESM, injectGlobalToIIFE } from './analyse'
+import { analyseHTML, getUnusedGlobalVariables, injectGlobalToESM, injectGlobalToIIFE } from './analyse'
 import { DEFAULT_NATIVE_VARS } from './common'
 import { logger } from './log'
 const cli = cac('merak')
@@ -71,8 +71,8 @@ cli.command('', 'parse all file to merak-format')
         logger.log(`output file "${filePath}"`)
 
         if (logPath) {
-          const unUsedGlobals = analyseJSGlobals(raw, [...nativeVars, ...customVars])
-          unUsedGlobals.length > 0 && logger.collectUnusedGlobals(entry, unUsedGlobals)
+          const unUsedGlobals = getUnusedGlobalVariables(raw, [...nativeVars, ...customVars])
+          unUsedGlobals.length > 0 && logger.collectUnscopedVar(entry, unUsedGlobals)
         }
 
         continue
@@ -84,14 +84,14 @@ cli.command('', 'parse all file to merak-format')
         } as any
         let html = raw.replace('</head>', `</head><script merak-ignore>const ${fakeGlobalVar}=window.${fakeGlobalVar}||window</script>`)
         if (loader === 'compile') {
-          merakConfig._l = analysePathInHTML(html).map((item) => {
+          merakConfig._l = analyseHTML(html).map((item) => {
             logger.collectAction(`replace url "${item.src}"`)
             return item.loc
           })
         }
 
         if (!output)
-          html = html.replace('</body>', `<m-b config="${encodeURIComponent(JSON.stringify(merakConfig))}"></m-b></body>`)
+          html = html.replace('</body>', `<merak c="${encodeURIComponent(JSON.stringify(merakConfig))}"></m-b></body>`)
         else await fse.outputFile(resolve(filePath, output), JSON.stringify(merakConfig), 'utf-8')
         logger.log(`output file "${filePath}"`)
 

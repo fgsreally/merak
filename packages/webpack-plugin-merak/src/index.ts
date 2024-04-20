@@ -1,6 +1,6 @@
 import { resolve } from 'path'
 import type { Compiler } from 'webpack'
-import { DEFAULT_NATIVE_VARS, analyseJSGlobals, analysePathInHTML, compileHTML, injectGlobalToESM, injectGlobalToIIFE, logger } from 'merak-compile'
+import { DEFAULT_NATIVE_VARS, analyseHTML, compileHTML, getUnusedGlobalVariables, injectGlobalToESM, injectGlobalToIIFE, logger } from 'merak-compile'
 // @ts-expect-error miss types
 import isVarName from 'is-var-name'
 import type HtmlWebpackPlugin from 'html-webpack-plugin'
@@ -37,8 +37,8 @@ export class Merak {
                   return
                 const source = compilation.getAsset(file)!.source.source() as string
                 if (isDebug) {
-                  const unUsedGlobals = analyseJSGlobals(source, [...nativeVars, ...customVars])
-                  unUsedGlobals.length > 0 && logger.collectUnusedGlobals(file, unUsedGlobals)
+                  const unUsedGlobals = getUnusedGlobalVariables(source, [...nativeVars, ...customVars])
+                  unUsedGlobals.length > 0 && logger.collectUnscopedVar(file, unUsedGlobals)
                 }
                 const { code, warning } = (format === 'module' ? injectGlobalToESM : injectGlobalToIIFE)(source, fakeGlobalVar, nativeVars, customVars, force)
 
@@ -83,7 +83,7 @@ export class Merak {
         data.html = compileHTML(data.html, this.fakeGlobalVar)
 
         if (loader === 'compile') {
-          merakConfig._l = analysePathInHTML(data.html).map((item) => {
+          merakConfig._l = analyseHTML(data.html).map((item) => {
             logger.collectAction(`replace url "${item.src}"`)
             return item.loc
           })
@@ -94,7 +94,7 @@ export class Merak {
           ))
         }
         else {
-          data.html = data.html.replace('</body>', `<m-b config='${encodeURIComponent(JSON.stringify(merakConfig))}'></m-b></body>`)
+          data.html = data.html.replace('</body>', `<merak c='${encodeURIComponent(JSON.stringify(merakConfig))}'></m-b></body>`)
         }
         isDebug && logger.output(resolve(process.cwd(), this.options.logPath!))
 
@@ -105,7 +105,7 @@ export class Merak {
 }
 
 // export function injectGlobals(fakeGlobalVar: string, globals: string[], code: string) {
-//   return `(()=>{const {${desctructGlobal(globals)}}=${fakeGlobalVar}\n${code})()`
+//   return `(()=>{const {${desctructVars(globals)}}=${fakeGlobalVar}\n${code})()`
 // }
 
 export { merakPostCss } from 'merak-compile'

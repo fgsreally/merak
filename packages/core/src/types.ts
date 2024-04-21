@@ -7,7 +7,7 @@ export interface AppConfig {
 
 export interface LoadDone {
   url: string
-  fakeGlobalVar: string
+  projectGlobalVar: string
   template: string
   nativeVars: string[]
   customVars: string[]

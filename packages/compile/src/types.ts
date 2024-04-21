@@ -11,7 +11,7 @@ export interface SpaMerakConfig {
 
 // export interface MerakConfig {
 //   template: MerakHTMLFile
-//   fakeGlobalVar: string
+//   projectGlobalVar: string
 //   globals: string[]
 // }
 export interface SsrMerakConfig {
@@ -30,7 +30,7 @@ export interface MerakJSFile {
 }
 
 export interface MerakHTMLFile {
-  // fakeGlobalVar
+  // projectGlobalVar
   _f: string
   _g: string[]
   // link

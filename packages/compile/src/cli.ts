@@ -10,6 +10,7 @@ import { merakPostCss } from './postcss'
 import { analyseHTML, getUnusedGlobalVariables, injectGlobalToESM, injectGlobalToIIFE } from './analyse'
 import { DEFAULT_NATIVE_VARS } from './common'
 import { logger } from './log'
+import { Compiler } from './compiler'
 const cli = cac('merak')
 const root = process.cwd()
 const require = createRequire(root)
@@ -17,7 +18,7 @@ const styleReg = /<style[^>]*>[\s\S]*?<\/style>/gi
 cli.command('init', 'create merak.config.json').action(() => {
   fse.outputFile(resolve(root, 'merak.config.json'), JSON.stringify({
     $schema: 'https://unpkg.com/merak-compile/assets/schema.json',
-    fakeGlobalVar: '',
+    projectGlobalVar: '',
   }))
 })
 
@@ -28,11 +29,11 @@ cli.command('', 'parse all file to merak-format')
 
   .action(async (options) => {
     let {
-      dir = '', nativeVars = [], customVars = [], fakeGlobalVar, format = 'esm', outDir = 'dist', includes = ['index.html', '**/*.js', '*.js', '**/*.css', '*.css'], exclude = ['node_modules/**/*'], logPath,
+      dir = '', nativeVars = [], customVars = [], projectGlobalVar, format = 'esm', outDir = 'dist', includes = ['index.html', '**/*.js', '*.js', '**/*.css', '*.css'], exclude = ['node_modules/**/*'], logPath,
       loader = 'compile', output,
     } = getConfig(options.config)
-    if (!isVarName(fakeGlobalVar))
-      throw new Error(`${fakeGlobalVar} is not a valid var`)
+    if (!isVarName(projectGlobalVar))
+      throw new Error(`"${projectGlobalVar}" is not a valid variable name`)
     const cssHandler = postcss([merakPostCss()])
     const cwd = resolve(root, dir)
     fse.ensureDir(resolve(root, outDir))
@@ -50,22 +51,23 @@ cli.command('', 'parse all file to merak-format')
       console.table(customVars)
     }
 
+    const compiler = new Compiler(projectGlobalVar, nativeVars, customVars)
     for (const entry of entries) {
       const filePath = resolve(root, outDir, entry)
       const raw = await fse.readFile(resolve(cwd, entry), 'utf-8')
 
       if (entry.endsWith('.js')) {
         if (format === 'esm') {
-          const { code, warning } = injectGlobalToESM(raw, fakeGlobalVar, nativeVars, customVars)
-          warning.forEach(warn => logger.collectDangerUsed(entry, warn.info, [warn.loc.start.line, warn.loc.start.column]))
+          // const { code, warning } = injectGlobalToESM(raw, projectGlobalVar, nativeVars, customVars)
+          // warning.forEach(warn => logger.collectDangerUsed(entry, warn.info, [warn.loc.start.line, warn.loc.start.column]))
 
-          await fse.outputFile(filePath, code)
+          await fse.outputFile(filePath, compiler.compileESM(raw, entry).code)
         }
         else {
-          const { code, warning } = injectGlobalToIIFE(raw, fakeGlobalVar, nativeVars, customVars)
-          warning.forEach(warn => logger.collectDangerUsed(entry, warn.info, [warn.loc.start.line, warn.loc.start.column]))
+          // const { code, warning } = injectGlobalToIIFE(raw, projectGlobalVar, nativeVars, customVars)
+          // warning.forEach(warn => logger.collectDangerUsed(entry, warn.info, [warn.loc.start.line, warn.loc.start.column]))
 
-          await fse.outputFile(filePath, code)
+          await fse.outputFile(filePath, compiler.compileScript(raw, entry).code)
         }
 
         logger.log(`output file "${filePath}"`)
@@ -80,9 +82,9 @@ cli.command('', 'parse all file to merak-format')
 
       if (entry.endsWith('.html')) {
         const merakConfig = {
-          _f: fakeGlobalVar, _n: nativeVars, _c: customVars,
+          _f: projectGlobalVar, _n: nativeVars, _c: customVars,
         } as any
-        let html = raw.replace('</head>', `</head><script merak-ignore>const ${fakeGlobalVar}=window.${fakeGlobalVar}||window</script>`)
+        let html = raw.replace('</head>', `</head><script merak-ignore>const ${projectGlobalVar}=window.${projectGlobalVar}||window</script>`)
         if (loader === 'compile') {
           merakConfig._l = analyseHTML(html).map((item) => {
             logger.collectAction(`replace url "${item.src}"`)
@@ -127,7 +129,7 @@ function getConfig(configPath: string) {
    * {
    *  "nativeVars":[...],
    * "customVars":[...],
-   *  "fakeGlobalVar":'..'
+   *  "projectGlobalVar":'..'
    *  "dir":'..',
    *  "isInline":true/false,
    *  "format":esm/iife,

@@ -24,7 +24,7 @@ export class RuntimeLoader extends Loader {
       for (const re of this.re)
         htmlStr = replaceSrc(htmlStr, re)
 
-      const loadRes = { url: sourceUrl, fakeGlobalVar: config._f, template: htmlStr, nativeVars: config._n, customVars: config._c } as LoadDone
+      const loadRes = { url: sourceUrl, projectGlobalVar: config._f, template: htmlStr, nativeVars: config._n, customVars: config._c } as LoadDone
       this.loadCache.set(sourceUrl, loadRes)
       return loadRes
     }

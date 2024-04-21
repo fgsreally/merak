@@ -18,7 +18,7 @@ export class SSRLoader extends Loader {
         htmlStr = ret.html
         config = ret.config as unknown as AppConfig
       }
-      const loadRes = { url: sourceUrl, fakeGlobalVar: config._f, template: htmlStr, nativeVars: config._n, customVars: config._c } as LoadDone
+      const loadRes = { url: sourceUrl, projectGlobalVar: config._f, template: htmlStr, nativeVars: config._n, customVars: config._c } as LoadDone
       this.loadCache.set(sourceUrl, loadRes)
       return loadRes
     }

@@ -1,4 +1,4 @@
-@import 'b.css';
+@import /* merak */'b.css';
 @import url('b.css');
 
 :root a{
@@ -7,7 +7,10 @@
 
 :root>a{
     width:100px
+    
 }
+
+
 
 :root,:host,a{
     width:100px

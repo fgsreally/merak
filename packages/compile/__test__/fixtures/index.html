@@ -9,6 +9,13 @@
 
   <body>
     <script type="module" src="/src/main.js"></script>
+    <style>
+      @import url("./a.css");
+
+      body {
+        background-image: url(./a.png);
+      }
+    </style>
     <script type="module">
       import y from 'y'
 import xx from './xx'
@@ -20,5 +27,6 @@ console.log(y)
         await import('./esm.js')
 })
     </script>
+
   </body>
 </html>

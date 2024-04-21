@@ -103,8 +103,8 @@ export function $onUnmount(cb: (flag?: 'destroy' | string) => any) {
 // work for eval
 export function $sandbox(script: string) {
   if (isMerak) {
-    const fakeGlobalVar = window.$Merak.fakeGlobalVar
-    return `with(${fakeGlobalVar}){${script}}`
+    const projectGlobalVar = window.$Merak.projectGlobalVar
+    return `with(${projectGlobalVar}){${script}}`
   }
 
   else { return script }
@@ -112,8 +112,8 @@ export function $sandbox(script: string) {
 // work for esm script
 export function $esm(script: string) {
   if (isMerak) {
-    const { fakeGlobalVar, nativeVars, customVars } = window.$Merak
-    return `const {${nativeVars.reduce((p: string, c: string) => `${p},${c}`)}}=${fakeGlobalVar};${createCustomVarProxy(fakeGlobalVar, customVars)}\n${script}`
+    const { projectGlobalVar, nativeVars, customVars } = window.$Merak
+    return `const {${nativeVars.reduce((p: string, c: string) => `${p},${c}`)}}=${projectGlobalVar};${createCustomVarProxy(projectGlobalVar, customVars)}\n${script}`
   }
   return script
 }

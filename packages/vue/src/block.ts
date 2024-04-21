@@ -21,7 +21,7 @@ export const MerakImport = defineComponent({
   props: {
     ...shareLibProps,
     ...shareProps,
-    fakeGlobalVar: {
+    projectGlobalVar: {
       type: String,
       required: true as const,
     },
@@ -46,10 +46,10 @@ export const MerakImport = defineComponent({
   emits: shareEmits,
 
   setup(props, { slots, emit }) {
-    const { fakeGlobalVar, deactive, head, name, url, props: MerakProps, proxy, iframe, nativeVars = shareNativeVars, customVars = [], source, timeout, inlineStyle } = props
+    const { projectGlobalVar, deactive, head, name, url, props: MerakProps, proxy, iframe, nativeVars = shareNativeVars, customVars = [], source, timeout, inlineStyle } = props
     const app = getInstance(name) || new Merak(name, url, { proxy: proxy || createLibProxy, iframe, timeout })
-    if (!app.fakeGlobalVar)
-      app.setGlobalVars(fakeGlobalVar, nativeVars, customVars)
+    if (!app.projectGlobalVar)
+      app.setGlobalVars(projectGlobalVar, nativeVars, customVars)
     if (MerakProps)
       app.props = MerakProps
 
@@ -108,7 +108,7 @@ export const MerakScope = defineComponent({
       type: Boolean,
       default: true,
     },
-    fakeGlobalVar: {
+    projectGlobalVar: {
       type: String,
       required: true as const,
     },
@@ -117,12 +117,12 @@ export const MerakScope = defineComponent({
   emits: shareEmits,
   // emits: shareEmits,
   setup(props, { slots, emit }) {
-    const { fakeGlobalVar, deactive, head, name, proxy, iframe, url, nativeVars = shareNativeVars, customVars = [], timeout, inlineStyle, props: MerakProps } = props
+    const { projectGlobalVar, deactive, head, name, proxy, iframe, url, nativeVars = shareNativeVars, customVars = [], timeout, inlineStyle, props: MerakProps } = props
 
     const app = getInstance(name) || new Merak(name, url, { proxy: proxy || createLibProxy, iframe, timeout })
 
-    if (!app.fakeGlobalVar)
-      app.setGlobalVars(fakeGlobalVar, nativeVars, customVars)
+    if (!app.projectGlobalVar)
+      app.setGlobalVars(projectGlobalVar, nativeVars, customVars)
 
     if (MerakProps)
       app.props = MerakProps

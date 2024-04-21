@@ -1,6 +1,6 @@
 import { createCustomVarProxy, desctructVars } from './utils'
 
-export function cloneScript(script: HTMLScriptElement, fakeGlobalVar: string, nativeVars: string[], customVars: string[]) {
+export function cloneScript(script: HTMLScriptElement, projectGlobalVar: string, nativeVars: string[], customVars: string[]) {
   const { src, async, defer, type, innerHTML } = script
   const newScriptEl = document.createElement('script')
 
@@ -14,7 +14,7 @@ export function cloneScript(script: HTMLScriptElement, fakeGlobalVar: string, na
     newScriptEl.defer = defer
 
   if (innerHTML) {
-    const code = `const {${desctructVars(nativeVars)}}=${fakeGlobalVar};${createCustomVarProxy(fakeGlobalVar, customVars)}${innerHTML}`
+    const code = `const {${desctructVars(nativeVars)}}=${projectGlobalVar};${createCustomVarProxy(projectGlobalVar, customVars)}${innerHTML}`
     if (type === 'module')
       newScriptEl.innerHTML = code
 

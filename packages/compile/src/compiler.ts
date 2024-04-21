@@ -1,31 +1,25 @@
-/* eslint-disable @typescript-eslint/no-non-null-asserted-optional-chain */
-import { parseSync, traverse } from '@babel/core'
+import { parseSync, traverse } from /* merak */'@babel/core'
 import type { SourceLocation } from '@babel/types'
 import type { IText } from 'html5parser'
 import { parse, walk } from 'html5parser'
 import MagicString from 'magic-string'
+import postcss from 'postcss'
 import { desctructVars, isCdn, isRelativeReferences } from './utils'
 import { DANGER_IDENTIFIERS, EXCLUDE_TAG } from './common'
 import { Logger } from './log'
+import { merakPostCss } from './postcss'
+import { getImportLocFromJS, getPathLocFromHTML } from './analyse'
 
 export class Compiler {
   warnings: { info: string; loc: SourceLocation }[] = []
   logger = new Logger()
   unUsedVars = new Set<string>()
-  constructor(public fakeGlobalVar: string, public nativeVars: string[], public customVars: string[], public isDebug: boolean) {
+  constructor(public projectGlobalVar: string, public nativeVars: string[], public customVars: string[]) {
 
-  }
-
-  get configTag() {
-    return `<merak c='${encodeURIComponent(JSON.stringify({
-      _n: this.nativeVars,
-      _c: this.customVars,
-      _f: this.fakeGlobalVar,
-    }))}'></merak>`
   }
 
   get internalScript() {
-    return `const ${this.fakeGlobalVar}=window.${this.fakeGlobalVar}||window;${this.customVars.length > 0 ? `${this.fakeGlobalVar}.__m_p__=(k)=>new Proxy(()=>{},{get(_, p) {const v= ${this.fakeGlobalVar}[k][p];return typeof v==='function'?v.bind(${this.fakeGlobalVar}):v},has(target, p) { return p in ${this.fakeGlobalVar}[k]}, set(_,p,v){${this.fakeGlobalVar}[k][p]=v;return true },apply(_,t,a){return ${this.fakeGlobalVar}[k](...a) }})` : ''}`
+    return `const ${this.projectGlobalVar}=window.${this.projectGlobalVar}||window;${this.customVars.length > 0 ? `${this.projectGlobalVar}.__m_p__=(k)=>new Proxy(()=>{},{get(_, p) {const v= ${this.projectGlobalVar}[k][p];return typeof v==='function'?v.bind(${this.projectGlobalVar}):v},has(target, p) { return p in ${this.projectGlobalVar}[k]}, set(_,p,v){${this.projectGlobalVar}[k][p]=v;return true },apply(_,t,a){return ${this.projectGlobalVar}[k](...a) }})` : ''}`
   }
 
   get variables() {
@@ -33,36 +27,21 @@ export class Compiler {
   }
 
   get initAllVarString() {
-    return `const {${desctructVars(this.nativeVars)}}=${this.fakeGlobalVar};${this.customVars.map(item => `const ${item}=${this.fakeGlobalVar}.__m_p__('${item}')`).reduce((p, c) => `${p + c};`, '')}`
+    return `const {${desctructVars(this.nativeVars)}}=${this.projectGlobalVar};${this.customVars.map(item => `const ${item}=${this.projectGlobalVar}.__m_p__('${item}')`).reduce((p, c) => `${p + c};`, '')}`
   }
 
-  getImportLocFromScript(script: string) {
-    const ast = parseSync(script) as any
-    const locs = [] as [number, number][]
-    traverse(ast, {
-
-      ImportDeclaration(path) {
-        const { node } = path
-
-        const { value, start, end } = node.source as any
-        if (isRelativeReferences(value))
-          locs.push([start, end])
-      },
-      // dynamic import
-      Import(path) {
-        const { value, start, end } = (path.parent as any).arguments[0]
-        if (isRelativeReferences(value))
-          locs.push([start, end])
-      },
-
-    })
-    return locs
+  createTag(config: any) {
+    return `<merak c='${encodeURIComponent(JSON.stringify({
+      _n: this.nativeVars,
+      _c: this.customVars,
+      _f: this.projectGlobalVar,
+      ...config,
+    }))}'></merak>`
   }
 
   compileScript(code: string, file: string, force?: boolean) {
     const nativeSet = new Set<string>()
     const s = new MagicString(code)
-    const warning: { info: string; loc: SourceLocation }[] = []
 
     let start = 0
     let end = 0
@@ -74,6 +53,7 @@ export class Compiler {
       const ast = parseSync(code, { filename: 'any' }) as any
 
       traverse(ast, {
+
         ReferencedIdentifier: (path) => {
           const { start, loc, name } = path.node as any
           if (!path.scope.hasBinding(name, true)) {
@@ -93,8 +73,7 @@ export class Compiler {
               nativeSet.add(name)
             }
             if (this.customVars.includes(name))
-
-              s.appendLeft(start, `${this.fakeGlobalVar}.`)
+              s.appendLeft(start, `${this.projectGlobalVar}.`)
           }
         },
         Program(path) {
@@ -105,12 +84,12 @@ export class Compiler {
       const injectGlobals = [...nativeSet]
 
       if (injectGlobals.length) {
-        s.appendLeft(start, `(()=>{const {${desctructVars(injectGlobals)}}=${this.fakeGlobalVar};`)
+        s.appendLeft(start, `(()=>{const {${desctructVars(injectGlobals)}}=${this.projectGlobalVar};`)
         s.appendRight(end, '})()')
       }
     }
 
-    return { code: s.toString(), map: s.generateMap({ hires: true }), warning }
+    return { code: s.toString(), map: s.generateMap({ hires: true }) }
   }
 
   compileESM(code: string, file: string, force?: boolean) {
@@ -125,6 +104,7 @@ export class Compiler {
       const ast = parseSync(code) as any
       // let lastImport
       traverse(ast, {
+
         ReferencedIdentifier: (path) => {
           const { name, loc, start } = path.node
           if (!path.scope.hasBinding(name, true)) {
@@ -144,7 +124,7 @@ export class Compiler {
             }
 
             if (this.customVars.includes(name))
-              s.appendLeft(start!, `${this.fakeGlobalVar}.`)
+              s.appendLeft(start!, `${this.projectGlobalVar}.`)
           }
         },
 
@@ -153,7 +133,7 @@ export class Compiler {
       const injectGlobals = [...nativeSet]
       // globals = injectGlobals
       if (injectGlobals.length)
-        s.appendRight(0, `\nconst {${desctructVars(injectGlobals)}}=${this.fakeGlobalVar};`)
+        s.appendRight(0, `\nconst {${desctructVars(injectGlobals)}}=${this.projectGlobalVar};`)
     }
     return { code: s.toString(), map: s.generateMap({ hires: true }) }
   }
@@ -166,7 +146,7 @@ export class Compiler {
         const name = path.node.name
         if (!path.scope.hasBinding(name, true)) {
           const { start } = path.node as { start: number }
-          s.appendRight(start, `${this.fakeGlobalVar}.`)
+          s.appendRight(start, `${this.projectGlobalVar}.`)
         }
       },
     })
@@ -174,50 +154,43 @@ export class Compiler {
     return { code: s.toString(), map: s.generateMap({ hires: true }) }
   }
 
+  compileStyle(style: string, file: string) {
+    const { css, map } = postcss([merakPostCss()]).process(style, { from: file })
+    return { code: css, map }
+  }
+
   compileHTML(html: string, file: string) {
     const s = new MagicString(html)
     s.replace('</head>', `<head><script merak-ignore>${this.internalScript}</script>`)
     const ast = parse(html)
-    const locs = [] as [number, number][]
 
     walk(ast, {
       enter: (node) => {
         if (node.type === 'Tag') {
           if (node.name === 'script') {
             const outScriptNode = node.attributes.some(item => item.name.value === 'src')
-
+            const isModule = node.attributes.some(item => item.name.value === 'type' && item.value?.value === 'module')
             if (node.attributes.some(item => item.name.value === 'merak-ignore'))
               return
 
             // recording external script node to replace them in browser
-            if (outScriptNode) {
-              const { start, end, value } = node.attributes.find(item => item.name.value === 'src')?.value!
-              if (!isCdn(value)) {
-                this.logger.collectAction(file, `replace script src "${value}"`)
-                locs.push([start + 1, end - 1])
-              }
-              // ret._s.push({ _f: merakSrc || value, _tl: [start, end], _a: merakAttrs, _t: 'outline' })
-            }
-            else {
+            if (!outScriptNode) {
               const { start } = node.close as IText
               const { end } = node.open
-
               const source = html.slice(end, start)
 
-              this.getImportLocFromScript(source).forEach(item => locs.push([end + item[0] + 1, end + item[1] - 1]))
+              const { code } = isModule ? this.compileESM(source, file) : this.compileScript(source, file)
+
+              s.overwrite(start, end, code)
             }
           }
 
-          // recording link node to replace publicpath in browser(useless in pure mode)
-
-          if (node.name === 'link' && node.attributes.some(item => item.name.value === 'href')) {
-            const outLinkNode = node.attributes.find(item => item.name.value === 'href')
-            const { value: { start, end, value } } = outLinkNode as any
-            if (!isCdn(value)) {
-              this.logger.collectAction(file, `replace link href "${value}"`)
-
-              locs.push([start + 1, end - 1])
-            }
+          if (node.name === 'style') {
+            const { start } = node.close as IText
+            const { end } = node.open
+            const source = html.slice(end, start)
+            const { code } = this.compileStyle(source, file)
+            s.overwrite(start, end, code)
           }
 
           if (node.attributeMap) {
@@ -230,7 +203,10 @@ export class Compiler {
         }
       },
     })
-    s.replace('</body>', `${this.configTag}</body>`)
+
+    const loc = getPathLocFromHTML(s.toString())
+
+    s.replace('</body>', `${this.createTag({ _l: loc })}</body>`)
 
     return { code: s.toString(), map: s.generateMap({ hires: true }) }
   }

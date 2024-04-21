@@ -6,10 +6,10 @@ import isVarName from 'is-var-name'
 import type { FilterPattern, PluginOption } from 'vite'
 
 export { merakPostCss }
-export function MerakLib(fakeGlobalVar: string, opts: { isinLine?: boolean; includes?: FilterPattern; exclude?: FilterPattern; logPath?: string; force?: boolean; nativeVars?: string[]; customVars?: string[] } = {}): PluginOption {
+export function MerakLib(projectGlobalVar: string, opts: { isinLine?: boolean; includes?: FilterPattern; exclude?: FilterPattern; logPath?: string; force?: boolean; nativeVars?: string[]; customVars?: string[] } = {}): PluginOption {
   const { nativeVars = [], customVars = [], includes = /\.(ts|js|tsx|jsx|mjs)/, exclude, logPath, force } = opts
-  if (!isVarName(fakeGlobalVar))
-    throw new Error(`${fakeGlobalVar} is not a valid var`)
+  if (!isVarName(projectGlobalVar))
+    throw new Error(`${projectGlobalVar} is not a valid var`)
 
   nativeVars.push(...DEFAULT_NATIVE_VARS.filter(item => !['location', 'history'].includes(item)))
 
@@ -26,7 +26,7 @@ export function MerakLib(fakeGlobalVar: string, opts: { isinLine?: boolean; incl
 
       const unUsedGlobals = getUnusedGlobalVariables(raw, [...nativeVars, ...customVars])
       unUsedGlobals.length > 0 && logger.collectUnscopedVar(chunk.fileName, unUsedGlobals)
-      const { map, code, warning } = (opts.format === 'es' ? injectGlobalToESM : injectGlobalToIIFE)(raw, fakeGlobalVar, nativeVars, customVars, force)
+      const { map, code, warning } = (opts.format === 'es' ? injectGlobalToESM : injectGlobalToIIFE)(raw, projectGlobalVar, nativeVars, customVars, force)
       if (isDebug) {
         warning.forEach(warn => logger.collectDangerUsed(chunk.fileName, warn.info, [warn.loc.start.line, warn.loc.start.column]),
         )

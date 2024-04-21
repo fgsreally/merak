@@ -18,24 +18,24 @@ function createFillStr(length: number) {
 
 export * from './lib'
 
-export function Merak(fakeGlobalVar: string, opts: { output?: string; includes?: FilterPattern; exclude?: FilterPattern; logPath?: string; force?: boolean; nativeVars?: string[]; customVars?: string[];loader?: 'runtime' | 'compile' } = {}): PluginOption {
-  if (!isVarName(fakeGlobalVar))
-    throw new Error(`${fakeGlobalVar} is not a valid var`)
+export function Merak(projectGlobalVar: string, opts: { output?: string; includes?: FilterPattern; exclude?: FilterPattern; logPath?: string; force?: boolean; nativeVars?: string[]; customVars?: string[];loader?: 'runtime' | 'compile' } = {}): PluginOption {
+  if (!isVarName(projectGlobalVar))
+    throw new Error(`${projectGlobalVar} is not a valid var`)
 
   // const globalVars = [...new Set(globals)] as string[]
   const { nativeVars = [], customVars = [], includes = /\.(vue|ts|js|tsx|jsx|mjs)/, exclude = /\.(css|scss|sass|less)$/, logPath, force, output, loader = 'compile' } = opts
-  const merakConfig = { _f: fakeGlobalVar, _n: nativeVars, _c: customVars } as any
+  const merakConfig = { _f: projectGlobalVar, _n: nativeVars, _c: customVars } as any
 
   nativeVars.push(...DEFAULT_NATIVE_VARS)
 
   const isDebug = !!logPath
   const filter = createFilter(includes, exclude)
   let config: ResolvedConfig
-  const publicPath = `(${fakeGlobalVar}.__merak_url__||'')`
+  const publicPath = `(${projectGlobalVar}.__merak_url__||'')`
   // work in sourcemap(maybe..)
   const base = `/__dy_base_${createFillStr(publicPath.length + 12)}/`
 
-  const injectScript = `const ${fakeGlobalVar}=window.${fakeGlobalVar}||window;${customVars.length > 0 ? `${fakeGlobalVar}.__m_p__=(k)=>new Proxy(()=>{},{get(_, p) {const v= ${fakeGlobalVar}[k][p];return typeof v==='function'?v.bind(${fakeGlobalVar}):v},has(target, p) { return p in ${fakeGlobalVar}[k]}, set(_,p,v){${fakeGlobalVar}[k][p]=v;return true },apply(_,t,a){return ${fakeGlobalVar}[k](...a) }})` : ''}`
+  const injectScript = `const ${projectGlobalVar}=window.${projectGlobalVar}||window;${customVars.length > 0 ? `${projectGlobalVar}.__m_p__=(k)=>new Proxy(()=>{},{get(_, p) {const v= ${projectGlobalVar}[k][p];return typeof v==='function'?v.bind(${projectGlobalVar}):v},has(target, p) { return p in ${projectGlobalVar}[k]}, set(_,p,v){${projectGlobalVar}[k][p]=v;return true },apply(_,t,a){return ${projectGlobalVar}[k](...a) }})` : ''}`
   return [
     dynamicBase({
       publicPath,
@@ -55,7 +55,7 @@ export function Merak(fakeGlobalVar: string, opts: { output?: string; includes?:
         }
       },
       async transformIndexHtml(html) {
-        html = compileHTML(html.replace('<head>', `<head><script merak-ignore>${injectScript}</script>`), fakeGlobalVar)
+        html = compileHTML(html.replace('<head>', `<head><script merak-ignore>${injectScript}</script>`), projectGlobalVar)
         if (loader === 'compile') {
           merakConfig._l = analyseHTML(html).map((item) => {
             // logger.collectAction(`replace url "${item.src}"`)
@@ -68,10 +68,10 @@ export function Merak(fakeGlobalVar: string, opts: { output?: string; includes?:
 
       transform(str, id) {
         if (filter(id)) {
-          const { code } = injectGlobalToESM(str, fakeGlobalVar, nativeVars, customVars, force)
+          const { code } = injectGlobalToESM(str, projectGlobalVar, nativeVars, customVars, force)
           return { code }
         }
-        // return `const {${desctructVars(nativeVars)}}=${fakeGlobalVar};${createCustomVarProxy(fakeGlobalVar, customVars)}${code}`
+        // return `const {${desctructVars(nativeVars)}}=${projectGlobalVar};${createCustomVarProxy(projectGlobalVar, customVars)}${code}`
       },
     }, {
       name: 'vite-plugin-merak:build',
@@ -92,7 +92,7 @@ export function Merak(fakeGlobalVar: string, opts: { output?: string; includes?:
 
         const unUsedGlobals = getUnusedGlobalVariables(raw, [...nativeVars, ...customVars])
         unUsedGlobals.length > 0 && logger.collectUnscopedVar(chunk.fileName, unUsedGlobals)
-        const { map, code, warning } = (opts.format === 'es' ? injectGlobalToESM : injectGlobalToIIFE)(raw, fakeGlobalVar, nativeVars, customVars, force)
+        const { map, code, warning } = (opts.format === 'es' ? injectGlobalToESM : injectGlobalToIIFE)(raw, projectGlobalVar, nativeVars, customVars, force)
         if (isDebug) {
           warning.forEach(warn => logger.collectDangerUsed(chunk.fileName, warn.info, [warn.loc.start.line, warn.loc.start.column]),
           )
@@ -128,7 +128,7 @@ export function Merak(fakeGlobalVar: string, opts: { output?: string; includes?:
           Object.entries(bundle).map(async ([, chunk]) => {
             if (chunk.type === 'asset' && typeof chunk.source === 'string') {
               if (chunk.fileName.endsWith('.html')) {
-                chunk.source = compileHTML(chunk.source.replaceAll(base, './'), fakeGlobalVar)
+                chunk.source = compileHTML(chunk.source.replaceAll(base, './'), projectGlobalVar)
                 if (loader === 'compile') {
                   merakConfig._l = analyseHTML(chunk.source).map((item) => {
                     logger.collectAction(`replace url "${item.src}"`)

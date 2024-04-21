@@ -17,13 +17,13 @@ export function MerakScope(
     nativeVars: string[]
     customVars: string[]
     children: any
-    fakeGlobalVar: string
+    projectGlobalVar: string
   } & Partial<Merak['lifeCycle']>) {
-  const { url = $location().origin, head, proxy, deactive = true, props: MerakProps, iframe, name, timeout, inlineStyle = true, children, flag = 'destroy', fakeGlobalVar, nativeVars = shareNativeVars, customVars = [] } = props
+  const { url = $location().origin, head, proxy, deactive = true, props: MerakProps, iframe, name, timeout, inlineStyle = true, children, flag = 'destroy', projectGlobalVar, nativeVars = shareNativeVars, customVars = [] } = props
   const app = getInstance(name) || new Merak(name, url, { proxy, iframe, timeout })
 
-  if (!app.fakeGlobalVar)
-    app.setGlobalVars(fakeGlobalVar, nativeVars, customVars)
+  if (!app.projectGlobalVar)
+    app.setGlobalVars(projectGlobalVar, nativeVars, customVars)
   if (MerakProps)
     app.props = MerakProps
   useEffect(() => {
@@ -85,12 +85,12 @@ export function MerakImport(
     head?: string
     nativeVars: string[]
     customVars: string[]
-    fakeGlobalVar: string
+    projectGlobalVar: string
   } & Partial<Merak['lifeCycle']>) {
-  const { url = $location().origin, head, proxy, deactive = true, props: MerakProps, iframe, name, timeout, inlineStyle = true, flag = 'destroy', fakeGlobalVar, nativeVars = shareNativeVars, customVars = [], source } = props
+  const { url = $location().origin, head, proxy, deactive = true, props: MerakProps, iframe, name, timeout, inlineStyle = true, flag = 'destroy', projectGlobalVar, nativeVars = shareNativeVars, customVars = [], source } = props
   const app = getInstance(name) || new Merak(name, url, { proxy, iframe, timeout })
-  if (!app.fakeGlobalVar)
-    app.setGlobalVars(fakeGlobalVar, nativeVars, customVars)
+  if (!app.projectGlobalVar)
+    app.setGlobalVars(projectGlobalVar, nativeVars, customVars)
   if (MerakProps)
     app.props = MerakProps
   useEffect(() => {

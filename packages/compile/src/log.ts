@@ -2,6 +2,14 @@ import json2md from 'json2md'
 import fse from 'fs-extra'
 import pc from 'picocolors'
 export class Logger {
+  record = [] as {
+    type: string
+    key?: string
+    file: string
+    message: string
+    level: 'warning' | 'error'
+  }[]
+
   // work for DANGER_IDENTIFIERS
   dangerUsedRecord: Record<string, Record<string, { times: number; loc: [number, number] }>> = {}
   unusedGlobalRecord: Record<string, string[]> = {}
@@ -21,7 +29,7 @@ export class Logger {
       this.unusedGlobalRecord[file].push(variable)
   }
 
-  collectAction(value: string) {
+  collectAction(file: string, value: string) {
     this.actionRecord.push(value)
   }
 
@@ -62,4 +70,4 @@ export class Logger {
   }
 }
 
-// export const logger = new Logger()
+export const logger = new Logger()

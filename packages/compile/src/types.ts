@@ -31,7 +31,7 @@ export interface MerakJSFile {
 
 export interface MerakHTMLFile {
   // projectGlobalVar
-  _f: string
+  p: string
   _g: string[]
   // link
   _l: [number, number][]
@@ -44,7 +44,7 @@ export type ImportScript = MerakAttrs &
 { // type
   _t: 'outline'
   // filepath
-  _f: string
+  p: string
   // tag loc
   _tl: [number, number] }
 

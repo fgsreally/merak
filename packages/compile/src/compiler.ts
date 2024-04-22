@@ -34,7 +34,7 @@ export class Compiler {
     return `<merak c='${encodeURIComponent(JSON.stringify({
       n: this.nativeVars,
       c: this.customVars,
-      f: this.projectGlobalVar,
+      p: this.projectGlobalVar,
       ...config,
     }))}'></merak>`
   }

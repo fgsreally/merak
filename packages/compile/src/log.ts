@@ -38,7 +38,7 @@ export class Logger {
     console.log(`${pc.cyan('[MERAK]')} ${info}`)
   }
 
-  output(outputPath?: string) {
+  output(outputPath: string) {
     if (!outputPath)
       return
 

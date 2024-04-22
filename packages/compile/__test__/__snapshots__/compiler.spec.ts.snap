@@ -1,28 +1,12 @@
 // Vitest Snapshot v1, https://vitest.dev/guide/snapshot.html
 
-exports[`analyse file > analyese js globals 1`] = `
-[
-  "document",
-]
-`;
-
-exports[`analyse file > analyse html file 1`] = `"/favicon.ico"`;
-
-exports[`analyse file > analyse html file 2`] = `"/assets/index-28fadf32.css"`;
-
-exports[`analyse file > analyse html file 3`] = `"/src/main.js"`;
-
-exports[`analyse file > analyse html file 4`] = `"./xx"`;
-
-exports[`analyse file > analyse html file 5`] = `"./esm.js"`;
-
-exports[`analyse file > compile esm js 1`] = `
+exports[`compiler > compile esm js 1`] = `
 "
-const {window,document,}=$test;import c from 'c'
+const {window,document}=test;import c from 'c'
 
-/** @merak */(window.isMerak?window.rawWindow.document:document).addEventListener('click', c);
-(Math.random() > 0.5 ? /** @merak */(window.isMerak?window.rawWindow.document:document) : /** @merak */(window.isMerak?window.rawWindow.document:document).body).addEventListener('click', c)
-$test.__HMR__.run()
+/** @merak */(window.isMerak?window.rawWindow.document:document).addEventListener('click', c)
+
+test.__HMR__.run()
 
 window.onload = async () => {
   document.addEventListener('click', c)
@@ -30,8 +14,46 @@ window.onload = async () => {
 "
 `;
 
-exports[`analyse file > compile iife js 1`] = `
-"(()=>{const {self,}=$test;/*
+exports[`compiler > compile html 1`] = `
+"<!DOCTYPE html>
+<html lang=\\"en\\">
+  <head>
+    <meta charset=\\"UTF-8\\" />
+    <link rel=\\"icon\\" href=\\"/favicon.ico\\" />
+    <script type=\\"module\\" src=\\"a.js\\"></script>
+    <link rel=\\"stylesheet\\" href=\\"a.css\\" />
+    <meta name=\\"viewport\\" content=\\"width=device-width, initial-scale=1.0\\" />
+  <head><script merak-ignore>const test=window.test||window;test.__m_p__=(k)=>new Proxy(()=>{},{get(_, p) {const v= test[k][p];return typeof v==='function'?v.bind(test):v},has(target, p) { return p in test[k]}, set(_,p,v){test[k][p]=v;return true },apply(_,t,a){return test[k](...a) }})</script>
+
+  <body>
+    <style>
+      @import url(\\"b.css\\");
+
+      body {
+        background-image: url(a.png);
+      }
+    </style>
+    <script type=\\"module\\">
+const {document}=test;
+      import xx from 'xx'
+import y from './b.js'
+document.write(xx)
+console.log(y)
+    </script>
+    <script>(()=>{const {window}=test;
+      window.addEventListener('click', async () => {
+        await import('./c.js')
+})
+    })()</script>
+  <merak c='%7B%22n%22%3A%5B%22window%22%2C%22document%22%5D%2C%22c%22%3A%5B%22__HMR__%22%5D%2C%22f%22%3A%22test%22%2C%22l%22%3A%5B%5B102%2C114%5D%2C%5B151%2C155%5D%2C%5B201%2C206%5D%2C%5B687%2C692%5D%2C%5B631%2C636%5D%2C%5B812%2C818%5D%2C%5B988%2C994%5D%5D%7D'></merak></body>
+</html>
+"
+`;
+
+exports[`compiler > compile js statement 1`] = `"test.console.log(test.a)"`;
+
+exports[`compiler > compile script 1`] = `
+"/*
  * ATTENTION: An \\"eval-source-map\\" devtool has been used.
  * This devtool is neither made for production nor for readable output files.
  * It uses \\"eval()\\" calls to create a separate source file with attached SourceMaps in the browser devtools.
@@ -149,7 +171,7 @@ exports[`analyse file > compile iife js 1`] = `
         },
 
 }])
-})()"
+"
 `;
 
-exports[`analyse file > compile statement 1`] = `"test.console.log(test.window)"`;
+exports[`compiler > compile style 1`] = `""`;

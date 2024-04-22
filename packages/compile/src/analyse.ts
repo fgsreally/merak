@@ -7,21 +7,21 @@ import { parse, walk } from 'html5parser'
 import { isCdn, isRelativeReferences } from './utils'
 
 export function getImportLocFromJS(script: string) {
-  const ast = parseSync(script, { filename: 'any' }) as any
+  const ast = parseSync(script)!
   const loc = [] as [number, number][]
   traverse(ast, {
     ImportDeclaration(path) {
       const { node } = path
 
-      const { value, start, end } = node.source as any
+      const { value, start, end } = node.source
       if (isRelativeReferences(value))
-        loc.push([start, end])
+        loc.push([start! + 1, end! - 1])
     },
     // dynamic import
     Import(path) {
       const { value, start, end } = (path.parent as any).arguments[0]
       if (isRelativeReferences(value))
-        loc.push([start, end])
+        loc.push([start + 1, end - 1])
     },
 
   })
@@ -29,8 +29,8 @@ export function getImportLocFromJS(script: string) {
 }
 
 const URL_PATTERNS = [
-  /(url\(\s*['"]?)([^"')]+)(["']?\s*\))/g,
-  /(AlphaImageLoader\(\s*src=['"]?)([^"')]+)(["'])/g,
+  /url\(\s*['"]?([^"')]+)["']?\s*\)/,
+  /AlphaImageLoader\(\s*src=['"]?([^"')]+)["']/,
 ]
 const getPattern = (value: string) =>
   URL_PATTERNS.find(pattern => pattern.test(value))
@@ -38,7 +38,8 @@ const getPattern = (value: string) =>
 export function getUrlLocFromCSS(style: string) {
   const loc = [] as [number, number][]
 
-  const { css } = postcss([
+  // eslint-disable-next-line no-unused-expressions
+  postcss([
     <AcceptedPlugin>{
       postcssPlugin: 'postcss-extract-url',
       Root(root) {
@@ -47,19 +48,41 @@ export function getUrlLocFromCSS(style: string) {
           const start = decl.source?.start?.offset
 
           if (pattern && start) {
-            const match = pattern.exec(decl.value)
-            console.log('decl', pattern, decl.value, match)
-
+            const match = pattern.exec(decl.toString())
+            if (!match)
+              return
+            const from = start + match.index + match[0].indexOf(match[1])
+            const to = from + match[1].length
             if (match)
-              loc.push([start + match[1].indexOf(decl.value), start + match[1].indexOf(decl.value) + match[1].length])
+              loc.push([from, to])
           }
         },
         )
+
+        root.walkAtRules('import', (rule) => {
+          const urlMatch = rule.params.match(URL_PATTERNS[0])
+          let path = null
+          let offset = rule.source!.start!.offset + rule.toString().indexOf(rule.params)
+          if (urlMatch) {
+            path = urlMatch[1]
+            offset += urlMatch.index! + urlMatch[0].indexOf(urlMatch[1])
+          }
+          else {
+            const match = rule.params.match(/["']([^"']+)["']/)
+            if (match) {
+              path = match[1]
+
+              offset += match[0].indexOf(match[1])
+            }
+          }
+
+          if (path)
+            loc.push([offset, offset + path.length])
+        })
       },
     },
-  ]).process(style)
+  ]).process(style).css
 
-  console.log(css)
   return loc
 }
 
@@ -75,21 +98,17 @@ export function getPathLocFromHTML(html: string) {
           if (node.attributes.some(item => item.name.value === 'merak-ignore'))
             return
 
-          // recording external script node to replace them in browser
           if (outScriptNode) {
             // eslint-disable-next-line @typescript-eslint/no-non-null-asserted-optional-chain
             const { start, end, value } = node.attributes.find(item => item.name.value === 'src')?.value!
             if (!isCdn(value))
               loc.push([start + 1, end - 1])
-
-            // ret._s.push({ _f: merakSrc || value, _tl: [start, end], _a: merakAttrs, _t: 'outline' })
           }
           else {
             const { start } = node.close as IText
             const { end } = node.open
             const code = html.slice(end, start)
-
-            loc.push(...formatLoc(start, getImportLocFromJS(code)))
+            loc.push(...formatLoc(end, getImportLocFromJS(code)))
           }
         }
 
@@ -105,8 +124,8 @@ export function getPathLocFromHTML(html: string) {
           const { end } = node.open
 
           const code = html.slice(end, start)
-          console.log(code, formatLoc(start, getUrlLocFromCSS(code)))
-          loc.push(...formatLoc(start, getUrlLocFromCSS(code)))
+
+          loc.push(...formatLoc(end, getUrlLocFromCSS(code)))
         }
       }
     },
@@ -118,5 +137,5 @@ export function getPathLocFromHTML(html: string) {
 function formatLoc(start: number, loc: [number, number][]) {
   return loc.map(([s, e]) => {
     return [start + s, start + e] as [number, number]
-  })
+  }).sort((a, b) => a[0] - b[0])
 }

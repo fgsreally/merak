@@ -11,7 +11,7 @@ export function relativePath(from: string, to: string) {
   return relative(from, to).replace(/\\/g, '/')
 }
 export function desctructVars(vars: string[]) {
-  return vars.reduce((p, c) => `${p}${c},`, '')
+  return vars.reduce((p, c) => `${p},${c}`)
 }
 
 export function resolveHtmlConfig(html: string) {

@@ -1,0 +1,32 @@
+@import /* merak */'b.css';
+@import url('b.css');
+
+:root a{
+    width:100px
+}
+
+:root>a{
+    width:100px
+    
+}
+
+
+
+:root,:host,a{
+    width:100px
+
+}
+
+
+
+:root,body a{
+    width:100px
+
+}
+
+@font-face {
+    font-family: "Open Sans";
+    src:
+      url("/fonts/OpenSans-Regular-webfont.woff2") format("woff2"),
+      url("/fonts/OpenSans-Regular-webfont.woff") format("woff");
+  }

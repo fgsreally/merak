@@ -6,46 +6,62 @@ exports[`ssr > basic 1`] = `
   <head>
     <meta charset=\\"UTF-8\\" />
     <link rel=\\"icon\\" href=\\"/favicon.ico\\" />
-    <link rel=\\"stylesheet\\" href=\\"/assets/index-28fadf32.css\\" />
+    <script type=\\"module\\" src=\\"a.js\\"></script>
+    <link rel=\\"stylesheet\\" href=\\"a.css\\" />
     <meta name=\\"viewport\\" content=\\"width=device-width, initial-scale=1.0\\" />
-  </head>
+  <head><script merak-ignore>const app1=window.app1||window;</script>
 
   <body>
-    <script type=\\"module\\" src=\\"/src/main.js\\"></script>
+    <style>
+      @import url(\\"b.css\\");
+
+      body {
+        background-image: url(a.png);
+      }
+    </style>
     <script type=\\"module\\">
-      import y from 'y'
-import xx from './xx'
+const {document}=app1;
+      import xx from 'xx'
+import y from './b.js'
 document.write(xx)
 console.log(y)
     </script>
-    <script>
+    <script>(()=>{const {window}=app1;
       window.addEventListener('click', async () => {
-        await import('./esm.js')
+        await import('./c.js')
 })
-    </script>
-  <template data-merak-url='https://localhost:3000/app/index.html' class='test'><!DOCTYPE html>
+    })()</script>
+  <merak c='%7B%22n%22%3A%5B%22window%22%2C%22document%22%5D%2C%22c%22%3A%5B%5D%2C%22f%22%3A%22app1%22%2C%22l%22%3A%5B%5B102%2C114%5D%2C%5B151%2C155%5D%2C%5B201%2C206%5D%2C%5B405%2C410%5D%2C%5B461%2C466%5D%2C%5B586%2C592%5D%2C%5B762%2C768%5D%5D%7D'></merak><template data-merak-url='https://localhost:3000/app1/index.html' class='test'><!DOCTYPE html>
 <html lang=\\"en\\">
   <head>
     <meta charset=\\"UTF-8\\" />
-    <link rel=\\"icon\\" href=\\"https://localhost:3000/favicon.ico\\" />
-    <link rel=\\"stylesheet\\" href=\\"https://localhost:3000/assets/index-28fadf32.css\\" />
+    <link rel=\\"icon\\" href=\\"/favicon.ico\\" />
+    <script type=\\"module\\" src=\\"a.js\\"></script>
+    <link rel=\\"stylesheet\\" href=\\"a.css\\" />
     <meta name=\\"viewport\\" content=\\"width=device-width, initial-scale=1.0\\" />
-  </head>
+  <head><script merak-ignore>const app2=window.app2||window;</script>
 
   <body>
-    <script type=\\"module\\" src=\\"https://localhost:3000/src/main.js\\"></script>
+    <style>
+      @import url(\\"b.css\\");
+
+      body {
+        background-image: url(a.png);
+      }
+    </style>
     <script type=\\"module\\">
-      import y from 'y'
-import xx from 'https://localhost:3000/app/xx'
+const {document}=app2;
+      import xx from 'xx'
+import y from './b.js'
 document.write(xx)
 console.log(y)
     </script>
-    <script>
+    <script>(()=>{const {window}=app2;
       window.addEventListener('click', async () => {
-        await import('https://localhost:3000/app/esm.js')
+        await import('./c.js')
 })
-    </script>
-  </body>
+    })()</script>
+  <merak c='%7B%22n%22%3A%5B%22window%22%2C%22document%22%5D%2C%22c%22%3A%5B%5D%2C%22f%22%3A%22app2%22%2C%22l%22%3A%5B%5B102%2C114%5D%2C%5B151%2C155%5D%2C%5B201%2C206%5D%2C%5B405%2C410%5D%2C%5B461%2C466%5D%2C%5B586%2C592%5D%2C%5B762%2C768%5D%5D%7D'></merak></body>
 </html>
 </template></body>
 </html>
@@ -58,45 +74,59 @@ exports[`ssr > stream 1`] = `
   <head>
     <meta charset=\\"UTF-8\\" />
     <link rel=\\"icon\\" href=\\"/favicon.ico\\" />
-    <link rel=\\"stylesheet\\" href=\\"/assets/index-28fadf32.css\\" />
+    <script type=\\"module\\" src=\\"a.js\\"></script>
+    <link rel=\\"stylesheet\\" href=\\"a.css\\" />
     <meta name=\\"viewport\\" content=\\"width=device-width, initial-scale=1.0\\" />
   </head>
 
   <body>
-    <script type=\\"module\\" src=\\"/src/main.js\\"></script>
+    <style>
+      @import url(\\"b.css\\");
+
+      body {
+        background-image: url(a.png);
+      }
+    </style>
     <script type=\\"module\\">
-      import y from 'y'
-import xx from './xx'
+      import xx from 'xx'
+import y from './b.js'
 document.write(xx)
 console.log(y)
     </script>
     <script>
       window.addEventListener('click', async () => {
-        await import('./esm.js')
+        await import('./c.js')
 })
     </script>
   </body>
 </html>
-<template data-merak-url='https://localhost:3000/app/index.html' >
+<template data-merak-url='https://localhost:3000/app1/index.html' >
 <html lang='en'>
   <head>
     <meta charset='UTF-8'></meta>
     <link rel='icon' href='https://localhost:3000/favicon.ico'></link>
-    <link rel='stylesheet' href='https://localhost:3000/assets/index-28fadf32.css'></link>
+    <script type='module' src='https://localhost:3000/app1/a.js'></script>
+    <link rel='stylesheet' href='https://localhost:3000/app1/a.css'></link>
     <meta name='viewport' content='width=device-width, initial-scale=1.0'></meta>
   </head>
 
   <body>
-    <script type='module' src='https://localhost:3000/src/main.js'></script>
+    <style>
+      @import url(\\"b.css\\");
+
+      body {
+        background-image: url(a.png);
+      }
+    </style>
     <script type='module'>
-      import y from 'y'
-import xx from './xx'
+      import xx from 'xx'
+import y from './b.js'
 document.write(xx)
 console.log(y)
     </script>
     <script>
       window.addEventListener('click', async () => {
-        await import('./esm.js')
+        await import('./c.js')
 })
     </script>
   </body>

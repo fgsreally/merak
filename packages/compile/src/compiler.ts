@@ -4,15 +4,15 @@ import type { IText } from 'html5parser'
 import { parse, walk } from 'html5parser'
 import MagicString from 'magic-string'
 import postcss from 'postcss'
-import { desctructVars, isCdn, isRelativeReferences } from './utils'
+import { desctructVars } from './utils'
 import { DANGER_IDENTIFIERS, EXCLUDE_TAG } from './common'
-import { Logger } from './log'
+import { logger } from './log'
 import { merakPostCss } from './postcss'
-import { getImportLocFromJS, getPathLocFromHTML } from './analyse'
+import { getPathLocFromHTML } from './analyse'
 
 export class Compiler {
   warnings: { info: string; loc: SourceLocation }[] = []
-  logger = new Logger()
+  logger = logger
   unUsedVars = new Set<string>()
   constructor(public projectGlobalVar: string, public nativeVars: string[], public customVars: string[]) {
 
@@ -27,14 +27,14 @@ export class Compiler {
   }
 
   get initAllVarString() {
-    return `const {${desctructVars(this.nativeVars)}}=${this.projectGlobalVar};${this.customVars.map(item => `const ${item}=${this.projectGlobalVar}.__m_p__('${item}')`).reduce((p, c) => `${p + c};`, '')}`
+    return `const {${desctructVars(this.nativeVars)}}=${this.projectGlobalVar};${this.customVars.map(item => `const ${item}=${this.projectGlobalVar}.__m_p__('${item}')`).reduce((p, c) => `${p};${c}`)}`
   }
 
   createTag(config: any) {
     return `<merak c='${encodeURIComponent(JSON.stringify({
-      _n: this.nativeVars,
-      _c: this.customVars,
-      _f: this.projectGlobalVar,
+      n: this.nativeVars,
+      c: this.customVars,
+      f: this.projectGlobalVar,
       ...config,
     }))}'></merak>`
   }
@@ -181,7 +181,7 @@ export class Compiler {
 
               const { code } = isModule ? this.compileESM(source, file) : this.compileScript(source, file)
 
-              s.overwrite(start, end, code)
+              s.overwrite(end, start, code)
             }
           }
 
@@ -190,7 +190,7 @@ export class Compiler {
             const { end } = node.open
             const source = html.slice(end, start)
             const { code } = this.compileStyle(source, file)
-            s.overwrite(start, end, code)
+            s.overwrite(end, start, code)
           }
 
           if (node.attributeMap) {
@@ -206,12 +206,12 @@ export class Compiler {
 
     const loc = getPathLocFromHTML(s.toString())
 
-    s.replace('</body>', `${this.createTag({ _l: loc })}</body>`)
+    s.replace('</body>', `${this.createTag({ l: loc })}</body>`)
 
     return { code: s.toString(), map: s.generateMap({ hires: true }) }
   }
 
-  output(outputPath?: string) {
+  output(outputPath: string) {
     this.logger.output(outputPath)
   }
 }

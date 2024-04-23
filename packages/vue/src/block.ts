@@ -1,7 +1,7 @@
 /* eslint-disable vue/one-component-per-file */
 import type { PropType, VNode } from 'vue'
 import { defineComponent, h, nextTick, onBeforeUnmount, onMounted, onUnmounted, render } from 'vue'
-import { MERAK_DATA_ID, MERAK_FLAG, Merak, createLibProxy, getInstance } from 'merak-core'
+import { MERAK_DATA_ID, MERAK_FLAG, Merak, createLibProxy, getApp } from 'merak-core'
 import { $location } from 'merak-helper'
 import { shareEmits, shareProps } from './share'
 
@@ -47,7 +47,7 @@ export const MerakImport = defineComponent({
 
   setup(props, { slots, emit }) {
     const { projectGlobalVar, deactive, head, name, url, props: MerakProps, proxy, iframe, nativeVars = shareNativeVars, customVars = [], source, timeout, inlineStyle } = props
-    const app = getInstance(name) || new Merak(name, url, { proxy: proxy || createLibProxy, iframe, timeout })
+    const app = getApp(name) || new Merak(name, url, { proxy: proxy || createLibProxy, iframe, timeout })
     if (!app.projectGlobalVar)
       app.setGlobalVars(projectGlobalVar, nativeVars, customVars)
     if (MerakProps)
@@ -119,7 +119,7 @@ export const MerakScope = defineComponent({
   setup(props, { slots, emit }) {
     const { projectGlobalVar, deactive, head, name, proxy, iframe, url, nativeVars = shareNativeVars, customVars = [], timeout, inlineStyle, props: MerakProps } = props
 
-    const app = getInstance(name) || new Merak(name, url, { proxy: proxy || createLibProxy, iframe, timeout })
+    const app = getApp(name) || new Merak(name, url, { proxy: proxy || createLibProxy, iframe, timeout })
 
     if (!app.projectGlobalVar)
       app.setGlobalVars(projectGlobalVar, nativeVars, customVars)

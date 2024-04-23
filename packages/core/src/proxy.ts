@@ -1,6 +1,6 @@
 /* eslint-disable no-prototype-builtins */
 import { createQuery, debug, getMerakQuerys, isBoundedFunction, isCallable, isConstructable } from './utils'
-import { getInstance } from './helper'
+import { getApp } from './helper'
 import { createProxyTimer } from './proxy/timer'
 import { createProxyListener } from './proxy/listener'
 import type { ProxyFn } from './types'
@@ -49,7 +49,7 @@ export function getBindFn(target: any, p: any) {
 export function createProxyWindow(id: string, url: string) {
   return {
     get(target: any, p: PropertyKey) {
-      const instance = getInstance(id)!
+      const instance = getApp(id)!
 
       debug(`get [${typeof p === 'symbol' ? p.toString() : p}] from window`, id)
       // if you want to rewrite proxy logic,don't remove this part
@@ -76,7 +76,7 @@ export function createProxyWindow(id: string, url: string) {
     },
 
     set(target: any, p: PropertyKey, v: any) {
-      const instance = getInstance(id)!
+      const instance = getApp(id)!
 
       debug(`set [${typeof p === 'symbol' ? p.toString() : p}] to window`, id)
 
@@ -106,7 +106,7 @@ export function createProxyDocument(id: string, url: string) {
     get(target: any, p: PropertyKey) {
       debug(`get [${typeof p === 'symbol' ? p.toString() : p}] from document`, id)
 
-      const instance = getInstance(id)!
+      const instance = getApp(id)!
 
       if (p === 'rawDocument')
         return document

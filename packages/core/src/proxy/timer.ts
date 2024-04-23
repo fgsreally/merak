@@ -1,16 +1,16 @@
-import { getInstance } from '../helper'
+import { getApp } from '../helper'
 
 export function createProxyTimer(id: string) {
   const fakeTimeOut = (...args: Parameters<typeof setTimeout>) => {
     const timer = setTimeout(...args)
-    getInstance(id)!.sideEffects.push(() => clearTimeout(timer))
+    getApp(id)!.sideEffects.push(() => clearTimeout(timer))
 
     return timer
   }
 
   const fakeTimeInterval = (...args: Parameters<typeof setTimeout>) => {
     const timer = setInterval(...args)
-    getInstance(id)!.sideEffects.push(() => clearInterval(timer))
+    getApp(id)!.sideEffects.push(() => clearInterval(timer))
 
     return timer
   }

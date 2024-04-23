@@ -1,4 +1,4 @@
-import { $location, getInstance } from 'merak-helper'
+import { $location, getApp } from 'merak-helper'
 import { createElement, useEffect } from 'react'
 import { MERAK_DATA_ID, MERAK_FLAG, Merak } from 'merak-core'
 import type { Root } from 'react-dom/client'
@@ -20,7 +20,7 @@ export function MerakScope(
     projectGlobalVar: string
   } & Partial<Merak['lifeCycle']>) {
   const { url = $location().origin, head, proxy, deactive = true, props: MerakProps, iframe, name, timeout, inlineStyle = true, children, flag = 'destroy', projectGlobalVar, nativeVars = shareNativeVars, customVars = [] } = props
-  const app = getInstance(name) || new Merak(name, url, { proxy, iframe, timeout })
+  const app = getApp(name) || new Merak(name, url, { proxy, iframe, timeout })
 
   if (!app.projectGlobalVar)
     app.setGlobalVars(projectGlobalVar, nativeVars, customVars)
@@ -88,7 +88,7 @@ export function MerakImport(
     projectGlobalVar: string
   } & Partial<Merak['lifeCycle']>) {
   const { url = $location().origin, head, proxy, deactive = true, props: MerakProps, iframe, name, timeout, inlineStyle = true, flag = 'destroy', projectGlobalVar, nativeVars = shareNativeVars, customVars = [], source } = props
-  const app = getInstance(name) || new Merak(name, url, { proxy, iframe, timeout })
+  const app = getApp(name) || new Merak(name, url, { proxy, iframe, timeout })
   if (!app.projectGlobalVar)
     app.setGlobalVars(projectGlobalVar, nativeVars, customVars)
   if (MerakProps)

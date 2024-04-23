@@ -19,8 +19,8 @@ export function $history() {
 export function $location() {
   return $window().location
 }
-// the same as getInstance in merak-core
-export function getInstance(id: string) {
+// the same as getApp in merak-core
+export function getApp(id: string) {
   return $window().__m_map__.get(id)
 }
 
@@ -30,7 +30,7 @@ export function getInstance(id: string) {
 export function $jump(project: string, to: string) {
   if (!isMerak)
     return
-  const instance = getInstance(project)
+  const instance = getApp(project)
   if (instance) {
     // @ts-expect-error miss history types
     instance.proxyMap.history.pushState(null, '', to)

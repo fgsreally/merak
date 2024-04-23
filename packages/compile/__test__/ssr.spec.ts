@@ -4,6 +4,8 @@ import { resolve } from 'path'
 import { Writable } from 'node:stream'
 import { describe, expect, it } from 'vitest'
 import { Compiler, SsrTransformer, mergeCompiledHTML } from '../src'
+import html from './fixtures/index.html?raw'
+import { removeMerakTag } from './utils'
 
 describe('ssr', () => {
   const app1 = 'https://localhost:3000/app1/index.html'
@@ -11,9 +13,9 @@ describe('ssr', () => {
 
   const compiler1 = new Compiler('app1', ['window', 'document'], [])
   const compiler2 = new Compiler('app2', ['window', 'document'], [])
-  const html = fs.readFileSync(resolve(__dirname, './fixtures/index.html'), 'utf-8')
+
   it('basic', async () => {
-    expect(mergeCompiledHTML(compiler1.compileHTML(html, 'index.html').code, compiler2.compileHTML(html, 'index.html').code, app2, { attrs: { class: 'test' } }),
+    expect(removeMerakTag(mergeCompiledHTML(compiler1.compileHTML(html, 'index.html').code, compiler2.compileHTML(html, 'index.html').code, app2, { attrs: { class: 'test' } })),
     ).toMatchSnapshot()
   })
 

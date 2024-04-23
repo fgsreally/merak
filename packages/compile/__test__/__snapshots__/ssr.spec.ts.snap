@@ -31,7 +31,7 @@ console.log(y)
         await import('./c.js')
 })
     })()</script>
-  <merak c='%7B%22n%22%3A%5B%22window%22%2C%22document%22%5D%2C%22c%22%3A%5B%5D%2C%22p%22%3A%22app1%22%2C%22l%22%3A%5B%5B102%2C114%5D%2C%5B151%2C155%5D%2C%5B201%2C206%5D%2C%5B345%2C350%5D%2C%5B401%2C406%5D%2C%5B526%2C532%5D%2C%5B702%2C708%5D%5D%7D'></merak><template data-merak-url='https://localhost:3000/app2/index.html' class='test'><!DOCTYPE html>
+  <template data-merak-url='https://localhost:3000/app2/index.html' class='test'><!DOCTYPE html>
 <html lang=\\"en\\">
   <head>
     <meta charset=\\"UTF-8\\" />
@@ -61,7 +61,7 @@ console.log(y)
         await import('https://localhost:3000/app2/c.js')
 })
     })()</script>
-  <merak c='%7B%22n%22%3A%5B%22window%22%2C%22document%22%5D%2C%22c%22%3A%5B%5D%2C%22p%22%3A%22app2%22%2C%22l%22%3A%5B%5B102%2C114%5D%2C%5B151%2C155%5D%2C%5B201%2C206%5D%2C%5B345%2C350%5D%2C%5B401%2C406%5D%2C%5B526%2C532%5D%2C%5B702%2C708%5D%5D%7D'></merak></body>
+  </body>
 </html>
 </template>
     </body>

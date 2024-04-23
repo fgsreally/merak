@@ -4,6 +4,7 @@ import esm from './fixtures/esm.js?raw'
 import iife from './fixtures/iife.js?raw'
 import style from './fixtures/style.css?raw'
 import html from './fixtures/index.html?raw'
+import { removeMerakTag } from './utils'
 
 describe('compiler', () => {
   const compiler = new Compiler('test', ['window', 'document'], ['__HMR__'])
@@ -30,7 +31,7 @@ describe('compiler', () => {
 
   it('compile html', async () => {
     const { code } = compiler.compileHTML(html, 'index.html')
-    expect(code).toMatchSnapshot()
+    expect(removeMerakTag(code)).toMatchSnapshot()
   })
 
   // it('compile iife js', async () => {

@@ -1,5 +1,17 @@
 # vite-plugin-merak
 
+## 1.2.2
+
+### Patch Changes
+
+- 5393d06: auto cors in dev
+
+## 1.2.1
+
+### Patch Changes
+
+- ab090ac: auto cors in dev
+
 ## 1.2.0
 
 ### Minor Changes

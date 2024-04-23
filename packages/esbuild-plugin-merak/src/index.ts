@@ -17,9 +17,7 @@ export function Merak(projectGlobalVar: string, opts: { exclude?: RegExp; logPat
             continue
           if (item.path.endsWith('.js')) {
             const raw = item.text
-
             const { code } = compiler.compileESM(raw, item.path, force)
-
             item.contents = strToUint8(code)
 
             continue
@@ -30,6 +28,7 @@ export function Merak(projectGlobalVar: string, opts: { exclude?: RegExp; logPat
 
           if (item.path.endsWith('.css'))
             item.contents = strToUint8(compiler.compileStyle(item.text, item.path).code)
+
         }
 
         logPath && compiler.output(logPath)

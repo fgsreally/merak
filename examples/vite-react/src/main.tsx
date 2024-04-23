@@ -7,6 +7,7 @@ import App from './root'
 function setup() {
   const root = ReactDOM.createRoot(document.getElementById('root')!)
   root.render(
+    // @ts-expect-error skip
     <React.StrictMode>
       <BrowserRouter window={window}>
         <App />
@@ -18,8 +19,6 @@ function setup() {
 let root: ReactDOM.Root | undefined
 
 $onMount(() => {
-  console.log('root')
-
   root = setup()
 })
 

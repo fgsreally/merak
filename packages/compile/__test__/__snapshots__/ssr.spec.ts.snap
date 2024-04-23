@@ -1,0 +1,136 @@
+// Vitest Snapshot v1, https://vitest.dev/guide/snapshot.html
+
+exports[`ssr > basic 1`] = `
+"<!DOCTYPE html>
+<html lang=\\"en\\">
+  <head>
+    <meta charset=\\"UTF-8\\" />
+    <link rel=\\"icon\\" href=\\"/favicon.ico\\" />
+    <script type=\\"module\\" src=\\"a.js\\"></script>
+    <link rel=\\"stylesheet\\" href=\\"a.css\\" />
+    <meta name=\\"viewport\\" content=\\"width=device-width, initial-scale=1.0\\" />
+  </head>
+
+  <body>
+    <style>
+      @import url(\\"b.css\\");
+
+      body {
+        background-image: url(a.png);
+      }
+    </style>
+    <script type=\\"module\\">
+const {document}=app1;
+      import xx from 'xx'
+import y from './b.js'
+document.write(xx)
+console.log(y)
+    </script>
+    <script>(()=>{const {window}=app1;
+      window.addEventListener('click', async () => {
+        await import('./c.js')
+})
+    })()</script>
+  <merak c='%7B%22n%22%3A%5B%22window%22%2C%22document%22%5D%2C%22c%22%3A%5B%5D%2C%22p%22%3A%22app1%22%2C%22l%22%3A%5B%5B102%2C114%5D%2C%5B151%2C155%5D%2C%5B201%2C206%5D%2C%5B345%2C350%5D%2C%5B401%2C406%5D%2C%5B526%2C532%5D%2C%5B702%2C708%5D%5D%7D'></merak><template data-merak-url='https://localhost:3000/app2/index.html' class='test'><!DOCTYPE html>
+<html lang=\\"en\\">
+  <head>
+    <meta charset=\\"UTF-8\\" />
+    <link rel=\\"icon\\" href=\\"https://localhost:3000/favicon.ico\\" />
+    <script type=\\"module\\" src=\\"https://localhost:3000/app2/a.js\\"></script>
+    <link rel=\\"stylesheet\\" href=\\"https://localhost:3000/app2/a.css\\" />
+    <meta name=\\"viewport\\" content=\\"width=device-width, initial-scale=1.0\\" />
+  </head>
+
+  <body>
+    <style>
+      @import url(\\"https://localhost:3000/app2/b.css\\");
+
+      body {
+        background-image: url(https://localhost:3000/app2/a.png);
+      }
+    </style>
+    <script type=\\"module\\">
+const {document}=app2;
+      import xx from 'xx'
+import y from 'https://localhost:3000/app2/b.js'
+document.write(xx)
+console.log(y)
+    </script>
+    <script>(()=>{const {window}=app2;
+      window.addEventListener('click', async () => {
+        await import('https://localhost:3000/app2/c.js')
+})
+    })()</script>
+  <merak c='%7B%22n%22%3A%5B%22window%22%2C%22document%22%5D%2C%22c%22%3A%5B%5D%2C%22p%22%3A%22app2%22%2C%22l%22%3A%5B%5B102%2C114%5D%2C%5B151%2C155%5D%2C%5B201%2C206%5D%2C%5B345%2C350%5D%2C%5B401%2C406%5D%2C%5B526%2C532%5D%2C%5B702%2C708%5D%5D%7D'></merak></body>
+</html>
+</template>
+    </body>
+</html>
+"
+`;
+
+exports[`ssr > stream 1`] = `
+"<!DOCTYPE html>
+<html lang=\\"en\\">
+  <head>
+    <meta charset=\\"UTF-8\\" />
+    <link rel=\\"icon\\" href=\\"/favicon.ico\\" />
+    <script type=\\"module\\" src=\\"a.js\\"></script>
+    <link rel=\\"stylesheet\\" href=\\"a.css\\" />
+    <meta name=\\"viewport\\" content=\\"width=device-width, initial-scale=1.0\\" />
+  </head>
+
+  <body>
+    <style>
+      @import url(\\"b.css\\");
+
+      body {
+        background-image: url(a.png);
+      }
+    </style>
+    <script type=\\"module\\">
+      import xx from 'xx'
+import y from './b.js'
+document.write(xx)
+console.log(y)
+    </script>
+    <script>
+      window.addEventListener('click', async () => {
+        await import('./c.js')
+})
+    </script>
+  </body>
+</html>
+<template data-merak-url='https://localhost:3000/app1/index.html' >
+<html lang='en'>
+  <head>
+    <meta charset='UTF-8'></meta>
+    <link rel='icon' href='https://localhost:3000/favicon.ico'></link>
+    <script type='module' src='https://localhost:3000/app1/a.js'></script>
+    <link rel='stylesheet' href='https://localhost:3000/app1/a.css'></link>
+    <meta name='viewport' content='width=device-width, initial-scale=1.0'></meta>
+  </head>
+
+  <body>
+    <style>
+      @import url(\\"b.css\\");
+
+      body {
+        background-image: url(a.png);
+      }
+    </style>
+    <script type='module'>
+      import xx from 'xx'
+import y from './b.js'
+document.write(xx)
+console.log(y)
+    </script>
+    <script>
+      window.addEventListener('click', async () => {
+        await import('./c.js')
+})
+    </script>
+  </body>
+</html>
+</template>"
+`;

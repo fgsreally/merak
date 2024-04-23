@@ -27,7 +27,9 @@ export class Compiler {
   }
 
   get initAllVarString() {
-    return `const {${desctructVars(this.nativeVars)}}=${this.projectGlobalVar};${this.customVars.map(item => `const ${item}=${this.projectGlobalVar}.__m_p__('${item}')`).reduce((p, c) => `${p};${c}`)}`
+    const nativeVarsStr = this.nativeVars.length ? `const {${desctructVars(this.nativeVars)}}=${this.projectGlobalVar};` : ''
+    const customVarsStr = this.customVars.length ? `${this.customVars.map(item => `const ${item}=${this.projectGlobalVar}.__m_p__('${item}')`).reduce((p, c) => `${p};${c}`)}` : ''
+    return nativeVarsStr + customVarsStr
   }
 
   createTag(config: any) {
@@ -161,7 +163,7 @@ export class Compiler {
 
   compileHTML(html: string, file: string) {
     const s = new MagicString(html)
-    s.replace('</head>', `<head><script merak-ignore>${this.internalScript}</script>`)
+    s.replace('</title>', `</title><script merak-ignore>${this.internalScript}</script>`)
     const ast = parse(html)
 
     walk(ast, {

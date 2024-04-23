@@ -4,6 +4,7 @@ import { getInstance } from './helper'
 import { createProxyTimer } from './proxy/timer'
 import { createProxyListener } from './proxy/listener'
 import type { ProxyFn } from './types'
+import { Merak } from './merak'
 
 export const cacheBindFn = new WeakMap()
 
@@ -53,13 +54,13 @@ export function createProxyWindow(id: string, url: string) {
       debug(`get [${typeof p === 'symbol' ? p.toString() : p}] from window`, id)
       // if you want to rewrite proxy logic,don't remove this part
       /** start  */
-      if (p === 'isMerak')
-        return true
 
-      if (p === '__merak_url__')
-        return url
-      if (p === '$Merak')
+      if (p === '__m_app__')
         return instance
+      if (p === '__m_url__')
+        return url
+      if (p === '__m_map__')
+        return Merak.map
 
       if (p === 'rawWindow')
         return window

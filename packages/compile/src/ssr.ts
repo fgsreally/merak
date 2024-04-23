@@ -2,20 +2,25 @@ import type { TransformCallback } from 'stream'
 import { Transform } from 'stream'
 import { StringDecoder } from 'node:string_decoder'
 import { Parser } from 'htmlparser2'
-import { resolveUrl } from './utils'
+import { resolvePathInHTML, resolveUrl } from './utils'
 
 function mergeAttrs(attrs: Record<string, string>) {
   return Object.entries(attrs).reduce((p, c) => `${p} ${c[0]}='${c[1]}'`, '')
 }
 
-export function mergeCompiledHTML(mainHTML: string, subHTML: string[], url: string, { tag = 'template', attrs = {} }: {
+export function mergeCompiledHTML(mainHTML: string, subHTML: string, url: string, { tag = 'template', attrs = {} }: {
   tag?: string
   attrs?: Record<string, string>
 } = {}) {
   return mainHTML.replace('</body>', () => {
-    return `${subHTML.reduce((p, c) => {
-      return `${p}<${tag} data-merak-url='${url}'${mergeAttrs(attrs)}>${c}</${tag}>`
-    }, '')}</body>`
+    const matcher = subHTML.match(/<merak[^>]+c=['"](.*)['"][\s>]<\/merak>/)
+    if (matcher) {
+      const config = JSON.parse(decodeURIComponent(matcher[1]))
+      if (config.l)
+        subHTML = resolvePathInHTML(subHTML, url, config.l)
+    }
+    return `<${tag} data-merak-url='${url}'${mergeAttrs(attrs)}>${subHTML}</${tag}>
+    </body>`
   })
 }
 

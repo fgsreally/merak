@@ -2,7 +2,7 @@ import type { Merak, NameSpace, Props } from 'merak-core'
 
 export { Merak, Props, NameSpace }
 
-export const isMerak = !!window.isMerak
+export const isMerak = !!window.__m_app__
 
 // get real window
 export function $window(): Window {
@@ -21,7 +21,7 @@ export function $location() {
 }
 // the same as getInstance in merak-core
 export function getInstance(id: string) {
-  return $window().$MerakMap.get(id)
+  return $window().__m_map__.get(id)
 }
 
 /**
@@ -32,6 +32,7 @@ export function $jump(project: string, to: string) {
     return
   const instance = getInstance(project)
   if (instance) {
+    // @ts-expect-error miss history types
     instance.proxyMap.history.pushState(null, '', to)
     const event = new PopStateEvent('popstate')
     instance.proxy.dispatchEvent(event)
@@ -44,7 +45,7 @@ export function $eventName(event: string) {
 
 // sub app baseUrl
 export function $base() {
-  return isMerak ? $instance()!.baseUrl : location.origin
+  return isMerak ? $app()!.baseUrl : location.origin
 }
 
 export function $body(): HTMLElement {
@@ -103,7 +104,7 @@ export function $onUnmount(cb: (flag?: 'destroy' | string) => any) {
 // work for eval
 export function $sandbox(script: string) {
   if (isMerak) {
-    const projectGlobalVar = window.$Merak.projectGlobalVar
+    const projectGlobalVar = $app().projectGlobalVar
     return `with(${projectGlobalVar}){${script}}`
   }
 
@@ -112,7 +113,7 @@ export function $sandbox(script: string) {
 // work for esm script
 export function $esm(script: string) {
   if (isMerak) {
-    const { projectGlobalVar, nativeVars, customVars } = window.$Merak
+    const { projectGlobalVar, nativeVars, customVars } = $app()
     return `const {${nativeVars.reduce((p: string, c: string) => `${p},${c}`)}}=${projectGlobalVar};${createCustomVarProxy(projectGlobalVar, customVars)}\n${script}`
   }
   return script
@@ -136,24 +137,24 @@ function createCustomVarProxy(globalVar: string, customVars: string[]) {
   return customVars.map(item => `const ${item}=${globalVar}.__m_p__('${item}')`).reduce((p, c) => `${p + c};`, '')
 }
 
-export function $instance() {
-  return window.$Merak as Merak
+export function $app() {
+  return window.__m_app__ as Merak
 }
 
 export function $props(): Props
 export function $props<K extends keyof Props>(key: string): Props[K]
 export function $props(key?: string) {
-  return key ? $instance()?.props[key] : $instance().props as any
+  return key ? $app()?.props[key] : $app().props as any
 }
 
 export function $namespace(): NameSpace
 export function $namespace<K extends keyof NameSpace>(key: string): NameSpace[K]
 export function $namespace(key?: string) {
-  return key ? $instance()?.namespace[key] : $instance().namespace as any
+  return key ? $app()?.namespace[key] : $app().namespace as any
 }
 
 export function $perf() {
-  return $instance()?.perf
+  return $app()?.perf
 }
 
 /**
@@ -174,12 +175,12 @@ export function $stopBubble(isPass = false) {
  * Tell the host application that it's time to uninstall,
  */
 export function $deactive() {
-  $instance()?.deactive()
+  $app()?.deactive()
 }
 
 /**
  * @danger
  */
 export function $destroy() {
-  $instance()?.destroy()
+  $app()?.destroy()
 }

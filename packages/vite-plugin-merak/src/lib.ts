@@ -1,20 +1,20 @@
 import { resolve } from 'path'
-import { DEFAULT_NATIVE_VARS, getUnusedGlobalVariables, injectGlobalToESM, injectGlobalToIIFE, logger, merakPostCss } from 'merak-compile'
+import { Compiler, DEFAULT_NATIVE_VARS, merakPostCss } from 'merak-compile'
 import { createFilter } from 'vite'
 // @ts-expect-error miss types
 import isVarName from 'is-var-name'
 import type { FilterPattern, PluginOption } from 'vite'
 
 export { merakPostCss }
-export function MerakLib(projectGlobalVar: string, opts: { isinLine?: boolean; includes?: FilterPattern; exclude?: FilterPattern; logPath?: string; force?: boolean; nativeVars?: string[]; customVars?: string[] } = {}): PluginOption {
-  const { nativeVars = [], customVars = [], includes = /\.(ts|js|tsx|jsx|mjs)/, exclude, logPath, force } = opts
+export function MerakLib(projectGlobalVar: string, opts: { compiler?: typeof Compiler; includes?: FilterPattern; exclude?: FilterPattern; logPath?: string; force?: boolean; nativeVars?: string[]; customVars?: string[] } = {}): PluginOption {
+  const { nativeVars = [], customVars = [], includes = /\.(ts|js|tsx|jsx|mjs)/, exclude, logPath, force, compiler: C = Compiler } = opts
   if (!isVarName(projectGlobalVar))
-    throw new Error(`${projectGlobalVar} is not a valid var`)
+    throw new Error(`${projectGlobalVar} is not a valid variable name`)
 
+  const compiler = new C(projectGlobalVar, nativeVars, customVars)
   nativeVars.push(...DEFAULT_NATIVE_VARS.filter(item => !['location', 'history'].includes(item)))
 
   // const globalVars = [...new Set(globals)] as string[]
-  const isDebug = !!logPath
   const filter = createFilter(includes, exclude)
   return [merakCSS(), {
     name: 'vite-plugin-merak:lib',
@@ -24,17 +24,12 @@ export function MerakLib(projectGlobalVar: string, opts: { isinLine?: boolean; i
       if (!filter(chunk.fileName))
         return
 
-      const unUsedGlobals = getUnusedGlobalVariables(raw, [...nativeVars, ...customVars])
-      unUsedGlobals.length > 0 && logger.collectUnscopedVar(chunk.fileName, unUsedGlobals)
-      const { map, code, warning } = (opts.format === 'es' ? injectGlobalToESM : injectGlobalToIIFE)(raw, projectGlobalVar, nativeVars, customVars, force)
-      if (isDebug) {
-        warning.forEach(warn => logger.collectDangerUsed(chunk.fileName, warn.info, [warn.loc.start.line, warn.loc.start.column]),
-        )
-      }
+      const { map, code } = opts.format === 'es' ? compiler.compileESM(raw, chunk.fileName, force) : compiler.compileScript(raw, chunk.fileName, force)
+
       return { map, code }
     },
     closeBundle() {
-      isDebug && logger.output(resolve(process.cwd(), logPath))
+      logPath && compiler.output(resolve(process.cwd(), logPath))
     },
   }]
 }

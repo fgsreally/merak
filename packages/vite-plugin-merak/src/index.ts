@@ -1,5 +1,5 @@
 import { resolve } from 'path'
-import { DEFAULT_NATIVE_VARS, analyseHTML, compileHTML, getUnusedGlobalVariables, injectGlobalToESM, injectGlobalToIIFE, logger } from 'merak-compile'
+import { Compiler, DEFAULT_NATIVE_VARS } from 'merak-compile'
 import { createFilter } from 'vite'
 import type { FilterPattern, PluginOption, ResolvedConfig } from 'vite'
 // @ts-expect-error miss types
@@ -18,24 +18,21 @@ function createFillStr(length: number) {
 
 export * from './lib'
 
-export function Merak(projectGlobalVar: string, opts: { output?: string; includes?: FilterPattern; exclude?: FilterPattern; logPath?: string; force?: boolean; nativeVars?: string[]; customVars?: string[];loader?: 'runtime' | 'compile' } = {}): PluginOption {
+export function Merak(projectGlobalVar: string, opts: { includes?: FilterPattern; exclude?: FilterPattern; logPath?: string; force?: boolean; nativeVars?: string[]; customVars?: string[];compiler?: typeof Compiler } = {}): PluginOption {
   if (!isVarName(projectGlobalVar))
-    throw new Error(`${projectGlobalVar} is not a valid var`)
+    throw new Error(`${projectGlobalVar} is not a valid variable name`)
 
   // const globalVars = [...new Set(globals)] as string[]
-  const { nativeVars = [], customVars = [], includes = /\.(vue|ts|js|tsx|jsx|mjs)/, exclude = /\.(css|scss|sass|less)$/, logPath, force, output, loader = 'compile' } = opts
-  const merakConfig = { _f: projectGlobalVar, _n: nativeVars, _c: customVars } as any
-
+  const { nativeVars = [], customVars = [], includes = /\.(vue|ts|js|tsx|jsx|mjs)/, exclude = /\.(css|scss|sass|less)$/, logPath, force, compiler: C = Compiler } = opts
+  const compiler = new C(projectGlobalVar, nativeVars, customVars)
   nativeVars.push(...DEFAULT_NATIVE_VARS)
 
-  const isDebug = !!logPath
   const filter = createFilter(includes, exclude)
   let config: ResolvedConfig
-  const publicPath = `(${projectGlobalVar}.__merak_url__||'')`
+  const publicPath = `(${projectGlobalVar}.__m_url__||'')`
   // work in sourcemap(maybe..)
-  const base = `/__dy_base_${createFillStr(publicPath.length + 12)}/`
+  const base = `/__dy_base_${createFillStr(publicPath.length + 8)}/`
 
-  const injectScript = `const ${projectGlobalVar}=window.${projectGlobalVar}||window;${customVars.length > 0 ? `${projectGlobalVar}.__m_p__=(k)=>new Proxy(()=>{},{get(_, p) {const v= ${projectGlobalVar}[k][p];return typeof v==='function'?v.bind(${projectGlobalVar}):v},has(target, p) { return p in ${projectGlobalVar}[k]}, set(_,p,v){${projectGlobalVar}[k][p]=v;return true },apply(_,t,a){return ${projectGlobalVar}[k](...a) }})` : ''}`
   return [
     dynamicBase({
       publicPath,
@@ -54,22 +51,14 @@ export function Merak(projectGlobalVar: string, opts: { output?: string; include
           },
         }
       },
-      async transformIndexHtml(html) {
-        html = compileHTML(html.replace('<head>', `<head><script merak-ignore>${injectScript}</script>`), projectGlobalVar)
-        if (loader === 'compile') {
-          merakConfig._l = analyseHTML(html).map((item) => {
-            // logger.collectAction(`replace url "${item.src}"`)
-            return item.loc
-          })
-        }
-        html = html.replace('</body>', `<merak c='${encodeURIComponent(JSON.stringify(merakConfig))}'></m-b></body>`)
-        return html
+      async transformIndexHtml(html, ctx) {
+        return compiler.compileHTML(html, ctx.filename).code
       },
 
       transform(str, id) {
         if (filter(id)) {
-          const { code } = injectGlobalToESM(str, projectGlobalVar, nativeVars, customVars, force)
-          return { code }
+          const { code, map } = compiler.compileESM(str, id)
+          return { code, map }
         }
         // return `const {${desctructVars(nativeVars)}}=${projectGlobalVar};${createCustomVarProxy(projectGlobalVar, customVars)}${code}`
       },
@@ -90,67 +79,42 @@ export function Merak(projectGlobalVar: string, opts: { output?: string; include
         if (!filter(chunk.fileName))
           return
 
-        const unUsedGlobals = getUnusedGlobalVariables(raw, [...nativeVars, ...customVars])
-        unUsedGlobals.length > 0 && logger.collectUnscopedVar(chunk.fileName, unUsedGlobals)
-        const { map, code, warning } = (opts.format === 'es' ? injectGlobalToESM : injectGlobalToIIFE)(raw, projectGlobalVar, nativeVars, customVars, force)
-        if (isDebug) {
-          warning.forEach(warn => logger.collectDangerUsed(chunk.fileName, warn.info, [warn.loc.start.line, warn.loc.start.column]),
-          )
-        }
-        if (config.build.sourcemap)
-          return { map, code }
+        const { map, code } = opts.format === 'es' ? compiler.compileESM(raw, chunk.fileName, force) : compiler.compileScript(raw, chunk.fileName, force)
 
-        return {
-          code,
-        }
+        return { map, code }
       },
-      transformIndexHtml(html) {
-        return {
-          html,
-          tags: [
-            {
-              tag: 'script',
-              attrs: { 'merak-ignore': true },
-              children: injectScript,
+      // transformIndexHtml(html) {
+      //   return {
+      //     html,
+      //     tags: [
+      //       {
+      //         tag: 'script',
+      //         attrs: { 'merak-ignore': true },
+      //         children: injectScript,
 
-              injectTo: 'head-prepend',
+      //         injectTo: 'head-prepend',
 
-            },
-          ],
-        }
-      },
+      //       },
+      //     ],
+      //   }
+      // },
 
       async generateBundle(_, bundle) {
+        // @todo
         if (config.build.ssr)
           return
 
         await Promise.all(
           Object.entries(bundle).map(async ([, chunk]) => {
             if (chunk.type === 'asset' && typeof chunk.source === 'string') {
-              if (chunk.fileName.endsWith('.html')) {
-                chunk.source = compileHTML(chunk.source.replaceAll(base, './'), projectGlobalVar)
-                if (loader === 'compile') {
-                  merakConfig._l = analyseHTML(chunk.source).map((item) => {
-                    logger.collectAction(`replace url "${item.src}"`)
-                    return item.loc
-                  })
-                }
-
-                if (output) {
-                  this.emitFile({
-                    fileName: output,
-                    source: JSON.stringify(merakConfig),
-                    type: 'asset',
-                  })
-                }
-                else {
-                  chunk.source = chunk.source.replace('</body>', `<merak c='${encodeURIComponent(JSON.stringify(merakConfig))}'></m-b></body>`)
-                }
-              }
+              if (chunk.fileName.endsWith('.html'))
+                chunk.source = compiler.compileHTML(chunk.source.replaceAll(base, './'), chunk.fileName).code
             }
           }),
         )
-        isDebug && logger.output(resolve(process.cwd(), logPath))
+
+        if (logPath)
+          compiler.output(resolve(process.cwd(), logPath))
       },
 
     },

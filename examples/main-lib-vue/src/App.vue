@@ -21,7 +21,7 @@ function hook(msg: string) {
   </button>
 
   <MerakImport
-    v-if="isShow" name="UUID" fake-global-var="vue_lib" source="http://localhost:5000/lib.js"
+    v-if="isShow" name="UUID" project-global-var="vue_lib" source="http://localhost:5000/lib.js"
     @after-mount="hook('aftermount')"
     @before-mount="hook('beforemount')"
     @before-unmount="hook('beforeunmount')"

@@ -7,7 +7,7 @@ export abstract class Loader {
     return loadJSONFile(url)
   }
 
-  resolveHtml(html: string, baseUrl: string) {
+  resolveHtml(html: string) {
     let config: any
     // <merak> merak-base
 
@@ -16,12 +16,6 @@ export abstract class Loader {
       return ''
     })
 
-    // replace url in inline style
-    html = html.replace(/<style([^>]*)>([\s\S]*?)<\/style>/g, (style) => {
-      return style.replace(/url\(['"]?(.*?)['"]?\)/g, (_, url) => {
-        return `url('${resolveUrl(url, baseUrl)}')`
-      })
-    })
     return { html, config }
   }
 }

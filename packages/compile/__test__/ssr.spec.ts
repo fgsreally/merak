@@ -14,7 +14,7 @@ describe('ssr', () => {
   const compiler2 = new Compiler('app2', ['window', 'document'], [])
 
   it('basic', async () => {
-    expect(mergeCompiledHTML(compiler1.compileHTML(html, 'index.html').code, [compiler2.compileHTML(html, 'index.html').code], app1, { attrs: { class: 'test' } }),
+    expect(mergeCompiledHTML(compiler1.compileHTML(html, 'index.html').code, compiler2.compileHTML(html, 'index.html').code, app2, { attrs: { class: 'test' } }),
     ).toMatchSnapshot()
   })
 

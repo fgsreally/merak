@@ -9,9 +9,9 @@ exports[`analyse html > handle tags and import 1`] = `
     <link rel=\\"stylesheet\\" href=\\"http://localhost:5002/assets/index-28fadf32.css\\" />
     <meta name=\\"viewport\\" content=\\"width=device-width, initial-scale=1.0\\" />
     <style>
-      @import url('/a.css');
+      @import url('http://localhost:5002/a.css');
       body {
-        background-image: url(\\"path/to/image.jpg\\");
+        background-image: url(\\"http://localhost:5002/base/path/to/image.jpg\\");
       }
     </style>
   </head>
@@ -43,9 +43,9 @@ exports[`analyse html > handle tags and import 2`] = `
     <link rel=\\"stylesheet\\" href=\\"http://localhost:5002/assets/index-28fadf32.css\\" />
     <meta name=\\"viewport\\" content=\\"width=device-width, initial-scale=1.0\\" />
     <style>
-      @import url('/a.css');
+      @import url('http://localhost:5002/a.css');
       body {
-        background-image: url(\\"path/to/image.jpg\\");
+        background-image: url(\\"http://localhost:5002/path/to/image.jpg\\");
       }
     </style>
   </head>

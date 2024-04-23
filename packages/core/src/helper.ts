@@ -1,12 +1,9 @@
 import { Merak } from './merak'
 import { eventTrigger } from './utils'
 
-export const MerakMap: Map<string, Merak> = window.$MerakMap || new Map()
-window.$MerakMap = MerakMap
-
 // 获得子元素对应实例
 export function getInstance(id: string) {
-  return MerakMap.get(id)
+  return Merak.map.get(id)
 }
 
 // 获得子应用对应的shadowroot 的host，可往其上插样式

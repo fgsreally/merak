@@ -28,7 +28,6 @@ export function Merak(projectGlobalVar: string, opts: { exclude?: RegExp; logPat
 
           if (item.path.endsWith('.css'))
             item.contents = strToUint8(compiler.compileStyle(item.text, item.path).code)
-
         }
 
         logPath && compiler.output(logPath)

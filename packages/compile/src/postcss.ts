@@ -7,6 +7,7 @@ export function merakPostCss(): any {
 
     Root(root) {
       root.walkAtRules('font-face', ({ source: { start, input: { file } } }: any) => {
+        // @todo file is a absolute path at now; it will confuse logger output
         logger.add(`"@font-face" need manual process:${start.line}:${start.column}`, file, LOG_LELVEL.ERROR)
       })
       root.walkAtRules('import', (rule) => {

@@ -18,8 +18,6 @@ function setup() {
 let root: ReactDOM.Root | undefined
 
 $onMount(() => {
-  console.log('root')
-
   root = setup()
 })
 

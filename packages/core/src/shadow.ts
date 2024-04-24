@@ -1,6 +1,6 @@
 import { MERAK_DATA_ID, MERAK_FLAG } from './common'
 import { Merak } from './merak'
-import { getInstance } from './helper'
+import { getApp } from './helper'
 import { debug } from './utils'
 
 export function defineWebComponent() {
@@ -16,7 +16,7 @@ export function defineWebComponent() {
     attributeChangedCallback(_: string, oldVal: string, newVal: string) {
       if (newVal === oldVal)
         return
-      const app = getInstance(oldVal)
+      const app = getApp(oldVal)
       if (!app)
         return
 
@@ -32,7 +32,7 @@ export function defineWebComponent() {
         return
       }
       debug('connected', id)
-      const app = getInstance(id) as Merak
+      const app = getApp(id) as Merak
       if (!app) {
         Merak.errorHandler({ type: 'missInstance', error: new Error(`can't find app [${id}] `) })
         return
@@ -62,7 +62,7 @@ export function defineWebComponent() {
     disconnectedCallback() {
       const id = this.getAttribute(MERAK_DATA_ID)!
       debug('disconnected', id)
-      const app = getInstance(id)!
+      const app = getApp(id)!
       app.unmount(this.getAttribute(MERAK_FLAG) || 'destroy')
     }
   }

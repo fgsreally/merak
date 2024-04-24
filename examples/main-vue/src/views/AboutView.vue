@@ -6,7 +6,7 @@ const data = {
 }
 
 function hook(msg: string) {
-  console.log(msg)
+  console.log(`[merak]:${msg}`)
 }
 function addRelativeToBody({ ele }: { ele: HTMLElement }) {
   ele.querySelector('body')!.style.position = 'relative'

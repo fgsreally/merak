@@ -4,16 +4,17 @@ import { type Loader } from './loaders'
 import { createProxy } from './proxy'
 import { MERAK_CYCLE, MERAK_DATA_ID, MERAK_EVENT, MERAK_SHADE_STYLE, PERF_TIME } from './common'
 import { debug, eventTrigger, scriptPromise } from './utils'
-import { MerakMap } from './helper'
 import { LifeCycle } from './lifecycle'
 import { cloneScript } from './compile'
 import { Perf } from './perf'
 
 export class Merak<L extends Loader = Loader> {
+  // 所有子应用
+  static map = new Map<string, Merak>()
   /** 所有子应用共享 */
   static namespace: NameSpace = {}
   /** 已经被占用的变量名 */
-  static fakeGlobalVars = new Set<string>()
+  static projectGlobalVars = new Set<string>()
 
   /** 生命周期 */
   public lifeCycle = new LifeCycle()
@@ -58,7 +59,7 @@ export class Merak<L extends Loader = Loader> {
   public cacheFlag = false
 
   /** 子应用中的虚拟变量名 */
-  public fakeGlobalVar: string
+  public projectGlobalVar: string
 
   /** 传给loader的options */
   public loaderOptions?: any
@@ -104,12 +105,12 @@ export class Merak<L extends Loader = Loader> {
 
     },
   ) {
-    if (MerakMap.has(id)) {
+    if (Merak.map.has(id)) {
       debug('already exists', id)
 
-      return MerakMap.get(id) as Merak<L>
+      return Merak.map.get(id) as Merak<L>
     }
-    MerakMap.set(id, this)
+    Merak.map.set(id, this)
     this.baseUrl = new URL('./', url).href.slice(0, -1)
     const { proxy = createProxy, loaderOptions, loader, timeout = 0 } = options
     this.timeout = timeout
@@ -205,28 +206,28 @@ export class Merak<L extends Loader = Loader> {
     }
   }
 
-  setGlobalVars(fakeGlobalVar: string, nativeVars: string[], customVars: string[]) {
+  setGlobalVars(projectGlobalVar: string, nativeVars: string[], customVars: string[]) {
     if (!this.options.iframe) {
-      if (Merak.fakeGlobalVars.has(fakeGlobalVar)) {
-        Merak.errorHandler({ type: 'duplicateName', error: new Error(`fakeglobalVar '${fakeGlobalVar}' has been defined`) })
+      if (Merak.projectGlobalVars.has(projectGlobalVar)) {
+        Merak.errorHandler({ type: 'duplicateName', error: new Error(`fakeglobalVar '${projectGlobalVar}' has been defined`) })
         return
       }
-      Merak.fakeGlobalVars.add(fakeGlobalVar)
+      Merak.projectGlobalVars.add(projectGlobalVar)
     }
-    debug(`set fakerGlobalVar '${fakeGlobalVar}'`, this.id)
-    this.fakeGlobalVar = fakeGlobalVar
+    debug(`set fakerGlobalVar '${projectGlobalVar}'`, this.id)
+    this.projectGlobalVar = projectGlobalVar
     this.nativeVars = nativeVars
     this.customVars = customVars
   }
 
   active() {
     if (!this.activeFlag) {
-      if (!this.fakeGlobalVar)
+      if (!this.projectGlobalVar)
         return
 
       if (this.iframe?.contentWindow)
-        (this.iframe.contentWindow as Window)[this.fakeGlobalVar] = this.proxy
-      else window[this.fakeGlobalVar] = this.proxy
+        (this.iframe.contentWindow as Window)[this.projectGlobalVar] = this.proxy
+      else window[this.projectGlobalVar] = this.proxy
       this.activeFlag = true
     }
   }
@@ -245,9 +246,9 @@ export class Merak<L extends Loader = Loader> {
         else {
           this.perf.record(PERF_TIME.LOAD)
 
-          const { template, fakeGlobalVar, nativeVars, customVars } = this.execCycle(MERAK_CYCLE.LOAD, loadRes) || loadRes
+          const { template, projectGlobalVar, nativeVars, customVars } = this.execCycle(MERAK_CYCLE.LOAD, loadRes) || loadRes
           this.template = template
-          this.setGlobalVars(fakeGlobalVar, nativeVars, customVars)
+          this.setGlobalVars(projectGlobalVar, nativeVars, customVars)
         }
       })
     }
@@ -282,7 +283,7 @@ export class Merak<L extends Loader = Loader> {
             const scripts = originScripts.filter((script) => {
               !this.iframe && script.remove()
               return !script.hasAttribute('merak-ignore') && script.type !== 'importmap'
-            }).map(script => cloneScript(script, this.fakeGlobalVar, this.nativeVars, this.customVars))
+            }).map(script => cloneScript(script, this.projectGlobalVar, this.nativeVars, this.customVars))
             this.execCycle(MERAK_CYCLE.TRANSFORM_SCRIPT, { originScripts, scripts })
             let r: () => void
             this.execPromise = new Promise((resolve) => {
@@ -402,7 +403,7 @@ export class Merak<L extends Loader = Loader> {
         this.execPromise = false
     }
     else {
-      delete window[this.fakeGlobalVar]
+      delete window[this.projectGlobalVar]
     }
 
     this.sandHtml = null
@@ -419,10 +420,10 @@ export class Merak<L extends Loader = Loader> {
     this.cleanSideEffect()
 
     if (this.options.iframe)
-      Merak.fakeGlobalVars.delete(this.fakeGlobalVar)
+      Merak.projectGlobalVars.delete(this.projectGlobalVar)
     // @ts-expect-error to gc
     this.proxy = this.proxyMap = this.delayEvents = this.sandHtml = this.props = this.sideEffects = this.loader = this.nativeVars = this.customVars = this.perf = this.lifeCycle = null
-    MerakMap.delete(this.id)
+    Merak.map.delete(this.id)
   }
 }
 

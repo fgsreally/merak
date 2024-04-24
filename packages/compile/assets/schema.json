@@ -35,21 +35,16 @@
         "type": "string"
       }
     },
-    "fakeGlobalVar": {
+    "projectGlobalVar": {
       "type": "string"
     },
     "format": {
       "type": "string",
       "enum": ["esm", "iife"]
-    },
-    "loader": {
-      "type": "string",
-      "enum": ["compile", "runtime"]
-    },
-    "outPut": {
-      "type": "string"
     }
+
+
   },
-  "required": ["fakeGlobalVar"]
+  "required": ["projectGlobalVar"]
 
 }

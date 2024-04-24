@@ -1,60 +1,66 @@
 import json2md from 'json2md'
 import fse from 'fs-extra'
-import pc from 'picocolors'
+
+export enum LOG_LELVEL {
+  INFO = 0,
+  LOG = 1,
+  WARN = 2,
+  ERROR = 3,
+}
+
 export class Logger {
-  // work for DANGER_IDENTIFIERS
-  dangerUsedRecord: Record<string, Record<string, { times: number; loc: [number, number] }>> = {}
-  unusedGlobalRecord: Record<string, string[]> = {}
-  actionRecord: string[] = []
-  collectDangerUsed(file: string, message: string, loc: [number, number]) {
-    if (!this.dangerUsedRecord[file])
-      this.dangerUsedRecord[file] = {}
-    if (!this.dangerUsedRecord[file][message])
-      this.dangerUsedRecord[file][message] = { times: 0, loc }
-    this.dangerUsedRecord[file][message].times++
+  protected filesInfo = {} as Record<string, Set<string>>
+  level: number
+  constructor() {
+    this.level = Number(process.env.MERAK_LOG_LEVEL || 1)
   }
 
-  collectUnusedGlobals(file: string, globals: string[]) {
-    this.unusedGlobalRecord[file] = globals
+  add(msg: string, file: string, level = 1) {
+    if (this.level > level)
+      return
+    if (!this.filesInfo[file])
+      this.filesInfo[file] = new Set()
+
+    this.filesInfo[file].add(msg)
   }
 
-  collectAction(value: string) {
-    this.actionRecord.push(value)
+  info(info: string) {
+    if (this.level <= LOG_LELVEL.INFO)
+
+    // eslint-disable-next-line no-console
+      console.info(`\x1B[38;2;255;165;0m[MERAK] \x1B[90m${info}\x1B[0m`)
   }
 
   log(info: string) {
+    if (this.level <= LOG_LELVEL.LOG)
     // eslint-disable-next-line no-console
-    console.log(`${pc.cyan('[MERAK]')} ${info}`)
+      console.log(`\x1B[38;2;255;165;0m[MERAK] \x1B[32m${info}\x1B[0m`)
   }
 
-  output(outputPath?: string) {
+  warn(info: string) {
+    if (this.level <= LOG_LELVEL.WARN)
+
+      console.warn(`\x1B[38;2;255;165;0m[MERAK] \x1B[33m${info}\x1B[0m`)
+  }
+
+  error(info: string) {
+    if (this.level <= LOG_LELVEL.ERROR)
+      console.error(`\x1B[38;2;255;165;0m[MERAK] \x1B[31m${info}'\x1B[0m`)
+  }
+
+  output(outputPath: string) {
     if (!outputPath)
       return
+
     const ret = [] as any[]
+    ret.push({ h1: '`MERAK DEBUG INFO`' })
 
-    ret.push({ h1: 'Action Info:' })
-    ret.push({ ol: this.actionRecord })
-
-    ret.push({ h1: 'Danger used like eval:' })
-
-    for (const file in this.dangerUsedRecord) {
-      ret.push({ blockquote: `file:\`${file}\`` })
-      for (const message in this.dangerUsedRecord[file]) {
-        const { times, loc } = this.dangerUsedRecord[file][message]
-        ret.push({ h3: `\`${message}\`` })
-
-        ret.push({ ul: [`loc:\`${file}:${loc[0]}:${loc[1]}\``, `times: \`${times}\``] })
-      }
+    for (const file in this.filesInfo) {
+      ret.push({ h2: `file:\`${file}\`` })
+      ret.push({ ol: [...this.filesInfo[file]] })
     }
-
-    ret.push({ h1: 'Unused globals:' })
-
-    for (const file in this.unusedGlobalRecord) {
-      ret.push({ blockquote: `file:\`${file}\`` })
-      ret.push({ ol: this.unusedGlobalRecord[file] })
-    }
-    this.log(`generate log file at ${outputPath}`)
     fse.outputFileSync(outputPath, json2md(ret))
+    this.log(`generate log file at ${outputPath}`)
   }
 }
 

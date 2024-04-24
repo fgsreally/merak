@@ -7,21 +7,15 @@ export abstract class Loader {
     return loadJSONFile(url)
   }
 
-  resolveHtml(html: string, baseUrl: string) {
+  resolveHtml(html: string) {
     let config: any
-    // <m-b> merak-base
+    // <merak> merak-base
 
-    html = html.replace(/<m-b[^>]+config=['"](.*)['"][\s>]<\/m-b>/, (js, conf) => {
+    html = html.replace(/<merak[^>]+c=['"](.*)['"][\s>]<\/merak>/, (js, conf) => {
       config = JSON.parse(decodeURIComponent(conf))
       return ''
     })
 
-    // replace url in inline style
-    html = html.replace(/<style([^>]*)>([\s\S]*?)<\/style>/g, (style) => {
-      return style.replace(/url\(['"]?(.*?)['"]?\)/g, (_, url) => {
-        return `url('${resolveUrl(url, baseUrl)}')`
-      })
-    })
     return { html, config }
   }
 }
@@ -35,7 +29,7 @@ export async function loadTextFile(url: string) {
   return res.text()
 }
 
-export function compileHTML(code: string, htmlUrl: string, loc: [number, number][]) {
+export function resolvePathInHTML(code: string, htmlUrl: string, loc: [number, number][]) {
   const originStr = code
   let index = 0
   code = ''

@@ -3,21 +3,28 @@
   <head>
     <meta charset="UTF-8" />
     <link rel="icon" href="/favicon.ico" />
-    <link rel="stylesheet" href="/assets/index-28fadf32.css" />
+    <script type="module" src="a.js"></script>
+    <link rel="stylesheet" href="a.css" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   </head>
 
   <body>
-    <script type="module" src="/src/main.js"></script>
+    <style>
+      @import url("b.css");
+
+      body {
+        background-image: url(a.png);
+      }
+    </style>
     <script type="module">
-      import y from 'y'
-import xx from './xx'
+      import xx from 'xx'
+import y from './b.js'
 document.write(xx)
 console.log(y)
     </script>
     <script>
       window.addEventListener('click', async () => {
-        await import('./esm.js')
+        await import('./c.js')
 })
     </script>
   </body>

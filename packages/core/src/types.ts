@@ -1,13 +1,13 @@
-export interface AppConfig {
-  _n: string[]
-  _c: string[]
-  _f: string
+export interface CompileInfo {
+  n: string[]
+  c: string[]
+  p: string
   [key: string]: any
 }
 
 export interface LoadDone {
   url: string
-  fakeGlobalVar: string
+  projectGlobalVar: string
   template: string
   nativeVars: string[]
   customVars: string[]

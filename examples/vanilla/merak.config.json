@@ -1,10 +1,8 @@
 {
   "$schema": "https://unpkg.com/merak-compile/assets/schema.json",
   "dir": ".",
-  "globals": [],
-  "fakeGlobalVar": "vanilla",
+  "projectGlobalVar": "vanilla",
   "exclude":["node_modules/**/*","dist/**/*"],
   "format": "esm",
-  "logPath":"./name.md",
-  "isinLine": true
+  "logPath":"./name.md"
 }

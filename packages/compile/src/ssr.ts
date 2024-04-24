@@ -2,27 +2,26 @@ import type { TransformCallback } from 'stream'
 import { Transform } from 'stream'
 import { StringDecoder } from 'node:string_decoder'
 import { Parser } from 'htmlparser2'
-import { compileHTML, resolveUrl } from './utils'
-import { analyseHTML } from './analyse'
+import { resolvePathInHTML, resolveUrl } from './utils'
 
 function mergeAttrs(attrs: Record<string, string>) {
   return Object.entries(attrs).reduce((p, c) => `${p} ${c[0]}='${c[1]}'`, '')
 }
 
-/**
- * @deprecated
- */
-export function wrap(html: string, url: string) {
-  return `<template data-merak-url='${url}'>${html}</template>`
-}
-
-export function addMerakTagToHtml(main: string, sub: string, url: string, { tag = 'template', attrs = {} }: {
+export function mergeCompiledHTML(mainHTML: string, subHTML: string, url: string, { tag = 'template', attrs = {} }: {
   tag?: string
   attrs?: Record<string, string>
 } = {}) {
-  const subHtml = compileHTML(sub, url, analyseHTML(sub).map(item => item.loc))
-
-  return main.replace('</body>', `<${tag} data-merak-url='${url}'${mergeAttrs(attrs)}>${subHtml}</${tag}></body>`)
+  return mainHTML.replace('</body>', () => {
+    const matcher = subHTML.match(/<merak[^>]+c=['"](.*)['"][\s>]<\/merak>/)
+    if (matcher) {
+      const config = JSON.parse(decodeURIComponent(matcher[1]))
+      if (config.l)
+        subHTML = resolvePathInHTML(subHTML, url, config.l)
+    }
+    return `<${tag} data-merak-url='${url}'${mergeAttrs(attrs)}>${subHTML}</${tag}>
+    </body>`
+  })
 }
 
 function isBuffer(_chunk: string | Buffer, encoding: string): _chunk is Buffer {

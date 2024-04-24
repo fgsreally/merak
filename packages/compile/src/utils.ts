@@ -1,5 +1,4 @@
 import { relative } from 'path'
-import { DANGER_IDENTIFIERS } from './common'
 export function isCdn(str: string) {
   return str.startsWith('http://') || str.startsWith('https://')
 }
@@ -10,20 +9,20 @@ export function isRelativeReferences(str: string) {
 export function relativePath(from: string, to: string) {
   return relative(from, to).replace(/\\/g, '/')
 }
-export function desctructGlobal(globals: string[]) {
-  return globals.reduce((p, c) => `${p}${c},`, '')
+export function desctructVars(vars: string[]) {
+  return vars.reduce((p, c) => `${p},${c}`)
 }
 
 export function resolveHtmlConfig(html: string) {
   let config
 
-  html = html.replace(/<m-b[^>]+config=['"](.*)['"][\s>]<\/m-b>/, (js, conf) => {
+  html = html.replace(/<merak[^>]+c=['"](.*)['"][\s>]<\/merak>/, (js, conf) => {
     config = JSON.parse(decodeURIComponent(conf))
     return ''
   })
   return { html, config }
 }
-export function compileHTML(code: string, baseUrl: string, loc: [number, number][]) {
+export function resolvePathInHTML(code: string, baseUrl: string, loc: [number, number][]) {
   const originStr = code
   let index = 0
   code = ''
@@ -36,10 +35,6 @@ export function compileHTML(code: string, baseUrl: string, loc: [number, number]
   return code
 }
 
-export function checkIsDanger(node: any, warning: any[]) {
-  if (DANGER_IDENTIFIERS.includes(node.name))
-    warning.push({ info: `"${node.name}" is danger,need to be wrapped in $sandbox`, loc: node.loc ! })
-}
 export function resolveUrl(filePath: string, baseURL: string) {
   return new URL(filePath, baseURL).href
 }

@@ -4,7 +4,7 @@ import path from 'node:path'
 import { fileURLToPath } from 'node:url'
 import express from 'express'
 import axios from 'axios'
-import { addMerakTagToHtml } from 'merak-compile'
+import { mergeCompiledHTML } from 'merak-compile'
 const isProduction = process.env.PROD || process.env.CI
 
 export async function createServer(root = process.cwd(), isProd = isProduction) {
@@ -67,7 +67,7 @@ export async function createServer(root = process.cwd(), isProd = isProduction) 
         .replace('<!--preload-links-->', links)
         .replace('<!--app-html-->', strOrStream)
 
-      res.status(200).set({ 'Content-Type': 'text/html' }).end(addMerakTagToHtml(html, data, appurl))
+      res.status(200).set({ 'Content-Type': 'text/html' }).end(mergeCompiledHTML(html, data, appurl))
     }
     catch (e) {
       vite && vite.ssrFixStacktrace(e)

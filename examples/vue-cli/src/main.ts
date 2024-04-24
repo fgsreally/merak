@@ -9,7 +9,7 @@ import "element-plus/dist/index.css";
 import {$onMount,$onUnmount, $deactive} from 'merak-helper'
 // import { $onExec } from 'merak-helper'
 //@ts-expect-error webpack conf
-__webpack_public_path__ = window.__merak_url__?window.__merak_url__+'/' : '/'
+__webpack_public_path__ = window.__m_url__?window.__m_url__+'/' : '/'
 
 let app:any
 

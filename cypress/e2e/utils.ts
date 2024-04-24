@@ -21,3 +21,11 @@ export function isSymbolExist(ids: (keyof typeof SUBAPP_CONTENT)[]) {
 export function isImgExist(id: string, src: string) {
   cy.get(getShadowSelector(id as string)).shadow().find('img').should('have.attr', 'src', src)
 }
+
+export function visit(url: string) {
+  cy.visit(url, {
+    onBeforeLoad(win) {
+      cy.stub(win.console, 'log').as('consoleLog')
+    },
+  })
+}

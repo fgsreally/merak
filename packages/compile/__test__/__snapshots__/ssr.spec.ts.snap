@@ -6,48 +6,65 @@ exports[`ssr > basic 1`] = `
   <head>
     <meta charset=\\"UTF-8\\" />
     <link rel=\\"icon\\" href=\\"/favicon.ico\\" />
-    <link rel=\\"stylesheet\\" href=\\"/assets/index-28fadf32.css\\" />
+    <script type=\\"module\\" src=\\"a.js\\"></script>
+    <link rel=\\"stylesheet\\" href=\\"a.css\\" />
     <meta name=\\"viewport\\" content=\\"width=device-width, initial-scale=1.0\\" />
   </head>
 
   <body>
-    <script type=\\"module\\" src=\\"/src/main.js\\"></script>
+    <style>
+      @import url(\\"b.css\\");
+
+      body {
+        background-image: url(a.png);
+      }
+    </style>
     <script type=\\"module\\">
-      import y from 'y'
-import xx from './xx'
+const {document}=app1;
+      import xx from 'xx'
+import y from './b.js'
 document.write(xx)
 console.log(y)
     </script>
-    <script>
+    <script>(()=>{const {window}=app1;
       window.addEventListener('click', async () => {
-        await import('./esm.js')
+        await import('./c.js')
 })
-    </script>
-  <template data-merak-url='https://localhost:3000/app/index.html' class='test'><!DOCTYPE html>
+    })()</script>
+  <template data-merak-url='https://localhost:3000/app2/index.html' class='test'><!DOCTYPE html>
 <html lang=\\"en\\">
   <head>
     <meta charset=\\"UTF-8\\" />
     <link rel=\\"icon\\" href=\\"https://localhost:3000/favicon.ico\\" />
-    <link rel=\\"stylesheet\\" href=\\"https://localhost:3000/assets/index-28fadf32.css\\" />
+    <script type=\\"module\\" src=\\"https://localhost:3000/app2/a.js\\"></script>
+    <link rel=\\"stylesheet\\" href=\\"https://localhost:3000/app2/a.css\\" />
     <meta name=\\"viewport\\" content=\\"width=device-width, initial-scale=1.0\\" />
   </head>
 
   <body>
-    <script type=\\"module\\" src=\\"https://localhost:3000/src/main.js\\"></script>
+    <style>
+      @import url(\\"https://localhost:3000/app2/b.css\\");
+
+      body {
+        background-image: url(https://localhost:3000/app2/a.png);
+      }
+    </style>
     <script type=\\"module\\">
-      import y from 'y'
-import xx from 'https://localhost:3000/app/xx'
+const {document}=app2;
+      import xx from 'xx'
+import y from 'https://localhost:3000/app2/b.js'
 document.write(xx)
 console.log(y)
     </script>
-    <script>
+    <script>(()=>{const {window}=app2;
       window.addEventListener('click', async () => {
-        await import('https://localhost:3000/app/esm.js')
+        await import('https://localhost:3000/app2/c.js')
 })
-    </script>
+    })()</script>
   </body>
 </html>
-</template></body>
+</template>
+    </body>
 </html>
 "
 `;
@@ -58,45 +75,59 @@ exports[`ssr > stream 1`] = `
   <head>
     <meta charset=\\"UTF-8\\" />
     <link rel=\\"icon\\" href=\\"/favicon.ico\\" />
-    <link rel=\\"stylesheet\\" href=\\"/assets/index-28fadf32.css\\" />
+    <script type=\\"module\\" src=\\"a.js\\"></script>
+    <link rel=\\"stylesheet\\" href=\\"a.css\\" />
     <meta name=\\"viewport\\" content=\\"width=device-width, initial-scale=1.0\\" />
   </head>
 
   <body>
-    <script type=\\"module\\" src=\\"/src/main.js\\"></script>
+    <style>
+      @import url(\\"b.css\\");
+
+      body {
+        background-image: url(a.png);
+      }
+    </style>
     <script type=\\"module\\">
-      import y from 'y'
-import xx from './xx'
+      import xx from 'xx'
+import y from './b.js'
 document.write(xx)
 console.log(y)
     </script>
     <script>
       window.addEventListener('click', async () => {
-        await import('./esm.js')
+        await import('./c.js')
 })
     </script>
   </body>
 </html>
-<template data-merak-url='https://localhost:3000/app/index.html' >
+<template data-merak-url='https://localhost:3000/app1/index.html' >
 <html lang='en'>
   <head>
     <meta charset='UTF-8'></meta>
     <link rel='icon' href='https://localhost:3000/favicon.ico'></link>
-    <link rel='stylesheet' href='https://localhost:3000/assets/index-28fadf32.css'></link>
+    <script type='module' src='https://localhost:3000/app1/a.js'></script>
+    <link rel='stylesheet' href='https://localhost:3000/app1/a.css'></link>
     <meta name='viewport' content='width=device-width, initial-scale=1.0'></meta>
   </head>
 
   <body>
-    <script type='module' src='https://localhost:3000/src/main.js'></script>
+    <style>
+      @import url(\\"b.css\\");
+
+      body {
+        background-image: url(a.png);
+      }
+    </style>
     <script type='module'>
-      import y from 'y'
-import xx from './xx'
+      import xx from 'xx'
+import y from './b.js'
 document.write(xx)
 console.log(y)
     </script>
     <script>
       window.addEventListener('click', async () => {
-        await import('./esm.js')
+        await import('./c.js')
 })
     </script>
   </body>

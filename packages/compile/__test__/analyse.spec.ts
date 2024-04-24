@@ -1,33 +1,40 @@
-import fs from 'fs'
-import { resolve } from 'path'
 import { describe, expect, it } from 'vitest'
-import { analyseHTML, analyseJSGlobals, injectGlobalToESM, injectGlobalToIIFE } from '../src'
+import { getImportLocFromJS, getPathLocFromHTML, getUrlLocFromCSS } from '../src'
+import html from './fixtures/index.html?raw'
 describe('analyse file', () => {
-  it('analyse html file', async () => {
-    const content = await fs.promises.readFile(resolve(__dirname, './fixtures/index.html'), 'utf-8')
-    const ret = analyseHTML(content)
-    expect(ret.length).toBe(5)
+  it('getImportLocFromJS', () => {
+    const script = `
+    import {a} from './a'
+    import {b} from "./b"
+    import x from "x"
 
-    function getPath(str: string, start: number, end: number) {
-      return str.slice(start, end)
-    }
-    for (const { loc: [start, end] } of ret)
-      expect(getPath(content, start, end)).toMatchSnapshot()
+    const c=import('./c')
+    `
+    const loc = getImportLocFromJS(script)
+    expect(loc.map(([start, end]) => {
+      return script.slice(start, end)
+    })).toEqual(['./a', './b', './c'])
   })
 
-  it('analyese js globals', async () => {
-    expect(analyseJSGlobals('const a=document.createElement(\'div\')', [])).toMatchSnapshot()
+  it('getUrlLocFromCSS', () => {
+    const style = `
+@import url('./a');
+@import 'b';
+
+.a{
+  background-image:url('./c')
+}
+    `
+    const loc = getUrlLocFromCSS(style)
+    expect(loc.map(([start, end]) => {
+      return style.slice(start, end)
+    })).toEqual(['./c', './a', 'b'])
   })
 
-  it('compile esm js', async () => {
-    const filePath = resolve(__dirname, './fixtures/esm.js')
-    const { code } = injectGlobalToESM(await fs.promises.readFile(filePath, 'utf-8'), '$test', ['document', 'window'], ['__HMR__'])
-    expect(code).toMatchSnapshot()
-  })
-
-  it('compile iife js', async () => {
-    const filePath = resolve(__dirname, './fixtures/iife.js')
-    const { code } = injectGlobalToIIFE(await fs.promises.readFile(filePath, 'utf-8'), '$test', ['document', 'self', 'window'], [])
-    expect(code).toMatchSnapshot()
+  it('getPathLocFromHTML', () => {
+    const loc = getPathLocFromHTML(html)
+    expect(loc.map(([start, end]) => {
+      return html.slice(start, end)
+    })).toEqual(['/favicon.ico', 'a.js', 'a.css', 'b.css', 'a.png', './b.js', './c.js'])
   })
 })

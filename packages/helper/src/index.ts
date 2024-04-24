@@ -2,7 +2,7 @@ import type { Merak, NameSpace, Props } from 'merak-core'
 
 export { Merak, Props, NameSpace }
 
-export const isMerak = !!window.isMerak
+export const isMerak = !!window.__m_app__
 
 // get real window
 export function $window(): Window {
@@ -19,9 +19,9 @@ export function $history() {
 export function $location() {
   return $window().location
 }
-// the same as getInstance in merak-core
-export function getInstance(id: string) {
-  return $window().$MerakMap.get(id)
+// the same as getApp in merak-core
+export function getApp(id: string) {
+  return $window().__m_map__.get(id)
 }
 
 /**
@@ -30,8 +30,9 @@ export function getInstance(id: string) {
 export function $jump(project: string, to: string) {
   if (!isMerak)
     return
-  const instance = getInstance(project)
+  const instance = getApp(project)
   if (instance) {
+    // @ts-expect-error miss history types
     instance.proxyMap.history.pushState(null, '', to)
     const event = new PopStateEvent('popstate')
     instance.proxy.dispatchEvent(event)
@@ -44,7 +45,7 @@ export function $eventName(event: string) {
 
 // sub app baseUrl
 export function $base() {
-  return isMerak ? $instance()!.baseUrl : location.origin
+  return isMerak ? $app()!.baseUrl : location.origin
 }
 
 export function $body(): HTMLElement {
@@ -103,8 +104,8 @@ export function $onUnmount(cb: (flag?: 'destroy' | string) => any) {
 // work for eval
 export function $sandbox(script: string) {
   if (isMerak) {
-    const fakeGlobalVar = window.$Merak.fakeGlobalVar
-    return `with(window.$MerakMap.get(${fakeGlobalVar}).proxy){${script}}`
+    const projectGlobalVar = $app().projectGlobalVar
+    return `with(${projectGlobalVar}){${script}}`
   }
 
   else { return script }
@@ -112,34 +113,48 @@ export function $sandbox(script: string) {
 // work for esm script
 export function $esm(script: string) {
   if (isMerak) {
-    const { fakeGlobalVar, nativeVars, customVars } = window.$Merak
-    return `const {${nativeVars.reduce((p: string, c: string) => `${p},${c}`)}}=${fakeGlobalVar};${createCustomVarProxy(fakeGlobalVar, customVars)}\n${script}`
+    const { projectGlobalVar, nativeVars, customVars } = $app()
+    return `const {${nativeVars.reduce((p: string, c: string) => `${p},${c}`)}}=${projectGlobalVar};${createCustomVarProxy(projectGlobalVar, customVars)}\n${script}`
   }
   return script
+}
+
+/**
+ * @experiment work for events on html
+ */
+export function $html(html: string) {
+  if (isMerak) {
+    return html.replace(/<(\w+)([^>]*)>/g, (_, tag, attrs) => {
+      return `<${tag}${(attrs as string).replace(/(on\w+)="([^"]*)"/g, (_, event, content) => {
+        return `${event}="${$sandbox(content)}"`
+      })}>`
+    })
+  }
+  return html
 }
 
 function createCustomVarProxy(globalVar: string, customVars: string[]) {
   return customVars.map(item => `const ${item}=${globalVar}.__m_p__('${item}')`).reduce((p, c) => `${p + c};`, '')
 }
 
-export function $instance() {
-  return window.$Merak as Merak
+export function $app() {
+  return window.__m_app__ as Merak
 }
 
 export function $props(): Props
 export function $props<K extends keyof Props>(key: string): Props[K]
 export function $props(key?: string) {
-  return key ? $instance()?.props[key] : $instance().props as any
+  return key ? $app()?.props[key] : $app().props as any
 }
 
 export function $namespace(): NameSpace
 export function $namespace<K extends keyof NameSpace>(key: string): NameSpace[K]
 export function $namespace(key?: string) {
-  return key ? $instance()?.namespace[key] : $instance().namespace as any
+  return key ? $app()?.namespace[key] : $app().namespace as any
 }
 
 export function $perf() {
-  return $instance()?.perf
+  return $app()?.perf
 }
 
 /**
@@ -160,12 +175,12 @@ export function $stopBubble(isPass = false) {
  * Tell the host application that it's time to uninstall,
  */
 export function $deactive() {
-  $instance()?.deactive()
+  $app()?.deactive()
 }
 
 /**
  * @danger
  */
 export function $destroy() {
-  $instance()?.destroy()
+  $app()?.destroy()
 }

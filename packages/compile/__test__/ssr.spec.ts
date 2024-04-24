@@ -3,13 +3,19 @@ import fs from 'fs'
 import { resolve } from 'path'
 import { Writable } from 'node:stream'
 import { describe, expect, it } from 'vitest'
-import { SsrTransformer, addMerakTagToHtml } from '../src'
+import { Compiler, SsrTransformer, mergeCompiledHTML } from '../src'
+import html from './fixtures/index.html?raw'
+import { removeMerakTag } from './utils'
+
 describe('ssr', () => {
-  const subUrl = 'https://localhost:3000/app/index.html'
+  const app1 = 'https://localhost:3000/app1/index.html'
+  const app2 = 'https://localhost:3000/app2/index.html'
+
+  const compiler1 = new Compiler('app1', ['window', 'document'], [])
+  const compiler2 = new Compiler('app2', ['window', 'document'], [])
 
   it('basic', async () => {
-    const content = await fs.promises.readFile(resolve(__dirname, './fixtures/index.html'), 'utf-8')
-    expect(addMerakTagToHtml(content, content, subUrl, { attrs: { class: 'test' } }),
+    expect(removeMerakTag(mergeCompiledHTML(compiler1.compileHTML(html, 'index.html').code, compiler2.compileHTML(html, 'index.html').code, app2, { attrs: { class: 'test' } })),
     ).toMatchSnapshot()
   })
 
@@ -17,7 +23,7 @@ describe('ssr', () => {
     const mainStream = fs.createReadStream(resolve(__dirname, './fixtures/index.html'))
     const subStream = fs.createReadStream(resolve(__dirname, './fixtures/index.html'))
 
-    const transfomer = new SsrTransformer(subUrl)
+    const transfomer = new SsrTransformer(app1)
 
     const mockHttpStream = new Writable()
 
@@ -37,6 +43,7 @@ describe('ssr', () => {
     })
 
     mainStream.pipe(mockHttpStream, { end: false })
+
     subStream.pipe(transfomer)
   }))
 })

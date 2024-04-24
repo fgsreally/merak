@@ -1,6 +1,6 @@
 /* eslint-disable no-prototype-builtins */
 // @internal
-import { MerakMap } from './helper'
+import { Merak } from './merak'
 
 export function resolveUrl(filePath: string, baseURL: string) {
   return new URL(filePath, baseURL).href
@@ -12,14 +12,14 @@ export function getMerakQuerys() {
   if (querys) {
     querys.split('&').forEach((item) => {
       const [key, value] = item.split('=')
-      queryMap[key] = MerakMap.has(key) ? decodeURIComponent(value) : value
+      queryMap[key] = Merak.map.has(key) ? decodeURIComponent(value) : value
     })
   }
   return queryMap
 }
 
 export function createQuery(queryMap: Record<string, string>) {
-  return Object.entries(queryMap).map(([k, v]) => `${k}=${MerakMap.has(k) ? encodeURIComponent(v) : v}`).join('&')
+  return Object.entries(queryMap).map(([k, v]) => `${k}=${Merak.map.has(k) ? encodeURIComponent(v) : v}`).join('&')
 }
 
 /**
@@ -37,7 +37,7 @@ export function eventTrigger(el: HTMLElement | Window | Document, eventName: str
   el.dispatchEvent(event)
 }
 
-export function desctructGlobal(globals: string[]) {
+export function desctructVars(globals: string[]) {
   return globals.join(',')
 }
 
@@ -95,6 +95,7 @@ export function scriptPromise(ele: HTMLScriptElement) {
       resolve(true)
 
     ele.addEventListener('load', resolve)
+    // @todo it will cause undefined error.message at now
     ele.addEventListener('error', reject)
   })
 }

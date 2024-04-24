@@ -7,7 +7,7 @@
   "scripts": {
     "predev": "npm run build",
     "dev": "serve  --cors -p 4002",
-    "compile": "merak"
+    "compile": "npx merak"
   },
   "keywords": [],
   "author": "",

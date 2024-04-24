@@ -13,7 +13,8 @@ function render() {
   app = createApp(App)
   app.use(createPinia()).use(ElementPlus)
   app.use(router)
-
+  new Function('add')
+  eval('33')
   // const scriptEl = document.createElement('script')
   // scriptEl.innerHTML = $sandbox('console.log(location.href)')
 

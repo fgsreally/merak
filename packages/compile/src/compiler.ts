@@ -5,8 +5,8 @@ import { parse, walk } from 'html5parser'
 import MagicString from 'magic-string'
 import postcss from 'postcss'
 import { desctructVars } from './utils'
-import { DANGER_IDENTIFIERS, EXCLUDE_TAG } from './common'
-import { logger } from './log'
+import { EXCLUDE_TAG } from './common'
+import { LOG_LELVEL, logger } from './log'
 import { merakPostCss } from './postcss'
 import { getPathLocFromHTML } from './analyse'
 
@@ -57,16 +57,19 @@ export class Compiler {
       traverse(ast, {
 
         ReferencedIdentifier: (path) => {
-          const { start, loc, name } = path.node as any
+          const { start, loc, name } = path.node
           if (!path.scope.hasBinding(name, true)) {
+            // for debug
             if (!this.variables.includes(name))
-              this.logger.collectUnscopedVar(file, name)
-            if (DANGER_IDENTIFIERS.includes(path.node.name))
-              this.logger.collectDangerUsed(file, `"${name}" is danger,need to be wrapped in $sandbox`, loc)
+              this.logger.add(`unused variabel "${name}"`, file, LOG_LELVEL.INFO)
+            if (path.node.name === 'eval')
+              this.logger.add(`"eval" is danger,need to be wrapped in $sandbox :${loc!.start.line}:${loc!.start.column}`, file, LOG_LELVEL.WARN)
+            if (path.node.name === 'Function' && path.parent.type === 'NewExpression')
+              this.logger.add(`"new Function" is danger,need to be wrapped in $sandbox :${loc!.start.line}:${loc!.start.column}`, file, LOG_LELVEL.WARN)
 
             if (this.nativeVars.includes(name)) {
               if (s.slice(start! - 13, start!) === EXCLUDE_TAG) {
-                s.overwrite(start, start + name.length, `(window.isMerak?window.rawWindow.${name}:${name})`)
+                s.overwrite(start!, start! + name.length, `(window.isMerak?window.rawWindow.${name}:${name})`)
                 nativeSet.add('window')
 
                 return
@@ -75,7 +78,7 @@ export class Compiler {
               nativeSet.add(name)
             }
             if (this.customVars.includes(name))
-              s.appendLeft(start, `${this.projectGlobalVar}.`)
+              s.appendLeft(start!, `${this.projectGlobalVar}.`)
           }
         },
         Program(path) {
@@ -110,10 +113,13 @@ export class Compiler {
         ReferencedIdentifier: (path) => {
           const { name, loc, start } = path.node
           if (!path.scope.hasBinding(name, true)) {
+            // for debug
             if (!this.variables.includes(name))
-              this.logger.collectUnscopedVar(file, name)
-            if (DANGER_IDENTIFIERS.includes(path.node.name))
-              this.logger.collectDangerUsed(file, `"${name}" is danger,need to be wrapped in $sandbox`, [loc!.start.line, loc!.start.column])
+              this.logger.add(`unused variabel "${name}"`, file, LOG_LELVEL.INFO)
+            if (path.node.name === 'eval')
+              this.logger.add(`"eval" is danger,need to be wrapped in $sandbox :${loc!.start.line}:${loc!.start.column}`, file, LOG_LELVEL.WARN)
+            if (path.node.name === 'Function' && path.parent.type === 'NewExpression')
+              this.logger.add(`"new Function" is danger,need to be wrapped in $sandbox :${loc!.start.line}:${loc!.start.column}`, file, LOG_LELVEL.WARN)
 
             if (this.nativeVars.includes(name)) {
               if (start && s.slice(start! - 13, start!) === EXCLUDE_TAG) {

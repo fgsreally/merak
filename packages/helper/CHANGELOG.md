@@ -1,5 +1,19 @@
 # merak-helper
 
+## 3.0.0
+
+### Major Changes
+
+- 364aa8b: refact compile system(cli/vite/webpack/esbuild);
+  unified variable name in sandbox(**m_xx**);
+  fix ssr method;
+  rename $instance to $app
+  refact logger
+
+### Patch Changes
+
+- 364aa8b: fix $sandbox and add $html
+
 ## 2.0.2
 
 ### Patch Changes

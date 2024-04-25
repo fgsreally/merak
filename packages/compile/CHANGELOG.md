@@ -1,5 +1,20 @@
 # merak-compile
 
+## 3.0.0
+
+### Major Changes
+
+- 364aa8b: refact compile system(cli/vite/webpack/esbuild);
+  unified variable name in sandbox(**m_xx**);
+  fix ssr method;
+  rename $instance to $app
+  refact logger
+
+### Patch Changes
+
+- 364aa8b: add compileHTML to handle js on tag in html(like <div onclick="statement">
+- 364aa8b: rename analyseHtml to analysePathInHTML;rename compileHTML to resolvePathInHTML
+
 ## 2.1.3
 
 ### Patch Changes

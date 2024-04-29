@@ -41,6 +41,10 @@ export class Compiler {
     }))}'></merak>`
   }
 
+  /**
+   *
+   * @param force deprecate
+   */
   compileScript(code: string, file: string, force?: boolean) {
     const nativeSet = new Set<string>()
     const s = new MagicString(code)
@@ -53,11 +57,36 @@ export class Compiler {
     }
     else {
       const ast = parseSync(code, { filename: 'any' }) as any
-
       traverse(ast, {
+        FunctionDeclaration: (path) => {
+          if (path.parent.type !== 'Program')
+            return
+          const { end, name } = path.node.id || {}
 
+          if (end && name)
+            s.appendRight(end!, `${this.projectGlobalVar}.${name}=${name}`)
+        },
+
+        // Globally declared values need to remain referenced
+        VariableDeclaration: (path) => {
+          if (path.parent.type !== 'Program')
+            return
+          const { end } = path.node
+
+          let globalVarDeclareStr = ''
+          path.node.declarations.forEach((declaration) => {
+            if (!declaration.init)
+              return
+            const { type, name } = declaration.id as any
+            if (type === 'Identifier')
+              globalVarDeclareStr += `${this.projectGlobalVar}.${name}=${name};`
+          })
+
+          globalVarDeclareStr && s.appendRight(end!, `\n${globalVarDeclareStr}`)
+        },
         ReferencedIdentifier: (path) => {
           const { start, loc, name } = path.node
+
           if (!path.scope.hasBinding(name, true)) {
             // for debug
             if (!this.variables.includes(name))
@@ -97,6 +126,10 @@ export class Compiler {
     return { code: s.toString(), map: s.generateMap({ hires: true }) }
   }
 
+  /**
+   *
+   * @param force deprecate
+   */
   compileESM(code: string, file: string, force?: boolean) {
     const nativeSet = new Set<string>()
 

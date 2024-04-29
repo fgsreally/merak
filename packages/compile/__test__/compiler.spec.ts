@@ -1,7 +1,7 @@
 import { describe, expect, it } from 'vitest'
 import { Compiler } from '../src/compiler'
 import esm from './fixtures/esm.js?raw'
-import iife from './fixtures/iife.js?raw'
+import webpackEval from './fixtures/webpack-eval.js?raw'
 import style from './fixtures/style.css?raw'
 import html from './fixtures/index.html?raw'
 import { removeMerakTag } from './utils'
@@ -15,7 +15,7 @@ describe('compiler', () => {
   })
 
   it('compile script', async () => {
-    const { code } = compiler.compileScript(iife, 'iife.js')
+    const { code } = compiler.compileScript(webpackEval, 'webpack-eval.js')
     expect(code).toMatchSnapshot()
   })
 

@@ -1,4 +1,4 @@
-import type { ProxyFn } from 'merak-core'
+import type { ProxyFactory } from 'merak-core'
 
 export interface shareProps {
   name: string
@@ -6,7 +6,7 @@ export interface shareProps {
   props: any
   inlineStyle?: boolean
 
-  proxy?: ProxyFn
+  proxy?: ProxyFactory
   flag?: string
   iframe?: string
   timeout?: number

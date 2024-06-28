@@ -1,3 +1,5 @@
+import type { Merak } from './merak'
+
 export interface CompileInfo {
   n: string[]
   c: string[]
@@ -14,7 +16,7 @@ export interface LoadDone {
 
 }
 
-export type ProxyFn = (opts: { id: string; baseUrl: string }) => ProxyGlobals
+export type ProxyFactory = (instance: Merak) => ProxyGlobals
 
 export interface ProxyGlobals {
   window: ProxyHandler<Window>

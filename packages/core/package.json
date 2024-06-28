@@ -2,16 +2,22 @@
   "name": "merak-core",
   "version": "3.0.0",
   "description": "",
-  "main": "dist/index.js",
-  "module": "dist/index.mjs",
-  "types": "dist/index.d.ts",
+  "author": "",
+  "license": "MIT",
+  "keywords": [],
   "exports": {
     ".": {
-      "import": "./dist/index.mjs",
-      "require": "./dist/index.js"
+      "require": "./dist/index.js",
+      "import": "./dist/index.mjs"
     },
     "./*": "./*"
   },
+  "main": "dist/index.js",
+  "module": "dist/index.mjs",
+  "types": "dist/index.d.ts",
+  "files": [
+    "dist"
+  ],
   "scripts": {
     "serve": "http-server ./dist --cors -p 3000",
     "dev": "tsup --watch",
@@ -19,12 +25,6 @@
     "build:prod": "cross-env PROD=true tsup",
     "build:dev": "cross-env DEV=true tsup"
   },
-  "keywords": [],
-  "files": [
-    "dist"
-  ],
-  "author": "",
-  "license": "MIT",
   "devDependencies": {
     "merak-compile": "workspace:*",
     "tsup": "^6.5.0"

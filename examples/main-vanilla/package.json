@@ -1,19 +1,19 @@
 {
   "name": "example-main-vanilla",
-  "private": true,
-  "version": "0.0.0",
   "type": "module",
+  "version": "0.0.0",
+  "private": true,
   "scripts": {
     "dev": "vite",
     "serve": "http-server ./dist --cors -p 5002",
     "build": "tsc && vite build",
     "preview": "vite preview"
   },
+  "dependencies": {
+    "merak-core": "workspace:*"
+  },
   "devDependencies": {
     "typescript": "^4.9.3",
     "vite": "^4.1.0"
-  },
-  "dependencies": {
-    "merak-core": "workspace:*"
   }
 }

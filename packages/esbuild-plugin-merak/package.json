@@ -2,6 +2,9 @@
   "name": "esbuild-plugin-merak",
   "version": "2.0.0",
   "description": "esbuild plugin for merak",
+  "author": "",
+  "license": "MIT",
+  "keywords": [],
   "main": "dist/index.js",
   "module": "dist/index.mjs",
   "types": "dist/index.d.ts",
@@ -9,15 +12,12 @@
     "dev": "tsup --watch",
     "build": "tsup"
   },
-  "keywords": [],
-  "author": "",
-  "license": "MIT",
   "dependencies": {
     "merak-compile": "workspace:^",
     "postcss": "^8.4.30"
   },
   "devDependencies": {
-    "tsup": "^6.5.0",
-    "esbuild": "^0.19.5"
+    "esbuild": "^0.19.5",
+    "tsup": "^6.5.0"
   }
 }

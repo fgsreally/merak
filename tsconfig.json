@@ -12,6 +12,6 @@
     "strictBindCallApply": false,
     "strictPropertyInitialization": false,
     "suppressImplicitAnyIndexErrors": true,
-    "skipLibCheck": true,
+    "skipLibCheck": true
   }
 }

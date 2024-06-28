@@ -24,14 +24,14 @@ jobs:
         run: pnpm run build
 
       - name: Build Docs
-        run: pnpm run docs:build  
+        run: pnpm run docs:build
 
       - name: Deploy Docs
         uses: peaceiris/actions-gh-pages@v3
         with:
           github_token: ${{ secrets.GITHUB_TOKEN }}
           publish_dir: ./docs/.vitepress/dist
-          full_commit_message: ${{ github.event.head_commit.message }} 
+          full_commit_message: ${{ github.event.head_commit.message }}
 
       - name: Create Release Pull Request or Publish to npm
         id: changesets
@@ -41,4 +41,3 @@ jobs:
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
           NPM_TOKEN: ${{ secrets.NPM_TOKEN }}
- 

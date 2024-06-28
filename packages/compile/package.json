@@ -2,29 +2,22 @@
   "name": "merak-compile",
   "version": "3.0.0",
   "description": "",
+  "author": "",
+  "license": "MIT",
+  "keywords": [],
   "main": "dist/index.js",
   "module": "dist/index.mjs",
   "types": "dist/index.d.ts",
   "bin": {
     "merak": "dist/cli.js"
   },
-  "scripts": {
-    "dev": "tsup --watch",
-    "build": "tsup"
-  },
   "files": [
     "dist",
     "assets"
   ],
-  "keywords": [],
-  "author": "",
-  "license": "MIT",
-  "devDependencies": {
-    "@babel/types": "^7.21.4",
-    "@types/babel__core": "^7.20.0",
-    "@types/fs-extra": "^11.0.1",
-    "@types/json2md": "^1.5.1",
-    "tsup": "^6.5.0"
+  "scripts": {
+    "dev": "tsup --watch",
+    "build": "tsup"
   },
   "dependencies": {
     "@babel/core": "^7.20.12",
@@ -37,5 +30,12 @@
     "json2md": "^2.0.0",
     "magic-string": "^0.27.0",
     "postcss": "^8.4.30"
+  },
+  "devDependencies": {
+    "@babel/types": "^7.21.4",
+    "@types/babel__core": "^7.20.0",
+    "@types/fs-extra": "^11.0.1",
+    "@types/json2md": "^1.5.1",
+    "tsup": "^6.5.0"
   }
 }

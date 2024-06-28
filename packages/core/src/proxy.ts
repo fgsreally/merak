@@ -1,9 +1,8 @@
 /* eslint-disable no-prototype-builtins */
 import { createQuery, debug, getMerakQuerys, isBoundedFunction, isCallable, isConstructable } from './utils'
-import { getApp } from './helper'
 import { createProxyTimer } from './proxy/timer'
 import { createProxyListener } from './proxy/listener'
-import type { ProxyFn } from './types'
+import type { ProxyFactory } from './types'
 import { Merak } from './merak'
 
 export const cacheBindFn = new WeakMap()
@@ -46,11 +45,10 @@ export function getBindFn(target: any, p: any) {
   return value
 }
 
-export function createProxyWindow(id: string, url: string) {
+export function createProxyWindow(instance: Merak) {
+  const { id, baseUrl: url } = instance
   return {
     get(target: any, p: PropertyKey) {
-      const instance = getApp(id)!
-
       debug(`get [${typeof p === 'symbol' ? p.toString() : p}] from window`, id)
       // if you want to rewrite proxy logic,don't remove this part
       /** start  */
@@ -76,8 +74,6 @@ export function createProxyWindow(id: string, url: string) {
     },
 
     set(target: any, p: PropertyKey, v: any) {
-      const instance = getApp(id)!
-
       debug(`set [${typeof p === 'symbol' ? p.toString() : p}] to window`, id)
 
       if (WINDOW_VAR_SET.has(p)) {
@@ -97,7 +93,9 @@ export function createProxyWindow(id: string, url: string) {
   }
 }
 
-export function createProxyDocument(id: string, url: string) {
+export function createProxyDocument(instance: Merak) {
+  const { id, baseUrl: url } = instance
+
   return {
     // getPrototypeOf() {
     //   console.log(Object.getPrototypeOf(document))
@@ -105,8 +103,6 @@ export function createProxyDocument(id: string, url: string) {
     // },
     get(target: any, p: PropertyKey) {
       debug(`get [${typeof p === 'symbol' ? p.toString() : p}] from document`, id)
-
-      const instance = getApp(id)!
 
       if (p === 'rawDocument')
         return document
@@ -201,7 +197,8 @@ export function createProxyDocument(id: string, url: string) {
   }
 }
 
-export function createProxyHistory(id: string) {
+export function createProxyHistory(instance: Merak) {
+  const { id } = instance
   return {
     get(target: any, p: PropertyKey) {
       debug(`get [${typeof p === 'symbol' ? p.toString() : p}] from history`, id)
@@ -245,7 +242,9 @@ export function createProxyHistory(id: string) {
 
   }
 }
-export function createProxyLocation(id: string) {
+export function createProxyLocation(instance: Merak) {
+  const { id } = instance
+
   return {
 
     get(target: any, p: PropertyKey) {
@@ -271,12 +270,10 @@ export function createProxyLocation(id: string) {
   }
 }
 
-export const createProxy: ProxyFn = ({ id, baseUrl: url }) => {
-  const { setTimeout, setInterval } = createProxyTimer(id)
-  return { document: createProxyDocument(id, url), window: createProxyWindow(id, url), history: createProxyHistory(id), location: createProxyLocation(id), setTimeout, setInterval, addEventListener: createProxyListener(id) }
+export const createProxy: ProxyFactory = (instance) => {
+  return { document: createProxyDocument(instance), window: createProxyWindow(instance), history: createProxyHistory(instance), location: createProxyLocation(instance), addEventListener: createProxyListener(instance), ...createProxyTimer(instance) }
 }
 
-export const createLibProxy: ProxyFn = ({ id, baseUrl: url }) => {
-  const { setTimeout, setInterval } = createProxyTimer(id)
-  return { document: createProxyDocument(id, url), window: createProxyWindow(id, url), setTimeout, setInterval, addEventListener: createProxyListener(id) }
+export const createLibProxy: ProxyFactory = (instance) => {
+  return { document: createProxyDocument(instance), window: createProxyWindow(instance), addEventListener: createProxyListener(instance), ...createProxyTimer(instance) }
 }

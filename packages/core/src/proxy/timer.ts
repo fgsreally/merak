@@ -1,16 +1,15 @@
-import { getApp } from '../helper'
-
-export function createProxyTimer(id: string) {
+import type { Merak } from '../merak'
+export function createProxyTimer(instance: Merak) {
   const fakeTimeOut = (...args: Parameters<typeof setTimeout>) => {
     const timer = setTimeout(...args)
-    getApp(id)!.sideEffects.push(() => clearTimeout(timer))
+    instance.sideEffects.push(() => clearTimeout(timer))
 
     return timer
   }
 
   const fakeTimeInterval = (...args: Parameters<typeof setTimeout>) => {
     const timer = setInterval(...args)
-    getApp(id)!.sideEffects.push(() => clearInterval(timer))
+    instance.sideEffects.push(() => clearInterval(timer))
 
     return timer
   }

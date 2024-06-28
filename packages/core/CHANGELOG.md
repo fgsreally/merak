@@ -5,7 +5,7 @@
 ### Major Changes
 
 - 364aa8b: refact compile system(cli/vite/webpack/esbuild);
-  unified variable name in sandbox(**m_xx**);
+  unified variable name in sandbox(__m_xx__);
   fix ssr method;
   rename $instance to $app
   refact logger
@@ -18,7 +18,7 @@
 
 ### Patch Changes
 
-- 9be6ae8: replace **DEV** with NODE_ENV
+- 9be6ae8: replace __DEV__ with NODE_ENV
 
 ## 2.1.2
 

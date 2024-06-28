@@ -1,5 +1,5 @@
 import { iframeInstance } from './iframe'
-import type { LoadDone, NameSpace, Props, ProxyFn, ProxyGlobals } from './types'
+import type { LoadDone, NameSpace, Props, ProxyFactory, ProxyGlobals } from './types'
 import { type Loader } from './loaders'
 import { createProxy } from './proxy'
 import { MERAK_CYCLE, MERAK_DATA_ID, MERAK_EVENT, MERAK_SHADE_STYLE, PERF_TIME } from './common'
@@ -96,7 +96,7 @@ export class Merak<L extends Loader = Loader> {
     public options: {
       loader?: L
       // 沙箱
-      proxy?: ProxyFn
+      proxy?: ProxyFactory
       loaderOptions?: any
       // iframe id
       iframe?: string
@@ -117,7 +117,7 @@ export class Merak<L extends Loader = Loader> {
     this.loaderOptions = loaderOptions
     this.loader = loader
 
-    const proxyMap = proxy({ id, baseUrl: this.baseUrl })
+    const proxyMap = proxy(this)
     for (const i in proxyMap)
       this.proxyMap[i] = typeof proxyMap[i] === 'function' ? proxyMap[i] : new Proxy({} as any, proxyMap[i])
 
@@ -262,7 +262,6 @@ export class Merak<L extends Loader = Loader> {
     // work for style flicker
     if (!this.sandHtml) {
       this.sandHtml = document.createElement('html')
-
       this.sandHtml.innerHTML = this.template || '<head></head><body></body>'
     }
     if (!this.cacheFlag) {

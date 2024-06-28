@@ -1,3 +1,4 @@
+<!-- eslint-disable no-console -->
 <script setup lang="ts">
 import { MerakApp } from 'merak-vue'
 const data = {

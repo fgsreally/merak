@@ -9,7 +9,7 @@ type MerakApp = {
   url: string
   props: any
   inlineStyle?: boolean
-  proxy?: ProxyFn
+  proxy?: ProxyFactory
   flag?: string
   iframe?: string
   timeout?: number

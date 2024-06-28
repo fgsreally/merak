@@ -1,8 +1,8 @@
 {
   "name": "example-main-vue-lib",
-  "private": true,
-  "version": "0.0.0",
   "type": "module",
+  "version": "0.0.0",
+  "private": true,
   "scripts": {
     "dev": "vite",
     "serve": "http-server ./dist --cors -p 5000",

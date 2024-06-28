@@ -8,7 +8,7 @@ export function createProxyListener(instance: Merak) {
     const eventName = params[0]
 
     if (eventName.startsWith(MERAK_EVENT_PREFIX)) {
-      params[0] = eventName + id
+      params[0] = eventName + instance.id
       if (instance.options.iframe)
         instance.sideEffects.push(() => removeEventListener(...params))
     }

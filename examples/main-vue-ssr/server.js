@@ -5,12 +5,13 @@ import { fileURLToPath } from 'node:url'
 import express from 'express'
 import axios from 'axios'
 import { mergeCompiledHTML } from 'merak-compile'
+import serveStatic from 'serve-static'
 const isProduction = process.env.PROD || process.env.CI
 
 export async function createServer(root = process.cwd(), isProd = isProduction) {
   const __dirname = path.dirname(fileURLToPath(import.meta.url))
   const resolve = p => path.resolve(__dirname, p)
-  const indexProd = isProd ? fs.readFileSync(resolve('dist/client/index.html'), 'utf-8') : ''
+  const templateProd = isProd ? fs.readFileSync(resolve('dist/client/index.html'), 'utf-8') : ''
   const manifest = isProd ? JSON.parse(fs.readFileSync(resolve('dist/client/ssr-manifest.json'), 'utf-8')) : {}
   // @ts-expect-error
 
@@ -38,7 +39,7 @@ export async function createServer(root = process.cwd(), isProd = isProduction) 
   else {
     // app.use((await import('compression')).default())
     app.use(
-      (await import('serve-static')).default(resolve('dist/client'), {
+      serveStatic('./dist/client', {
         index: false,
       }),
     )
@@ -47,7 +48,6 @@ export async function createServer(root = process.cwd(), isProd = isProduction) 
   app.use('*', async (req, res) => {
     try {
       const url = req.originalUrl
-
       let template, render
       if (!isProd) {
         // always read fresh template in dev
@@ -56,7 +56,7 @@ export async function createServer(root = process.cwd(), isProd = isProduction) 
         render = (await vite.ssrLoadModule('/src/entry-server')).render
       }
       else {
-        template = indexProd
+        template = templateProd
         render = (await import('./dist/server/entry-server.js')).render
       }
 

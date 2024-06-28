@@ -24,30 +24,28 @@ export async function runAllExample() {
   console.time('runAllExample')
   step('\n building  merak-core...')
 
-  await $`pnpm --filter merak-core run build:dev`
-  await $`pnpm --filter merak-core run build:prod`
-
   try {
     if (process.env.CI || process.env.PROD) {
-      step('\n building  project...')
+      await $`pnpm --filter merak-core run build:prod`
 
+      step('\n building project...')
       await $`pnpm --filter example-* run build`
 
       step('\n serve bundle...')
       $`pnpm run example:serve`
-
-      await waitOn(opts)
-      step('\n start e2e test...')
     }
     else {
+      await $`pnpm --filter merak-core run build:dev`
+
       step('\n run dev project...')
       $`pnpm run example:dev`
-
-      step('\n wait project start...')
-      await waitOn(opts)
-
-      step('\n start e2e test...')
     }
+
+    step('\n wait project start...')
+
+    await waitOn(opts)
+
+    step('\n start e2e test...')
   }
   catch (err) {
     ports.forEach(port => killPort(port))

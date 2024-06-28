@@ -1,5 +1,11 @@
 # merak-compile
 
+## 3.0.1
+
+### Patch Changes
+
+- 738d1b2: Isolate globally declared variables and functions(Globally declared values need to remain referenced)
+
 ## 3.0.0
 
 ### Major Changes

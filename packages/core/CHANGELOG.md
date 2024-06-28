@@ -1,11 +1,17 @@
 # merak-core
 
+## 3.0.1
+
+### Patch Changes
+
+- 738d1b2: refactor proxy parameters
+
 ## 3.0.0
 
 ### Major Changes
 
 - 364aa8b: refact compile system(cli/vite/webpack/esbuild);
-  unified variable name in sandbox(__m_xx__);
+  unified variable name in sandbox(**m_xx**);
   fix ssr method;
   rename $instance to $app
   refact logger
@@ -18,7 +24,7 @@
 
 ### Patch Changes
 
-- 9be6ae8: replace __DEV__ with NODE_ENV
+- 9be6ae8: replace **DEV** with NODE_ENV
 
 ## 2.1.2
 

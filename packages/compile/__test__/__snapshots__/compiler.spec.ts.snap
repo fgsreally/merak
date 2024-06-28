@@ -6,6 +6,7 @@ const {window,document}=test;import c from 'c'
 
 /** @merak */(window.isMerak?window.rawWindow.document:document).addEventListener('click', c)
 
+// eslint-disable-next-line no-undef
 test.__HMR__.run()
 
 window.onload = async () => {

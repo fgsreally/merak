@@ -11,17 +11,20 @@ module.exports = defineConfig({
       },
     },
   },
+  chainWebpack(config) {
+    config.plugins.delete("fork-ts-checker");
+  },
   configureWebpack: {
-     devtool:'source-map',
+    devtool: "source-map",
     devServer: {
-      port:4005,
+      port: 4005,
       headers: {
         "Access-Control-Allow-Origin": "*",
         "Access-Control-Allow-Headers": "*",
         "Access-Control-Allow-Methods": "*",
       },
     },
- 
-    plugins: [new Merak("vue_cli",{force:true})],
+
+    plugins: [new Merak("vue_cli", { force: true })],
   },
 });

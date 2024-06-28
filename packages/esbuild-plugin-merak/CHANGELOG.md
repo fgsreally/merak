@@ -1,5 +1,12 @@
 # esbuild-plugin-merak
 
+## 2.0.1
+
+### Patch Changes
+
+- Updated dependencies [738d1b2]
+  - merak-compile@3.0.1
+
 ## 2.0.0
 
 ### Major Changes
